@@ -48,4 +48,4 @@ Install the wsgi Python library
 pip3 install mod-wsgi
 ```
 
-Print the path for the newly created wsgi files with the command
+Print the path for the newly created wsgi files with
