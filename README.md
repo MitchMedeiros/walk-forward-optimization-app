@@ -1,8 +1,8 @@
 # Overview
-This README provides an overview of the app's functionalities and additional steps necessary to recreate it for yourself.
+This README provides an overview of the app's functionalities and additional steps necessary to recreate it for yourself. You should already have Python and a virtual environment setup.
 
 ## Installation 
-TA-Lib is used in this app and requires some manual installation if you want to run the app locally. This is because the TA-Lib Python library serves only as a compatibility layer for the original TA-Lib library, which must be properly installed before running `pip install ta-lib`. For Linux you can follow the steps below. For Mac a similar procedure can be followed see [installing TA-Lib without Homebrew](https://medium.com/@mkstz/install-ta-lib-without-homebrew-61f57a63c06d).
+TA-Lib is used in this app and requires some manual installation if you want to run the app locally. This is because the TA-Lib Python library serves only as a compatibility layer for the original TA-Lib library, which must be properly installed before running `pip install ta-lib`. For Linux you can follow the steps below. For Mac, a similar procedure can be followed see: [Installing TA-Lib without Homebrew](https://medium.com/@mkstz/install-ta-lib-without-homebrew-61f57a63c06d).
 
 ### Ta-Lib Installation for Linux:
 
@@ -18,7 +18,7 @@ Download the TA-Lib library from [SourceForge](https://sourceforge.net/projects/
 wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
 ```
 
-Unzip the tar file
+Unpack the tar file
 
 ```shell
 tar -xvf ta-lib-0.4.0-src.tar.gz
@@ -55,7 +55,7 @@ If you've done `pip install mod-wsgi` already then locate your WSGI files with
 mod_wsgi-express module-config
 ```
 
-and copy the output. Now create a new mod file in your *mods-available* directory and paste this output inside it
+and copy the output. Now create a new mod load file in your Apache *mods-available* directory and paste that output inside it
 
 ```shell
 vim /etc/apache2/mods-available/wsgi.load
@@ -114,10 +114,10 @@ If your site has been setup to use https via Let's Encrypt then your .htaccess o
 
 If you've created a new *.config* or *.htaccess* file in one of your *...-available* folders rather than adding to an existing file then you'll also need to activate it with the appropriate `a2ensite`, `a2enmod`, or `a2enconf` command.
 
-You also need to edit the *app.wsgi* file in this repository by changing the sys.path line to the appropriate directory for your app
+Finally, you will also need to edit the *app.wsgi* file from this repository by changing the sys.path line to the appropriate directory for your app
 
 ```python
 sys.path.insert(0,"/var/www/yoursites_folder/dashapp/")
 ```
 
-Finally, restart Apache `systemctl restart apache2` for all changes to take effect. The app should now be accessible through your domain name.
+Now restart Apache `systemctl restart apache2` for all changes to take effect. The app should now be accessible through your domain name 🤩.
