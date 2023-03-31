@@ -4,13 +4,13 @@ The TA-Lib Python library merely serves as a compatibility layer for the origina
 
 ## Ta-Lib Installation for Linux:
 
-Install *wget* if you don't already have it, using the appropriate install command for your Linux distro. **For Debian/Ubuntu:**
+Install *wget* if you don't already have it, using the appropriate [install command](https://www.maketecheasier.com/install-software-in-various-linux-distros/) for your Linux distro. **For Debian/Ubuntu:**
 
 ```shell
 sudo apt-get install wget
 ```
 
-Download the TA-Lib library from SourceForge
+Download the TA-Lib library from [SourceForge](https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/)
 
 ```shell
 wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
@@ -40,10 +40,10 @@ Finally, run *make install* to copy the compiled files into */usr/include/ta-lib
 sudo make install
 ```
 
-From here you can *pip install vectorbt* to install the ta-lib python library and all other vectorbt dependencies for you. Make sure you have Python >=3.6, < 3.11.
+You can now *pip install* vectorbt and all other dependencies
 
 ```shell
-pip3 install -U vectorbt
+pip3 install -r requirements.txt
 ```
 
 ## WSGI Server Setup for Apache 2:
@@ -55,4 +55,4 @@ Install the wsgi Python library
 pip3 install mod-wsgi
 ```
 
-Print the path for for the newly created wsgi files with the command
+Print the path for the newly created wsgi files with the command
