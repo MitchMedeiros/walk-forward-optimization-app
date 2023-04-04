@@ -1,18 +1,41 @@
-# Overview
-This README provides an overview of the app's functionalities and additional steps necessary to recreate it for yourself. You should already have Python and a virtual environment setup.
+<h1>App Description and Preview</h1>
 
-## Installation 
-TA-Lib is used in this app and requires some manual installation if you want to run the app locally. This is because the TA-Lib Python library serves only as a compatibility layer for the original TA-Lib library, which must be properly installed before running `pip install ta-lib`. For Linux you can follow the steps below. For Mac, a similar procedure can be followed see: [Installing TA-Lib without Homebrew](https://medium.com/@mkstz/install-ta-lib-without-homebrew-61f57a63c06d).
+<h1>Dependencies and Installation</h1>
 
-### Ta-Lib Installation for Linux:
+<h2>Dependencies &nbsp;
+    <a href="https://pypi.org/project/vectorbt" alt="Python Versions">
+        <img src="https://img.shields.io/pypi/pyversions/vectorbt.svg?logo=python&logoColor=white">
+    </a>
+</h2>
 
-Install *wget* if you don't already have it, using the appropriate [install command](https://www.maketecheasier.com/install-software-in-various-linux-distros/) for your Linux distro. **For Debian/Ubuntu:**
+<ol>
+    <li>it's assumed that you already have a compatible version of Python (listed above) and ideally a new virtual environment</li>
+    <li>original TA-Lib library</li>
+    <li>libraries in requirements.txt</li>
+    <li>mod_wsgi (only if web hosting the app)</li>
+</ol>
+
+TA-Lib requires more work than a pip install if you want to reproduce the project. This is because the TA-Lib Python library serves only as a compatibility layer for the original TA-Lib library which must be installed before running `pip install ta-lib`. For Linux, I've provided the steps below. For Mac, a similar procedure can be followed: 
+<a href="https://medium.com/@mkstz/install-ta-lib-without-homebrew-61f57a63c06d">
+    Installing TA-Lib without Homebrew
+</a>
+
+<h2>Ta-Lib Installation for Linux:</h2>
+
+Install *wget* if you don't already have it, using the appropriate 
+<a href="https://www.maketecheasier.com/install-software-in-various-linux-distros/">
+    install command
+</a> 
+for your Linux distro. **For Debian/Ubuntu:**
 
 ```shell
 sudo apt-get install wget
 ```
 
-Download the TA-Lib library from [SourceForge](https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/)
+Download the TA-Lib library from 
+<a href="https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/">
+    SourceForge
+</a>
 
 ```shell
 wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
@@ -38,12 +61,13 @@ You should now be able to install vectorbt and all dependencies without any issu
 ```shell
 pip3 install -r requirements.txt
 ```
-If this generates errors still then confirm that your Linux distro stores header files in a subdirectory of /usr. If not, change `./configure --prefix=/appropriate_directory` in the earlier step.
+If this generates errors about ta-lib then confirm that your Linux distro stores header files in a subdirectory of /usr. If not, change `./configure --prefix=/appropriate_directory` in the earlier step.
 
-## Web Hosting on an Apache Server using WSGI:
-**This section assumes you already have an Apache server setup and linked to a domain name.**
+<h2>Web Hosting on an Apache Server using WSGI:</h2>
 
-With Apache installed you may still be missing important files for WSGI. For Debian/Ubuntu run:
+This section assumes you already have an Apache server setup and linked to a domain name.
+
+Even with Apache installed, you may be missing important files for mod_wsgi. For Debian/Ubuntu run:
 
 ```shell
 sudo apt-get install apache2-dev
