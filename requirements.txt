@@ -1,9 +1,8 @@
 datetime
-matplotlib
 flask
 dash
 dash-core-components
 dash-html-components
 dash-bootstrap-components
-mod-wsgi
 vectorbt
+mod-wsgi
