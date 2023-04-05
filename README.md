@@ -90,19 +90,19 @@ to install psycopg2. If so simply `pip install psycopg2` inside your python envi
 
 As a disclaimer, using psycopg2-binary is not recommended for production systems since it can create binary upgradeability issues. This is because psycopg2 is a compatibility library similar to TA-Lib, and psycopg2-binary installs the relevant C libraries and pre-compiled binary for you to make setup simple. However, these libraries won't be upgradeded by your system and can create conflicts.
 
-Note that you can shortcut the cursor creation process in psycopg2 using the pandas function `pd.read_sql_query('''your query''', conn)`, however, this is officially untested for psycopg2.
+Note that you can shortcut the cursor creation process for importing data with psycopg2 using the pandas function `pd.read_sql_query('''your query''', conn)`, however, this is officially untested for psycopg2.
 
 <h2>WSGI Setup for an Apache Server</h2>
 
 This section explains optionally how to web host the app on a server. It assumes you have an Apache server setup and linked to a domain name.
 
-Even with Apache installed, you may be missing important files for mod_wsgi. For Debian/Ubuntu run:
+Even with Apache installed, you may be missing important files for WSGI. For Debian/Ubuntu run:
 
 ```shell
 sudo apt-get install apache2-dev
 ```
 
-Now with your python environment active do 
+Now with your python environment active 
 
 ```shell
 pip install mod-wsgi
@@ -120,13 +120,13 @@ and copy the output. Now create a new .load file in your /etc/apache2/mods-avail
 vim /etc/apache2/mods-available/wsgi.load
 ```
 
-*(If you're new to vim press `i` to insert text, paste like normal, press `escape`, then `:wq` to save changes and exit. If you make a mistake press `escape` then `:q!` to exit without saving changes or creating the new file.)*
+(If you're new to vim press `i` to insert text, paste like normal, press `escape`, then `:wq` to save changes and exit. If you make a mistake press `escape` then `:q!` to exit without saving changes or creating the new file.)
 
 Enable the new mod with `a2enmod wsgi`.
 
-Nagivate to the .config or .htaccess file (depending on your OS) that you have your virutal host information in. You'll need to add a `WSGIScriptAlias` with the location of the .wsgi file.
+Nagivate to the .config or .htaccess file (depending on your OS) that you have your virutal host information in. You'll need to add a `WSGIScriptAlias` specifying the location of the app.wsgi file in this repository.
 
-If you site is only using http, your virtual host info should look similar to the below. If you have your site in a different directory from /var/www/ then change the entire root directory appropriately.
+If your site is only using http, your virtual host info should look similar to the below. If you have your site in a different directory from /var/www/ then change the root directory appropriately.
 
 ```apache
 <VirtualHost *:80>
@@ -173,7 +173,7 @@ If your site is setup to use https via Let's Encrypt then your .htaccess or .con
 
 If you've created a new .config or .htaccess file in one of your ...-available folders rather than adding to an existing file then you'll also need to activate it with the appropriate `a2ensite`, `a2enmod`, or `a2enconf` command.
 
-Finally, you should edit the app.wsgi file from this repository by changing the sys.path line shown below to the appropriate directory for your app
+Finally, you should edit the app.wsgi file in this repository by changing the sys.path line shown below to the appropriate root directory for your app
 
 ```python
 sys.path.insert(0,"/var/www/yoursites_folder/dashapp/")
