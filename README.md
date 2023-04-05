@@ -8,13 +8,13 @@
 
 <ol>
     <li>It is assumed that you already have a compatible version of Python (listed above) and ideally a fresh virtual environment</li>
-    <li>C-based TA-Lib library installed</li>
+    <li>The C-based TA-Lib library</li>
     <li>The libraries in requirements.txt</li>
     <li>(optional) A CSV file or database containing market data</li>
-    <li>(optional) WSGI setup if web hosting the app</li>
+    <li>(optional) A WSGI setup if web hosting the app</li>
 </ol>
 
-For a barebones installation you only need to install TA-Lib, clone this repository, and run pip3 install -r requirements.txt in your python environment. Detailed instruction for reproducing the full web app connected to a PostgreSQL/TimescaleDB database are also provided below.
+For a barebones installation you only need to install TA-Lib, clone this repository, and run pip3 install -r requirements.txt in your python environment. Detailed instruction for reproducing the full web app connected to a PostgreSQL/TimescaleDB database are provided below.
 
 The TA-Lib Python library serves only as a compatibility layer for the original TA-Lib library based in C and this must be installed before running `pip install ta-lib`. For Linux, I've provided the steps below. For Mac, a fairly similar procedure can be followed: 
 <a href="https://medium.com/@mkstz/install-ta-lib-without-homebrew-61f57a63c06d">
