@@ -4,8 +4,6 @@ from dash_bootstrap_components.themes import DARKLY
 # Instantiate app and choose theme
 app = Dash(__name__, external_stylesheets=[DARKLY])
 
-# Create app components
-
 # Customize dashboard layout
 app.layout = html.Div(children=[
     html.H4(children='Experimental Dash Page'),

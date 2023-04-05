@@ -4,5 +4,6 @@ dash
 dash-core-components
 dash-html-components
 dash-bootstrap-components
+yfinance
 vectorbt
 mod-wsgi
