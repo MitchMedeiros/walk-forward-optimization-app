@@ -102,9 +102,9 @@ for i in range(num_windows):
     res_h = ind.run(
         out_price[i], 
         rsi_period = np.arange(5,9,step=1,dtype=int),
-        ma_period = np.arange(10,120,step=10,dtype=int),
-        entry = np.arange(26,34,step=2,dtype=float),
-        exit = np.arange(66,74,step=2,dtype=float),
+        ma_period = np.arange(80,120,step=10,dtype=int),
+        entry = np.arange(28,32,step=2,dtype=float),
+        exit = np.arange(68,72,step=2,dtype=float),
         param_product = True
         )
 
@@ -123,9 +123,11 @@ for i in range(num_windows):
     print("In=sample optimized parameters = " f'{max_return_params[i]}')
     print("Out-of-sample optimized parameters = " f'{return_params_h[i]}')
 
-    # pf_h.total_return().vbt.volume(
-    # x_level = 'g_entry',
-    # y_level = 'g_exit',
-    # z_level = 'g_ma_period',
-    # slider_level = 'g_rsi_period',
-    # trace_kwargs=dict(colorbar=dict(title="Total return", tickformat='%'))).show()
+    # param_volume= pf_h.total_return().vbt.volume(
+        # x_level = '_entry',
+        # y_level = '_exit',
+        # z_level = '_ma_period',
+        # slider_level = '_rsi_period',
+        # trace_kwargs=dict(colorbar=dict(title="Total return", tickformat='%')))
+    
+    #param_volume.show()
