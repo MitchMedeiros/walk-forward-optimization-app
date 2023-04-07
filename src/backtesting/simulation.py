@@ -39,6 +39,10 @@ for i in range(num_windows):
     max_sharpe_params.append(pf.sharpe_ratio().idxmax())
     max_drawdown_params.append(pf.max_drawdown().idxmin())
 
+print(max_returns)
+print(max_return_params)
+print(max_sharpe_params)
+print(max_drawdown_params)
 
 ##############################
 #Out-of-sample testing

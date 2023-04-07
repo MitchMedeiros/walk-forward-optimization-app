@@ -19,9 +19,5 @@ ind = vbt.IndicatorFactory(
     output_names = ['value']
     ).from_apply_func(
         strategy,
-        rsi_period = 5,
-        ma_period = 110,
-        entry = 32,
-        exit = 70,
         keep_pd=True
         )

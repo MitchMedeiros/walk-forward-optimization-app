@@ -6,6 +6,16 @@ df = pd.read_csv("/var/www/backtest.fi/dashapp/src/data/ESZ22_1m.csv")
 
 ##### For yfinance data #####
 # import vectorbt as vbt
+
+# yf_data = vbt.YFData.download(
+#     "TSLA",
+#     start='2021-04-12 09:30:00 -0400',
+#     end='2021-04-12 09:35:00 -0400',
+#     interval='1m'
+# )
+
+# yf_data.get()
+
 # df = vbt.YFData.download('SPY').get('Close')
 
 ##### For CSV ######
