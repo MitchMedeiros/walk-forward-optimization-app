@@ -1,10 +1,10 @@
-from dash import Dash, html, dcc
+from dash import html, dcc
 
-def create_layout(app: Dash) -> html.Div:
+def create_layout() -> html.Div:
     return html.Div(
-        className="app-div",
+        className="layout-div",
         children=[
-            #html.H1(app.title),
+            html.H3("Backtesting Parameter Optimization"),
             html.Hr(),
             html.H4(children='Experimental Dash Page')
         ],

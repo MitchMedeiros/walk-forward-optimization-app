@@ -3,8 +3,6 @@ from scipy import stats
 from statistics import mean
 import vectorbt as vbt
 
-#from data import num_windows, in_price, out_price
-#from strategies import strategy, ind
 from . data import num_windows, in_price, out_price
 from . strategies import strategy, ind
 
@@ -15,11 +13,13 @@ from . strategies import strategy, ind
 # Variables for portfolio simulation
 pf_kwargs = dict(direction='both', freq = '1m', init_cash=10000)
 
-# Creates empty lists for appending optimized parameters to for popular metrics. 
-# You could instead write over np.zeros arrays but this isn't worth the added complexity
-max_returns, max_return_params, max_sharpe_params, max_drawdown_params = [],[],[],[]
+# Creates empty lists for appending optimized parameters for popular metrics. 
+# You could instead write over np.zeros arrays but this is more complicated with changing numbers of parameters
+max_return_values, max_return_params = [],[]
+max_sharpe_values, max_sharpe_params = [],[]
+max_drawdown_values, max_drawdown_params = [],[]
 
-# Loop the indicator on the in-sample walk-forward windows created in data.py to create buy and sell signals label entries and exits
+# Loop the indicator on the in-sample walk-forward windows, testing multiple parameter values
 for i in range(num_windows):
     signal = ind.run(
         in_price[i], 
@@ -36,12 +36,12 @@ for i in range(num_windows):
     # Calculates various stats based on the trade entries and exits
     pf = vbt.Portfolio.from_signals(in_price[i], entries, exits, **pf_kwargs)
 
-    max_returns.append(round(pf.total_return().max()*100,3))
+    max_return_values.append(round(pf.total_return().max()*100,3))
     max_return_params.append(pf.total_return().idxmax())
     max_sharpe_params.append(pf.sharpe_ratio().idxmax())
     max_drawdown_params.append(pf.max_drawdown().idxmin())
 
-print(max_returns)
+print(max_return_values)
 print(max_return_params)
 print(max_sharpe_params)
 print(max_drawdown_params)
@@ -50,9 +50,7 @@ print(max_drawdown_params)
 #Out-of-sample testing
 ##############################
 
-realized_profits, missed_profit = [],[]
-
-n = np.arange(0, num_windows, 1)
+realized_returns, missed_returns = [],[]
 
 # Looping the indicator on out-of-sample windows and inputting the parameters that maximimized returns for the corresponding in-sample window
 # Since the index for the windows and the optimized parameter arrays is matching we don't need enumerate here
@@ -78,30 +76,24 @@ for i in range(num_windows):
 
     pf_t = vbt.Portfolio.from_signals(out_price[i], entries_t, exits_t, **pf_kwargs)
 
-    realized_profits.append(round(pf_t.total_return()*100,4))
-    #print(pf_t.stats())
-
-for i in n:
-    mean_ad = np.sum(np.abs(realized_profits[i]-np.mean(realized_profits)))/(i+1)
-    #print(mean_ad)
-    missed_profit.append(round(max_returns[i]-realized_profits[i],4))
+    realized_returns.append(round(pf_t.total_return()*100,4))
+    missed_returns.append(round(max_return_values[i]-realized_returns[i],4))
+    mean_ad = np.sum(np.abs(realized_returns[i]-np.mean(realized_returns)))/(i+1)
 
 # Results acheieved through parameter optimization
-print("Average Return = " f'{round(mean(realized_profits),4)}''%')
-print("Annualized Return = " f'{round(sum(realized_profits)*(261/(5*num_windows)),4)}''%')
-print("Return by window: " f'{realized_profits}')
-print("Missed profit: " f'{missed_profit}')
-
-#print("STD = " f'{round(np.std(tr),3)}')
-#print("MAD =  " f'{round(mean_ad,3)}')
-#print("Median AD = " f'{stats.median_abs_deviation(tr)}')
+print("Average Return = " f'{round(mean(realized_returns),4)}''%')
+print("Annualized Return = " f'{round(sum(realized_returns)*(261/(5*num_windows)),4)}''%')
+print("Return by window: " f'{realized_returns}')
+print("Missed profit: " f'{missed_returns}')
+#print("Mean Absolute Deviation of Results =  " f'{round(mean_ad,3)}')
+print(pf_t.stats())
 
 
 ##############################
 #Hypothetically ideal results comparison
 ##############################
 
-hr, return_params_h = [], []
+max_return_values_h, max_return_params_h = [], []
 
 #Compare achieved out-of-sample results vs hypothetical optimum results
 for i in range(num_windows):
@@ -119,15 +111,15 @@ for i in range(num_windows):
     
     pf_h = vbt.Portfolio.from_signals(out_price[i], entries_h, exits_h, **pf_kwargs)
 
-    hr.append(round(pf_h.total_return().max()*100,2))
-    return_params_h.append(pf_h.total_return().idxmax())
+    max_return_values_h.append(round(pf_h.total_return().max()*100,2))
+    max_return_params_h.append(pf_h.total_return().idxmax())
 
     print("Walk forward window " f'{i+1}'':')
-    print("In-sample max return = " f'{max_returns[i]}' '%')
-    print("Out-of-sample return = " f'{round(realized_profits[i],2)}' '%')
-    print("Out-of-sample max return = " f'{hr[i]}' '%')
-    print("In=sample optimized parameters = " f'{max_return_params[i]}')
-    print("Out-of-sample optimized parameters = " f'{return_params_h[i]}')
+    print("In-sample max return = " f'{max_return_values[i]}' '%')
+    print("Out-of-sample return = " f'{round(realized_returns[i],2)}' '%')
+    print("Out-of-sample max return = " f'{max_return_values_h[i]}' '%')
+    print("Parameters Used = " f'{max_return_params[i]}')
+    print("Optimal Parameters = " f'{max_return_params_h[i]}')
 
     param_volume= pf_h.total_return().vbt.volume(
         x_level = '_entry',

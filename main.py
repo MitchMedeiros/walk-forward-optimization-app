@@ -9,7 +9,7 @@ app = Dash(__name__, external_stylesheets=[DARKLY])
 server = app.server
 
 # Add the custom layout
-app.layout = create_layout(app)
+app.layout = create_layout()
 
 # Run the app
 if __name__ == '__main__':
