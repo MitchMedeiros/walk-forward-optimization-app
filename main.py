@@ -1,22 +1,16 @@
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash
 from dash_bootstrap_components.themes import DARKLY
-from src.backtesting.simulation import param_volume
+from src.components.layout import create_layout
 
-# Instantiate app + provide a theme and styling
+# Instantiate the app & provide a theme
 app = Dash(__name__, external_stylesheets=[DARKLY])
+
+# For webhosting
 server = app.server
 
-# Customize dashboard layout
-app.layout = html.Div(children=[
-    html.H4(children='Experimental Dash Page'),
-    dcc.Graph(
-        id='volume',
-        figure=param_volume
-    )
-])
-
+# Add the custom layout
+app.layout = create_layout(app)
 
 # Run the app
 if __name__ == '__main__':
-    #app.run_server(debug=True)
-    app.run()
+    app.run_server(debug=True)
