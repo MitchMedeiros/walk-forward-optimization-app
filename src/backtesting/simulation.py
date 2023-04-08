@@ -3,8 +3,10 @@ from scipy import stats
 from statistics import mean
 import vectorbt as vbt
 
-from data import num_windows, in_price, out_price
-from strategies import strategy, ind
+#from data import num_windows, in_price, out_price
+#from strategies import strategy, ind
+from . data import num_windows, in_price, out_price
+from . strategies import strategy, ind
 
 #vbt.settings.set_theme('dark')
 #vbt.settings['plotting']['layout']['width']=1100
@@ -127,11 +129,12 @@ for i in range(num_windows):
     print("In=sample optimized parameters = " f'{max_return_params[i]}')
     print("Out-of-sample optimized parameters = " f'{return_params_h[i]}')
 
-    # param_volume= pf_h.total_return().vbt.volume(
-        # x_level = '_entry',
-        # y_level = '_exit',
-        # z_level = '_ma_period',
-        # slider_level = '_rsi_period',
-        # trace_kwargs=dict(colorbar=dict(title="Total return", tickformat='%')))
+    param_volume= pf_h.total_return().vbt.volume(
+        x_level = '_entry',
+        y_level = '_exit',
+        z_level = '_ma_period',
+        slider_level = '_rsi_period',
+        trace_kwargs=dict(colorbar=dict(title="Total return", tickformat='%'))
+        )
     
     #param_volume.show()

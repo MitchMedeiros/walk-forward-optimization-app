@@ -1,5 +1,6 @@
 from dash import Dash, dcc, html, Input, Output
 from dash_bootstrap_components.themes import DARKLY
+from src.backtesting.simulation import param_volume
 
 # Instantiate app + provide a theme and styling
 app = Dash(__name__, external_stylesheets=[DARKLY])
@@ -9,23 +10,13 @@ server = app.server
 app.layout = html.Div(children=[
     html.H4(children='Experimental Dash Page'),
     dcc.Graph(
-        id='example',
-        figure={
-            'data': [
-                {'x': [1, 2, 3, 4, 5], 'y': [9, 6, 2, 1, 5],
-                    'type': 'line', 'name': 'objects1'},
-                {'x': [1, 2, 3, 4, 5], 'y': [8, 7, 2, 7, 3],
-                    'type': 'bar', 'name': 'objects2'},
-            ],
-            'layout': {
-                'title': 'A Random Plot'
-            }
-        }
+        id='volume',
+        figure=param_volume
     )
 ])
 
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
-    #app.run()
+    #app.run_server(debug=True)
+    app.run()
