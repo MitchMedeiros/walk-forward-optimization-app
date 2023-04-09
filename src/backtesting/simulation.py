@@ -86,7 +86,6 @@ print("Annualized Return = " f'{round(sum(realized_returns)*(261/(5*num_windows)
 print("Return by window: " f'{realized_returns}')
 print("Missed profit: " f'{missed_returns}')
 #print("MAD =  " f'{round(mean_ad,3)}')
-print(pf_t.stats())
 
 
 max_return_values_h, max_return_params_h = [], []
