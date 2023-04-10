@@ -6,13 +6,14 @@ date_range = html.Div(
     dcc.DatePickerRange(
         start_date=date(2022, 10, 3), 
         end_date=date(2022, 10, 7), 
-        className="inital_range"
+        className="mb-2"
     )
 )
 
-date_calendar = html.Div([
+date_calendar = html.Div(
+    [
     dbc.Label("Select the dates to test your strategy on"),
-    date_range,
+    date_range
     ],
-    className="date-div",
+    className="dbc",
 )
