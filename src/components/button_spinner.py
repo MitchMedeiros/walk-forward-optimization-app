@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 
 spinner = html.Div(
     [
+    dbc.Label("Run Parameter Optimization: "),
     dbc.Button(
         [dbc.Spinner(size="sm"), " Loading..."],
         color="primary",
