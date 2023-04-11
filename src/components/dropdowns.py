@@ -9,10 +9,18 @@ asset_dropdown = html.Div(
     className="dbc",
 )
 
+timeframe_dropdown = html.Div(
+    [
+        dbc.Label("Select the timeframe"),
+        dcc.Dropdown(["15m", "1h", "4h", "1d"], "1d"),
+    ],
+    className="dbc",
+)
+
 strategy_dropdown = html.Div(
     [
         dbc.Label("Select the strategy"),
-        dcc.Dropdown(["SMA", "EMA", "RSI", "ATR", "MACD"], "SMA"),
+        dcc.Dropdown(["SMA Cross", "EMA Cross", "RSI", "MACD"], "SMA"),
     ],
     className="dbc",
 )
