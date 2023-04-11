@@ -27,5 +27,5 @@ core = html.Div(
 )
 
 parameters_tabs = html.Div(
-    [html.H3("Optimized Parameters"), core], className="dbc"
+    [html.H4("Optimized Parameters"), core], className="dbc"
 )

@@ -13,6 +13,17 @@ spinner = html.Div(
     ]
 )
 
+test_button = html.Div(
+    [
+    dbc.Button(
+        "Run Test", 
+        id = "run_test",
+        color="info",
+        class_name="me-1"
+    )
+    ]
+)
+
 
 # button = html.Div(
 #     [

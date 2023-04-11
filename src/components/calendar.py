@@ -12,7 +12,7 @@ date_range = html.Div(
 
 date_calendar = html.Div(
     [
-    dbc.Label("Select the dates to test your strategy on"),
+    dbc.Label("Select a date range to test"),
     date_range
     ],
     className="dbc",
