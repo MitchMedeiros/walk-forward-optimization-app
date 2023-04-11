@@ -4,8 +4,8 @@ import dash_bootstrap_components as dbc
 from . calendar import date_calendar
 from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
 from . tab import parameters_tabs
-from . buttons import test_button
 from . choose_strat import form
+from . card_group import cards
 
 # Import all of the visual components, arrange them properly using 
 # dbc rows and columns, and bring it all together in the app layout div.
@@ -17,14 +17,15 @@ data_row = html.Div(
                 dbc.Col(html.Div(asset_dropdown), width="auto"),
                 dbc.Col(html.Div(timeframe_dropdown), width="auto"),
                 dbc.Col(html.Div(date_calendar), width="auto"),
-                dbc.Col(html.Div(metric_dropdown), width="2"),
-                dbc.Col(html.Div(test_button), width="auto")
+                dbc.Col(html.Div(metric_dropdown), width="2")
             ]
         )
     ]
 )
 
-strategy_row = dbc.Col(html.Div(form), width=5)
+strategy_row = dbc.Col(html.Div(form), width=6)
+
+cards_row = dbc.Col(html.Div(cards), width=6)
 
 parameters_row = html.Div(
     [
@@ -46,6 +47,7 @@ def create_layout() -> html.Div:
             html.Hr(),
             data_row,
             strategy_row,
+            cards_row,
             html.Br(),
             parameters_row,
             html.Br(),
