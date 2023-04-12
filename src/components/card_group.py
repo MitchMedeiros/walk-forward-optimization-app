@@ -1,5 +1,26 @@
-from dash import html
+from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
+from . tab import parameters_tabs
+
+nwindows_dropdown = html.Div(
+    [
+        dbc.Label("number of windows to split the data into"),
+        dcc.Dropdown(["6","8","10","12","14","16","18","20"], "10"),
+    ],
+    className="dbc"
+)
+
+insample_dropdown = html.Div(
+    [
+        dbc.Label("in-sample size for each window"),
+        dcc.Dropdown(["50%","55%","60%","65%","70%","75%","80%","85%"], "70%"),
+    ],
+    className="dbc"
+)
+
+run_button = dbc.Button("Run Test", color="info", className="mt-auto")
+
+windowplot_button = dbc.Button("Show Windows", color="warning", className="mt-auto")
 
 cards = dbc.CardGroup(
     [
@@ -18,10 +39,12 @@ cards = dbc.CardGroup(
                 ),
                 dbc.CardFooter(
                     [
-                        dbc.Button("Run Test", color="info", className="mt-auto")
+                        windowplot_button,
+                        run_button
                     ]
                 )
-            ]
+            ],
+            color="light", outline=True
         ),
         dbc.Card(
             [
@@ -38,10 +61,14 @@ cards = dbc.CardGroup(
                 ),
                 dbc.CardFooter(
                     [
-                        dbc.Button("Run Test", color="info", className="mt-auto")
+                        nwindows_dropdown,
+                        insample_dropdown,
+                        windowplot_button,
+                        run_button
                     ]
                 )
-            ]
+            ],
+            color="light", outline=True
         )
     ]
 )

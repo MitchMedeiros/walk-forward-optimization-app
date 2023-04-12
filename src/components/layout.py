@@ -17,15 +17,15 @@ data_row = html.Div(
                 dbc.Col(html.Div(asset_dropdown), width="auto"),
                 dbc.Col(html.Div(timeframe_dropdown), width="auto"),
                 dbc.Col(html.Div(date_calendar), width="auto"),
-                dbc.Col(html.Div(metric_dropdown), width="2")
+                dbc.Col(html.Div(metric_dropdown), width="auto")
             ]
         )
     ]
 )
 
-strategy_row = dbc.Col(html.Div(form), width=6)
+strategy_row = dbc.Row(dbc.Col(html.Div(form), width="9"))
 
-cards_row = dbc.Col(html.Div(cards), width=6)
+cards_row = dbc.Row(dbc.Col(html.Div(cards), width="auto"))
 
 parameters_row = html.Div(
     [
@@ -41,16 +41,14 @@ disclaimer = html.H3("Disclaimer: This app is still in development. It's likely 
 
 def create_layout() -> html.Div:
     return html.Div(
-        className="app-div",
-        children=[
+        [
             html.H3("Backtesting Parameter Optimization"),
             html.Hr(),
             data_row,
             strategy_row,
             cards_row,
             html.Br(),
-            parameters_row,
-            html.Br(),
             dbc.Col(disclaimer, width="auto")
-        ]
+        ], 
+        className="app-div"
     )

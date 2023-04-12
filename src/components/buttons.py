@@ -4,23 +4,23 @@ import dash_bootstrap_components as dbc
 
 spinner = html.Div(
     [
-    dbc.Label("Run Parameter Optimization: "),
-    dbc.Button(
-        [dbc.Spinner(size="sm"), " Loading..."],
-        color="primary",
-        disabled=True,
-    ),
+        dbc.Label("Run Parameter Optimization: "),
+        dbc.Button(
+            [dbc.Spinner(size="sm"), " Loading..."],
+            color="primary",
+            disabled=True
+        )
     ]
 )
 
 test_button = html.Div(
     [
-    dbc.Button(
-        "Run Test", 
-        id = "run_test",
-        color="info",
-        class_name="me-1"
-    )
+        dbc.Button(
+            "Run Test", 
+            id = "run_test",
+            color="info",
+            class_name="me-1"
+        )
     ]
 )
 
