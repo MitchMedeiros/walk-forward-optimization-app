@@ -5,7 +5,7 @@ from . calendar import date_calendar
 from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
 from . tab import parameters_tabs
 from . choose_strat import form
-from . card_group import cards
+from . choose_window import accordion
 
 # Import all of the visual components, arrange them properly using 
 # dbc rows and columns, and bring it all together in the app layout div.
@@ -23,19 +23,9 @@ data_row = html.Div(
     ]
 )
 
-strategy_row = dbc.Row(dbc.Col(html.Div(form), width="9"))
-
-cards_row = dbc.Row(dbc.Col(html.Div(cards), width="auto"))
-
-parameters_row = html.Div(
-    [
-        dbc.Row(
-            [
-                dbc.Col(html.Div(parameters_tabs), width="auto")
-            ]
-        )
-    ]
-)
+strategy_col = dbc.Col(html.Div(form), width="9")
+accordion_col = dbc.Col(html.Div(accordion), width="9")
+parameters_col = dbc.Col(html.Div(parameters_tabs), width="auto")
 
 disclaimer = html.H3("Disclaimer: This app is still in development. It's likely not functioning yet.")
 
@@ -45,8 +35,8 @@ def create_layout() -> html.Div:
             html.H3("Backtesting Parameter Optimization"),
             html.Hr(),
             data_row,
-            strategy_row,
-            cards_row,
+            strategy_col,
+            accordion_col,
             html.Br(),
             dbc.Col(disclaimer, width="auto")
         ], 

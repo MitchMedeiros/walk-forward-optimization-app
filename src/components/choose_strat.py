@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 strategy_dropdown = html.Div(
     [
-        dbc.Label("Choose an asset"),
+        dbc.Label("Choose a strategy and the ranges of values for its parameters to be tested"),
         dcc.Dropdown(["SMA Crossover","EMA Crossover","RSI","MACD"],"SMA Crossover")
     ],
     className="dbc"
@@ -11,34 +11,34 @@ strategy_dropdown = html.Div(
 
 slider1 = html.Div(
     [
-        dbc.Label("SMA 1", html_for="slider1"),
-        dcc.RangeSlider(id="slider1", min=20, max=210, value=[20, 60]),
+        dbc.Label("SMA 1 period", html_for="slider1"),
+        dcc.RangeSlider(
+            id="slider1", 
+            min=20, 
+            max=210, 
+            value=[30, 100], 
+            step=10, 
+            allowCross=False, 
+            pushable=True
+        )
     ],
     className="mb-3"
 )
 
 slider2 = html.Div(
     [
-        dbc.Label("SMA 2", html_for="slider2"),
-        dcc.RangeSlider(id="slider2", min=20, max=210, value=[50, 100]),
+        dbc.Label("SMA 2 period", html_for="slider2"),
+        dcc.RangeSlider(
+            id="slider2", 
+            min=20, 
+            max=210, 
+            value=[110, 200], 
+            step=10, 
+            allowCross=False, 
+            pushable=True
+        )
     ],
     className="mb-3"
 )
 
-SMA1_input = html.Div(
-    [
-        html.P("Enter the period of the first SMA (20-200, steps of 10)"),
-        dbc.Input(type="number", min=20, max=200, step=10),
-    ],
-    id="styled-numeric-input",
-)
-
-SMA2_input = html.Div(
-    [
-        html.P("Enter the period of the second SMA (20-200, steps of 10)"),
-        dbc.Input(type="number", min=20, max=200, step=10),
-    ],
-    id="styled-numeric-input",
-)
-
-form = dbc.Form([strategy_dropdown, slider1, slider2, SMA1_input, SMA2_input])
+form = dbc.Form([strategy_dropdown, slider1, slider2])
