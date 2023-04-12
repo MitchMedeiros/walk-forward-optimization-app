@@ -1,6 +1,7 @@
-from dash import html, dcc
+from dash import html, dcc, dash_table
+#from .. backtesting.simulation import metrics_df
 
-core = html.Div(
+tabs = html.Div(
     [
         dcc.Tabs(
             [
@@ -29,7 +30,10 @@ core = html.Div(
 parameters_tabs = html.Div(
     [
         html.H4("Optimized Parameters"), 
-        core
+        tabs
     ], 
     className="dbc"
 )
+
+#df_small = df.iloc[10:16]
+#window_table = dash_table.DataTable(metrics_df.to_dict('records'))

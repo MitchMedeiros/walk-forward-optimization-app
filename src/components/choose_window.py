@@ -1,6 +1,5 @@
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
-from . tab import parameters_tabs
 
 nwindows_dropdown = html.Div(
     [
@@ -23,38 +22,39 @@ run_button = dbc.Button("Run Test", color="info", className="mt-auto")
 windowplot_button = dbc.Button("Show Windows", color="warning", className="mt-auto")
 
 accordion = html.Div(
-        dbc.Accordion(
-            [
-                dbc.AccordionItem(
-                    [
-                        html.P(
-                            "Optimize the strategy on a single in-sample period "
-                            "and check the results on an out-of-sample period immediately following. "
-                            "This test will provide more in-depth data and trade history." ,
-                            className="dbc"
-                        ),
-                        windowplot_button,
-                        run_button
-                    ],
-                    title="Single Window Test"
-                ),
-                dbc.AccordionItem(
-                    [
-                        html.P(
-                            "Test on a specified number of walk-forward windows. " 
-                            "Each in-sample period's optimized parameters will be used "
-                            "to test against the following out-of-sample period. Results will then be averaged across.",
-                            className="dbc"
-                        ),
-                        nwindows_dropdown,
-                        insample_dropdown,
-                        windowplot_button,
-                        run_button
-                    ],
-                    title="Walk-Forward Test"
-                )
-            ]
-        )
+    dbc.Accordion(
+        [
+            dbc.AccordionItem(
+                [
+                    html.P(
+                        "Optimize the strategy on a single in-sample period "
+                        "and check the results on an out-of-sample period immediately following. "
+                        "This test will provide more in-depth data and trade history." ,
+                        className="dbc"
+                    ),
+                    windowplot_button,
+                    run_button
+                ],
+                title="Single Window Test"
+            ),
+            dbc.AccordionItem(
+                [
+                    html.P(
+                        "Test on a specified number of walk-forward windows. " 
+                        "Each in-sample period's optimized parameters will be used "
+                        "to test against the following out-of-sample period. Results will then be averaged across.",
+                        className="dbc"
+                    ),
+                    nwindows_dropdown,
+                    insample_dropdown,
+                    windowplot_button,
+                    run_button
+                ],
+                title="Walk-Forward Test"
+            )
+        ], 
+        active_item="item-1"
+    )
 )
 
 

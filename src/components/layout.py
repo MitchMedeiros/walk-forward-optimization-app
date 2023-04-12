@@ -3,9 +3,10 @@ import dash_bootstrap_components as dbc
 
 from . calendar import date_calendar
 from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
-from . tab import parameters_tabs
+from . tabs import parameters_tabs
 from . choose_strat import form
 from . choose_window import accordion
+from .. backtesting.simulation import window_table
 
 # Import all of the visual components, arrange them properly using 
 # dbc rows and columns, and bring it all together in the app layout div.
@@ -38,6 +39,7 @@ def create_layout() -> html.Div:
             strategy_col,
             accordion_col,
             html.Br(),
+            window_table,
             dbc.Col(disclaimer, width="auto")
         ], 
         className="app-div"
