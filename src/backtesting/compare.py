@@ -34,8 +34,16 @@ for i in range(num_windows):
     max_return_values_h.append(round(pf_h.total_return().max()*100,4))
     max_return_params_h.append(pf_h.total_return().idxmax())
 
+    average_sharpe_values_h.append(round(pf_h.sharpe_ratio().mean()*100,4))
+    max_sharpe_values_h.append(round(pf_h.sharpe_ratio().max()*100,4))
+    max_sharpe_params_h.append(pf_h.sharpe_ratio().idxmax())
+
+    average_maxdrawdown_values_h.append(round(pf_h.max_drawdown().mean()*100,4))
+    min_maxdrawdown_values_h.append(round(pf_h.max_drawdown().min()*100,4))
+    min_maxdrawdown_params_h.append(pf_h.max_drawdown().idxmin())
+
+
     print(f'Walk forward window {i+1}:')
-    print(f'In-sample max return = {max_return_values[i]}%')
     print(f'Out-of-sample return = {round(realized_returns[i],2)}%')
     print(f'Out-of-sample max return = {max_return_values_h[i]}%')
     print(f'Parameters Used = {max_return_params[i]}')

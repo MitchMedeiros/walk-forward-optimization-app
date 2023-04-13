@@ -1,20 +1,5 @@
 import numpy as np
 import vectorbt as vbt
-import talib
-import pandas as pd
-import pandas_ta as ta
-
-#Creates a list of pandas-ta indicators
-ta_ind = pd.DataFrame().ta.indicators(as_list=True)
-# print(ta_ind)
-# ta_rsi = vbt.pandas_ta(ta_ind[98])
-# res = ta_rsi.run(close, 14)
-
-#Creates a list of talib indicators
-talib_ind = talib.get_functions()
-# print(talib_ind)
-# talib_rsi = vbt.talib(talib_ind[54])
-#talib_rsi.run(close, 14).real.to_numpy()
 
 # Create a strategy containing price-dependent functions
 def strategy(price, rsi_period, ma_period, entry, exit):
@@ -37,3 +22,20 @@ ind = vbt.IndicatorFactory(
         strategy,
         keep_pd=True
     )
+
+
+#Creates a list of pandas-ta indicators
+# import pandas as pd
+# import pandas_ta as ta
+# ta_ind = pd.DataFrame().ta.indicators(as_list=True)
+# print(ta_ind)
+# ta_rsi = vbt.pandas_ta(ta_ind[98])
+# res = ta_rsi.run(close, 14)
+
+#Creates a list of talib indicators
+# import pandas as pd
+# import talib
+# talib_ind = talib.get_functions()
+# print(talib_ind)
+# talib_rsi = vbt.talib(talib_ind[54])
+#talib_rsi.run(close, 14).real.to_numpy()
