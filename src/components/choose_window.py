@@ -42,7 +42,8 @@ accordion = html.Div(
                     html.P(
                         "Test on a specified number of walk-forward windows. " 
                         "Each in-sample period's optimized parameters will be used "
-                        "to test against the following out-of-sample period. Results will then be averaged across.",
+                        "to test against the following out-of-sample period. "
+                        "Results from the out-of-sample windows will then be averaged across.",
                         className="dbc"
                     ),
                     nwindows_dropdown,

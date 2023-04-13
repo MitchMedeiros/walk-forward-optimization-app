@@ -4,7 +4,7 @@ from statistics import mean
 import vectorbt as vbt
 from dash import dash_table
 
-from . data import num_windows, in_price, out_price, df
+from . data import num_windows, num_days, in_price, out_price
 from . strategies import ind
 
 #vbt.settings.set_theme('dark')
@@ -81,28 +81,21 @@ for i in range(num_windows):
     mean_ad = np.sum(np.abs(realized_returns[i]-np.mean(realized_returns)))/(i+1)
 
 # Results achieved from using parameter optimization.
-print("Average Return = " f'{round(mean(realized_returns),4)}''%')
-print("Annualized Return = " f'{round(sum(realized_returns)*(261/(5*num_windows)),4)}''%')
-print("Return by window: " f'{realized_returns}')
-print("Missed profit: " f'{missed_returns}')
-#print("MAD =  " f'{round(mean_ad,3)}')
+print(f'Average Return =  {round(mean(realized_returns),4)}%')
+print(f'Annualized Return =  {round(sum(realized_returns)*(261/(num_days/num_windows)),4)}%')
+print(f'Return by window (%):  {realized_returns}')
+print(f'Missed profit:  {missed_returns}')
+#print(f'MAD = {round(mean_ad,3)}')
 
-average_return_values = pd.DataFrame(average_return_values,columns=["average return (%)"])
-max_return_values = pd.DataFrame(max_return_values,columns=["total return (%)"])
-max_return_params = pd.DataFrame(max_return_params,columns=["parameter 1","parameter 2","parameter 3","parameter 4"])
+average_return_values = pd.DataFrame(average_return_values,columns=["Average Return (%)"])
+max_return_values = pd.DataFrame(max_return_values,columns=["Total Return (%)"])
+max_return_params = pd.DataFrame(max_return_params,columns=["Parameter 1","Parameter 2","Parameter 3","Parameter 4"])
 
-max_sharpe_params = pd.DataFrame(max_sharpe_params, columns=["parameter 1","parameter 2","parameter 3","parameter 4"])
+max_sharpe_params = pd.DataFrame(max_sharpe_params, columns=["Parameter 1","Parameter 2","Parameter 3","Parameter 4"])
 
-min_maxdrawdown_params = pd.DataFrame(min_maxdrawdown_params, columns=["parameter 1","parameter 2","parameter 3","parameter 4"])
+min_maxdrawdown_params = pd.DataFrame(min_maxdrawdown_params, columns=["Parameter 1","Parameter 2","Parameter 3","Parameter 4"])
 
 n = np.arange(1,num_windows+1)
-metrics_df = pd.concat([average_return_values, max_return_values, max_return_params], axis=1)
-#window_table = dash_table.DataTable(metrics_df.to_dict('records'))
+n = pd.DataFrame(n,columns=["Window"])
 
-#metrics_df = pd.concat([max_return_values, max_return_params],axis=1)
-#metrics_df = pd.DataFrame({'return':max_return_values,'params':chosen_metric}, index=n)
-# #window_table = dash_table.DataTable(metrics_df.to_dict('records'))
-window_table = dash_table.DataTable(
-    data=metrics_df.to_dict('records'),
-    columns=[{'name': str(i), 'id': str(i)} for i in metrics_df.columns]
-    )
+metrics_df = pd.concat([n, average_return_values, max_return_values, max_return_params], axis=1)

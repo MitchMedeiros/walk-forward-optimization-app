@@ -36,4 +36,4 @@ ind = vbt.IndicatorFactory(
     ).from_apply_func(
         strategy,
         keep_pd=True
-        )
+    )
