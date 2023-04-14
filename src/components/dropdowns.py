@@ -1,4 +1,4 @@
-from dash import html, dcc
+from dash import Dash, html, dcc, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 
 asset_dropdown = html.Div(
@@ -12,7 +12,7 @@ asset_dropdown = html.Div(
 timeframe_dropdown = html.Div(
     [
         dbc.Label("Timeframe"),
-        dcc.Dropdown(["15m","1h","4h","1d"],"1d"),
+        dcc.Dropdown(["15m","1h","1d"],"1d",id='timeframe'),
     ],
     className="dbc",
 )

@@ -11,8 +11,8 @@ vbt.settings.set_theme('dark')
 # Values for portfolio simulation
 pf_kwargs = dict(direction='both', freq = '1m', init_cash=10000)
 
-# Creates empty lists for appending optimized parameters to for chosen metric. 
-# Could instead write over np.zeros arrays but this is complicated by a changing numbers of parameters.
+# Empty lists for appending optimized parameters and results for the chosen optimization metric. 
+# Could instead write over np.zeros arrays but this is more complicated to implement
 average_return_values, max_return_values, max_return_params = [],[],[]
 average_sharpe_values, max_sharpe_values, max_sharpe_params = [],[],[]
 average_maxdrawdown_values, min_maxdrawdown_values, min_maxdrawdown_params = [],[],[]
@@ -53,12 +53,13 @@ for i in range(num_windows):
     min_maxdrawdown_params.append(pf.max_drawdown().idxmin())
 
 
+# Lists for storing the realized results of our optimized strategy
 realized_returns, difference_in_returns = [],[]
 realized_sharpe, difference_in_sharpe = [],[]
 realized_maxdrawdown, difference_in_maxdrawdown = [],[]
 
-# Loops the indicator on the out-of-sample windows, inputting the parameters that
-# maximimized our chosen metric for the corresponding in-sample windows.
+# Loop the indicator on the out-of-sample windows, inputting the parameters that
+# maximimized our results for the chosen metric in the corresponding in-sample window.
 for i in range(num_windows):
     signal_t = ind.run(
         out_price[i], 
@@ -80,20 +81,21 @@ for i in range(num_windows):
     )
 
     realized_returns.append(round(pf_t.total_return()*100,3))
-    difference_in_returns.append(round(max_return_values[i]-realized_returns[i],3))
+    difference_in_returns.append(round(realized_returns[i]-max_return_values[i],3))
 
     realized_sharpe.append(round(pf_t.sharpe_ratio(),3))
-    difference_in_sharpe.append(round(max_sharpe_values[i]-realized_sharpe[i],3))
+    difference_in_sharpe.append(round(realized_sharpe[i]-max_sharpe_values[i],3))
 
     realized_maxdrawdown.append(round(pf_t.max_drawdown()*100,3))
-    difference_in_maxdrawdown.append(round(min_maxdrawdown_values[i]-realized_maxdrawdown[i],3))
+    difference_in_maxdrawdown.append(round(realized_maxdrawdown[i]-min_maxdrawdown_values[i],3))
 
-# Lists for showing the hypothetical highest possible results with the strategy
+
+# Lists for showing the hypothetical highest possible results with the strategy.
 average_return_values_h, max_return_values_h, max_return_params_h = [],[],[]
 average_sharpe_values_h, max_sharpe_values_h, max_sharpe_params_h = [],[],[]
 average_maxdrawdown_values_h, min_maxdrawdown_values_h, min_maxdrawdown_params_h = [],[],[]
 
-# Finds the optimized parameters and results for the out-of-sample windows for comparison purposes
+# Finds the optimal parameters and results for the out-of-sample windows for comparison purposes.
 for i in range(num_windows):
     res_h = ind.run(
         out_price[i], 
@@ -126,7 +128,6 @@ for i in range(num_windows):
     min_maxdrawdown_values_h.append(round(pf_h.max_drawdown().min()*100,3))
     min_maxdrawdown_params_h.append(pf_h.max_drawdown().idxmin())
 
-
     # param_volume= pf_h.total_return().vbt.volume(
     #     x_level = '_entry',
     #     y_level = '_exit',
@@ -136,7 +137,7 @@ for i in range(num_windows):
     # )
     # param_volume.show()
 
-# Results achieved from using parameter optimization.
+# Results achieved in the walk-forward optimization:
 print(f'average return =  {round(mean(realized_returns),3)}%')
 print(f'annualized return =  {round(sum(realized_returns)*(261/(num_days/num_windows)),3)}%')
 print(f'average difference in return = {round(mean(difference_in_returns),3)}%')
@@ -147,9 +148,6 @@ print(f'average difference in Sharpe ratio = {round(mean(difference_in_sharpe),3
 print(f'average max drawdown =  {round(mean(realized_maxdrawdown),3)}%')
 print(f'average difference in max drawdown = {round(mean(difference_in_maxdrawdown),3)}%')
 
-
-# Converts the stats lists into dataframes for combining into tables
-
 one_param_columns = ["Parameter 1"]
 two_param_columns = ["Parameter 1","Parameter 2"]
 three_param_columns = ["Parameter 1","Parameter 2","Parameter 3"]
@@ -158,7 +156,7 @@ five_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4","P
 
 column_list = four_param_columns
 
-
+# Converting the lists with important stats into dataframes to be displayed as tables.
 realized_returns = pd.DataFrame(realized_returns, columns=["Realized Returns (%)"])
 difference_in_returns = pd.DataFrame(difference_in_returns, columns=["Difference from In-Sample (%)"])
 
@@ -169,7 +167,6 @@ max_return_params = pd.DataFrame(max_return_params, columns=column_list)
 average_return_values_h = pd.DataFrame(average_return_values_h, columns=["Out-of-Sample Average Return (%)"])
 max_return_values_h = pd.DataFrame(max_return_values_h, columns=["Out-of-Sample Maximized Return (%)"])
 max_return_params_h = pd.DataFrame(max_return_params_h, columns=column_list)
-
 
 realized_sharpe = pd.DataFrame(realized_sharpe, columns=["Realized Sharpe Ratio"])
 difference_in_sharpe = pd.DataFrame(difference_in_sharpe, columns=["Difference from In-Sample"])
@@ -182,7 +179,6 @@ average_sharpe_values_h = pd.DataFrame(average_sharpe_values_h, columns=["Out-of
 max_sharpe_values_h = pd.DataFrame(max_sharpe_values_h, columns=["Out-of-Sample Maximized Sharpe Ratio"])
 max_sharpe_params_h = pd.DataFrame(max_sharpe_params_h, columns=column_list)
 
-
 realized_maxdrawdown = pd.DataFrame(realized_maxdrawdown, columns=["Realized Max Drawdown (%)"])
 difference_in_maxdrawdown = pd.DataFrame(difference_in_maxdrawdown, columns=["Difference from In-Sample (%)"])
 
@@ -194,10 +190,9 @@ average_maxdrawdown_values_h = pd.DataFrame(average_maxdrawdown_values_h, column
 min_maxdrawdown_values_h = pd.DataFrame(min_maxdrawdown_values_h, columns=["Out-of-sample Minimized Max Drawdown (%)"])
 min_maxdrawdown_params_h = pd.DataFrame(min_maxdrawdown_params_h, columns=column_list)
 
-# Combines dataframes for the chosen metric into a new dataframe to be displayed in a dash table
+# Combines the dataframes for the chosen optimization metric into a single dataframe with the window number
 n = np.arange(1, num_windows+1)
 n = pd.DataFrame(n, columns=["Window"])
 
 insample_df = pd.concat([n, realized_returns, difference_in_returns, average_return_values, max_return_values, max_return_params], axis=1)
-
 outsample_df = pd.concat([n, average_return_values_h, max_return_values_h, max_return_params_h], axis=1)

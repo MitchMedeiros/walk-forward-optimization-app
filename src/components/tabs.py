@@ -8,6 +8,7 @@ tabs = html.Div(
                 dcc.Tab(
                     label="In-Sample Parameters",
                     value="tab-1",
+                    id="tab1",
                     children=html.Div(
                         "Datatable1", 
                         className="p-4 border"
