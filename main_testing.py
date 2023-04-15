@@ -18,14 +18,6 @@ server = app.server
 ####Layout Formating#####
 app_heading = html.H3("Backtesting Parameter Optimization",style={'textAlign': 'center', 'color': '#7FDBFF'})
 
-data_button = dbc.Button(
-    "Load Data",
-    id="load_data_button",
-    color="primary",
-    className="mr-1"
-)
-
-new_table = html.Div(id="table_div")
 
 data_row = html.Div(
     [
@@ -33,16 +25,27 @@ data_row = html.Div(
             [
                 dbc.Col(html.Div(asset_dropdown), width="auto"),
                 dbc.Col(html.Div(timeframe_dropdown), width="auto"),
-                dbc.Col(html.Div(date_calendar), width="auto"),
-                dbc.Col(html.Div(metric_dropdown), width="auto"),
-                dbc.Col(html.Div(data_button), width="auto")
+                dbc.Col(html.Div(date_calendar), width="auto")
             ]
         )
     ]
 )
 
+data_button = dbc.Button(
+    "Load Data",
+    id='load_data_button',
+    color='info',
+    size='lg',
+    className='mr-1',
+    n_clicks=0
+)
+
+# new_table = html.Div(id="table_div")
+new_table = dcc.Loading(children=[html.Div(id="table_div")], type="circle")
+
+metric_col = dbc.Col(html.Div(metric_dropdown), width="auto")
 strategy_col = dbc.Col(html.Div(form), width='9')
-accordion_col = dbc.Col(html.Div(accordion), width='9')
+window_col = dbc.Col(html.Div(accordion), width='9')
 #parameters_col = dbc.Col(html.Div(parameters_tabs), width="auto")
 disclaimer = html.H3("Disclaimer: This app is still in development. It's likely not functioning yet.")
 
@@ -52,31 +55,37 @@ app.layout = html.Div(
         app_heading,
         html.Hr(),
         data_row,
+        data_button,
+        html.Br(),
+        metric_col,
         strategy_col,
-        accordion_col,
+        window_col,
         html.Br(),
         new_table,
         dbc.Col(disclaimer, width="auto")
-    ], 
-    className="app-div"
+    ]
 )
 
-# chain the callback for the table to a button
+# Data callback
 @app.callback(
-    Output('table_div', 'children'),
+        Output('table_div', 'children'),
     [
         Input('load_data_button', 'n_clicks'),
-        Input('timeframe', 'value')
+        Input('timeframe', 'value'),
+        Input('asset', 'value'),
+        Input('date_range', 'start_date'),
+        Input('date_range', 'end_date')
     ],
     prevent_initial_call=True
 )
-def make_table(n_clicks, selected_timeframe):
+def make_table(n_clicks, selected_timeframe, selected_asset, start_date, end_date):
     if n_clicks is None:
         return None
+    
     df = vbt.YFData.download(
-        symbols='TSLA',
-        start='2023-01-01 09:30:00 -0400',
-        end='2023-03-20 09:35:00 -0400',
+        symbols=selected_asset,
+        start=f'{start_date}-0500',
+        end=f'{end_date}-0500',
         interval=selected_timeframe
     ).get()
 
@@ -89,6 +98,7 @@ def make_table(n_clicks, selected_timeframe):
             dismissable=True,
             color='danger'
         )
+    
     return dash_table.DataTable(
         data = df.to_dict('records'), 
         columns = [{"name": i, "id": i,} for i in (df.columns)],
@@ -104,6 +114,5 @@ def make_table(n_clicks, selected_timeframe):
     )
 
 
-# Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8055)
