@@ -19,7 +19,7 @@ timeframe_dropdown = html.Div(
 
 metric_dropdown = html.Div(
     [
-        dbc.Label("Metric to optimize parameters for"),
+        dbc.Label("Metric to optimize parameters on"),
         dcc.Dropdown(["maximize returns", "maximize Sharpe ratio", "minimize max drawdown"], "maximize returns"),
     ],
     className="dbc"

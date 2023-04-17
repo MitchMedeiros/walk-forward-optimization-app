@@ -18,22 +18,10 @@ app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
 server = app.server
 
 ####Layout Formating#####
-app_heading = html.H3("Backtesting Parameter Optimization",style={'textAlign': 'center', 'color': '#7FDBFF'})
+app_heading = html.H3("Backtesting Parameter Optimization", style={'textAlign': 'center', 'color': '#7FDBFF'})
 
-
-data_row = html.Div(
-    [
-        dbc.Row(
-            [
-                dbc.Col(asset_dropdown, width="auto"),
-                dbc.Col(timeframe_dropdown, width="auto"),
-                dbc.Col(date_calendar, width="auto"),
-                dbc.Col(nwindows_input, width="auto"),
-                dbc.Col(insample_dropdown, width="auto"),
-            ]
-        )
-    ]
-)
+#price_plot = dcc.Loading(children=[html.Div(id="plot_div")], type="circle")
+price_plot = dcc.Loading(type="circle", id='plot_div')
 
 data_button = dbc.Button(
     "Load Data",
@@ -44,23 +32,40 @@ data_button = dbc.Button(
     n_clicks=0
 )
 
-metric_col = dbc.Col(html.Div(metric_dropdown), width="auto")
-strategy_col = dbc.Col(html.Div(form), width='9')
-#window_col = dbc.Col(html.Div(accordion), width='9')
-
-price_plot = dcc.Loading(children=[html.Div(id="plot_div")], type="circle")
-
+main_row = html.Div(
+    [   
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        dbc.Row(asset_dropdown),
+                        dbc.Row(timeframe_dropdown),
+                        dbc.Row(date_calendar),
+                        dbc.Row(nwindows_input),
+                        dbc.Row(insample_dropdown),
+           #         ]
+          #      ),
+        #        dbc.Col(
+         #           [
+                        dbc.Row(strategy_dropdown),
+                        dbc.Row(form),
+                        dbc.Row(metric_dropdown)
+                    ]
+                ),
+                dbc.Col(
+                    [
+                        price_plot
+                    ]
+                )
+            ]
+        )
+    ]
+)
 
 app.layout = html.Div(
     [
         app_heading,
-        html.Hr(),
-        data_row,
-        data_button,
-        metric_col,
-        strategy_dropdown,
-        form,
-        price_plot,
+        main_row
     ]
 )
 
@@ -68,15 +73,13 @@ app.layout = html.Div(
 @app.callback(
         Output('plot_div', 'children'),
     [
-        Input('load_data_button', 'n_clicks'),
         Input('timeframe', 'value'),
         Input('asset', 'value'),
         Input('date_range', 'start_date'),
         Input('date_range', 'end_date')
-    ],
-    prevent_initial_call=True
+    ]
 )
-def make_table(n_clicks, selected_timeframe, selected_asset, start_date, end_date):    
+def make_table(selected_timeframe, selected_asset, start_date, end_date):    
     df = yfinance.download(
         tickers=selected_asset, 
         start=start_date, 
@@ -95,22 +98,21 @@ def make_table(n_clicks, selected_timeframe, selected_asset, start_date, end_dat
             dismissable=True,
             color='danger'
         )
-    
     else:
         if selected_timeframe=='1d':
-            breaks = dict(bounds=["sat", "mon"])
+            breaks = dict(bounds=['sat', 'mon'])
         else:
-            breaks = dict(bounds=[16, 9.5], pattern='hour')
-        
+            breaks = dict(bounds=[16, 9.5], pattern='hour') #intraday chart needs hour rangebreaks
+
         fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
         fig.update_layout(
             xaxis=dict(rangeslider=dict(visible=False)),
             plot_bgcolor='rgba(0,50,90,100)', 
             paper_bgcolor='rgba(0,50,90,10)',
-            font_color="white",
+            font_color='white',
             margin=dict(l=20, r=20, t=20, b=20))
         fig.update_xaxes(
-            rangebreaks=[dict(bounds=["sat", "mon"]), breaks],
+            rangebreaks=[dict(bounds=['sat', 'mon']), breaks],
             gridcolor='rgba(20,20,90,100)')
         fig.update_yaxes(gridcolor='rgba(20,20,90,100)', automargin=True)
         return dcc.Graph(figure=fig)
@@ -125,28 +127,28 @@ def update_strategy_children(selected_strategy):
     if selected_strategy == 'SMA Crossover':
         return html.Div(
             [
-                dbc.Label("Choose the minimum period for the first SMA"),
-                dbc.Input(type="number", value=50, min=10, max=210, step=1),
-                dbc.Label("Choose the maximum period for the first SMA"),
-                dbc.Input(type="number", value=100, min=10, max=210, step=1),
-                dbc.Label("Choose the minimum period for the second SMA"),
-                dbc.Input(type="number", value=50, min=10, max=210, step=1),
-                dbc.Label("Choose the maximum period for the second SMA"),
-                dbc.Input(type="number", value=100, min=10, max=210, step=1)
+                dbc.Label("minimum period of the first SMA (10-210)"),
+                dbc.Input(type='number', value=50, min=10, max=210, step=1),
+                dbc.Label("maximum period of the first SMA (10-210)"),
+                dbc.Input(type='number', value=100, min=10, max=210, step=1),
+                dbc.Label("minimum period of the second SMA (10-210)"),
+                dbc.Input(type='number', value=50, min=10, max=210, step=1),
+                dbc.Label("maximum period of the second SMA (10-210)"),
+                dbc.Input(type='number', value=100, min=10, max=210, step=1)
             ],
             className="dbc"
         )
     elif selected_strategy == 'EMA Crossover':
         return html.Div(
             [
-                dbc.Label("Choose the minimum period for the first EMA"),
-                dbc.Input(type="number", value=50, min=10, max=210, step=1),
-                dbc.Label("Choose the maximum period for the first EMA"),
-                dbc.Input(type="number", value=100, min=10, max=210, step=1),
-                dbc.Label("Choose the minimum period for the second EMA"),
-                dbc.Input(type="number", value=50, min=10, max=210, step=1),
-                dbc.Label("Choose the maximum period for the second EMA"),
-                dbc.Input(type="number", value=100, min=10, max=210, step=1)
+                dbc.Label("minimum period of the first EMA (10-210)"),
+                dbc.Input(type='number', value=50, min=10, max=210, step=1),
+                dbc.Label("maximum period of the first EMA (10-210)"),
+                dbc.Input(type='number', value=100, min=10, max=210, step=1),
+                dbc.Label("minimum period of the second EMA (10-210)"),
+                dbc.Input(type='number', value=50, min=10, max=210, step=1),
+                dbc.Label("maximum period of the second EMA (10-210)"),
+                dbc.Input(type='number', value=100, min=10, max=210, step=1)
             ],
             className="dbc"
         )
@@ -154,28 +156,27 @@ def update_strategy_children(selected_strategy):
     elif selected_strategy == 'RSI':
         return html.Div(
             [
-                dbc.Label("Choose the minimum entry value for the RSI"),
-                dbc.Input(type="number", value=20, min=10, max=40, step=1),
-                dbc.Label("Choose the maximum entry value for the RSI"),
-                dbc.Input(type="number", value=40, min=20, max=50, step=1),
-                dbc.Label("Choose the minimum exit value for the RSI"),
-                dbc.Input(type="number", value=60, min=50, max=80, step=1),
-                dbc.Label("Choose the maximum exit value for the RSI"),
-                dbc.Input(type="number", value=80, min=60, max=99, step=1)
+                dbc.Label("minimum entry value for the RSI (10-40)"),
+                dbc.Input(type='number', value=20, min=10, max=40, step=1),
+                dbc.Label("maximum entry value for the RSI (20-50)"),
+                dbc.Input(type='number', value=40, min=20, max=50, step=1),
+                dbc.Label("minimum exit value for the RSI (50-80)"),
+                dbc.Input(type='number', value=60, min=50, max=80, step=1),
+                dbc.Label("maximum exit value for the RSI (60-99)"),
+                dbc.Input(type='number', value=80, min=60, max=99, step=1)
             ],
-            className="dbc"
+            className='dbc'
         )
     
     elif selected_strategy == 'MACD':
         return html.Div(
             [
                 dbc.Label("Choose a window for the MACD"),
-                dcc.Dropdown(options=["5","10","20","50","100"], value="5", id='macd_window'),
+                dcc.Dropdown(options=['5','10','20','50','100'], value='5', id='macd_window'),
             ],
             className="dbc"
         )
     
-
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8061)

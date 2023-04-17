@@ -3,13 +3,13 @@ import dash_bootstrap_components as dbc
 
 strategy_dropdown = html.Div(
     [
-        dbc.Label("Choose a strategy and the ranges of values for its parameters to be tested"),
-        dcc.Dropdown(["SMA Crossover","EMA Crossover","RSI","MACD"],"SMA Crossover", id='strategy_drop')
+        dbc.Label("Choose a strategy and the ranges of values for its parameters"),
+        dcc.Dropdown(['SMA Crossover','EMA Crossover','RSI','MACD'], value='SMA Crossover', id='strategy_drop')
     ],
-    className="dbc"
+    className='dbc'
 )
 
-form = dbc.Form(id="strategy_form")
+form = dbc.Form(id='strategy_form')
 
 # slider1 = html.Div(
 #     [
