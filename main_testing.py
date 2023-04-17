@@ -113,6 +113,51 @@ def make_table(n_clicks, selected_timeframe, selected_asset, start_date, end_dat
         style_as_list_view=True
     )
 
+# Strategy callback
+@app.callback(
+    Output('strategy_form', 'children'),
+    [
+        Input('strategy', 'value')
+    ]
+)
+def update_strategy(selected_strategy):
+    if selected_strategy == 'SMA Crossover':
+        return html.Div(
+            [
+                dbc.Label("Choose a window for the SMA"),
+                dcc.Dropdown(options=["5","10","20","50","100"], value="5", id='sma_window'),
+            ],
+            className="dbc"
+        )
+    elif selected_strategy == 'EMA Crossover':
+        return html.Div(
+            [
+                dbc.Label("Choose a window for the EMA"),
+                dcc.Dropdown(options=["5","10","20","50","100"], value="5", id='ema_window'),
+            ],
+            className="dbc"
+        )
+    
+    elif selected_strategy == 'RSI':
+        return html.Div(
+            [
+                dbc.Label("Choose a window for the RSI"),
+                dcc.Dropdown(options=["5","10","20","50","100"], value="5", id='rsi_window'),
+            ],
+            className="dbc"
+        )
+    
+    elif selected_strategy == 'MACD':
+        return html.Div(
+            [
+                dbc.Label("Choose a window for the MACD"),
+                dcc.Dropdown(options=["5","10","20","50","100"], value="5", id='macd_window'),
+            ],
+            className="dbc"
+        )
+    
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8055)
