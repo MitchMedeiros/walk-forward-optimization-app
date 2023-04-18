@@ -9,7 +9,7 @@ strategy_dropdown = html.Div(
     className='dbc'
 )
 
-form = dbc.Form(id='strategy_form')
+strategy_output = dbc.Form(id='strategy_form')
 
 # slider1 = html.Div(
 #     [

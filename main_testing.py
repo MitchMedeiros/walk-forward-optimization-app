@@ -7,9 +7,9 @@ import yfinance
 
 from src.components.calendar import date_calendar
 from src.components.dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
-from src.components.choose_strat import form, strategy_dropdown
+from src.components.choose_strat import strategy_dropdown, strategy_output
 from src.components.choose_window import nwindows_input, insample_dropdown
-#from . tabs import parameters_tabs
+from src.components.plot_tabs import plot_tabs
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
@@ -17,58 +17,57 @@ app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
 
 server = app.server
 
-####Layout Formating#####
-app_heading = html.H3("Backtesting Parameter Optimization", style={'textAlign': 'center', 'color': '#7FDBFF'})
-
-#price_plot = dcc.Loading(children=[html.Div(id="plot_div")], type="circle")
-price_plot = dcc.Loading(type="circle", id='plot_div')
-
-data_button = dbc.Button(
-    "Load Data",
-    id='load_data_button',
-    color='info',
-    size='lg',
-    className='mr-1',
-    n_clicks=0
+###layout.py
+header_row = dbc.Row(
+    [
+        dbc.Col(html.H3(
+            "Walk-Forward Optimization Using Common Indicator Strategies", 
+            style={'textAlign': 'center', 'color': '#7FDBFF'}
+            )   
+        )
+    ]
 )
 
-main_row = dbc.Row(
+body_row = dbc.Row(
     [
         dbc.Col(
             [   
-                html.H4('Choose your data', style={'textAlign': 'center', 'color': '#7FDBFF'}),
-                asset_dropdown,
-                timeframe_dropdown,
-                date_calendar,
-                html.Hr(),
-                html.H4('Split the data', style={'textAlign': 'center', 'color': '#7FDBFF'}),
-                nwindows_input,
-                insample_dropdown,
-                html.Hr(),
-                html.H4('Strategy and parameter values', style={'textAlign': 'center', 'color': '#7FDBFF'}),
-                strategy_dropdown,
-                html.Br(),
-                form,
-                metric_dropdown
+                dbc.Stack(
+                    [
+                        html.H4('Choose your data', style={'color': '#7FDBFF'}),
+                        asset_dropdown,
+                        timeframe_dropdown,
+                        date_calendar,
+                        html.Hr(),
+                        html.H4('Split the data', style={'color': '#7FDBFF'}),
+                        nwindows_input,
+                        insample_dropdown,
+                        html.Hr(),
+                        html.H4('Strategy and parameter values', style={'color': '#7FDBFF'}),
+                        strategy_dropdown,
+                        strategy_output,
+                        metric_dropdown
+                    ],
+                    gap=1,
+                    style={'textAlign': 'center', 'padding': 8}
+                )
             ],
             width=3
-        ),
-        dbc.Col(
-            [
-                price_plot
-            ]
-        )
-    ],
-    style = {'padding': 12, 'flex': 1}
+        ),  
+        dbc.Col(plot_tabs)
+    ]
 )
 
-app.layout = html.Div(
-    [
-  #      app_heading,
-        main_row
-    ],
-    style={'display': 'flex', 'flex-direction': 'row'}
-)
+def create_layout():
+    return dbc.Container(
+        [
+            header_row,
+            body_row
+        ],
+        fluid=True
+    )
+
+app.layout = create_layout()
 
 # Data callback
 @app.callback(
