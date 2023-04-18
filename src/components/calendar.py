@@ -4,7 +4,8 @@ import dash_bootstrap_components as dbc
 
 date_calendar = html.Div(
     [
-        dbc.Label("Date range"),
+        dbc.Label("Dates"),
+        html.Br(),
         dcc.DatePickerRange(
             start_date=date(2023, 1, 1), 
             end_date=date(2023, 3, 31),

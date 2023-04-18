@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 asset_dropdown = html.Div(
     [
-        dbc.Label("Choose an asset"),
+        dbc.Label("Asset"),
         dcc.Dropdown(options=["SPY","QQQ","VIXY"], value="SPY", id='asset'),
     ],
     className="dbc"
@@ -19,7 +19,7 @@ timeframe_dropdown = html.Div(
 
 metric_dropdown = html.Div(
     [
-        dbc.Label("Metric to optimize parameters on"),
+        dbc.Label("Metric to optimize for"),
         dcc.Dropdown(["maximize returns", "maximize Sharpe ratio", "minimize max drawdown"], "maximize returns"),
     ],
     className="dbc"

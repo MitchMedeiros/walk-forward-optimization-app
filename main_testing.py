@@ -32,41 +32,42 @@ data_button = dbc.Button(
     n_clicks=0
 )
 
-main_row = html.Div(
-    [   
-        dbc.Row(
+main_row = dbc.Row(
+    [
+        dbc.Col(
+            [   
+                html.H4('Choose your data', style={'textAlign': 'center', 'color': '#7FDBFF'}),
+                asset_dropdown,
+                timeframe_dropdown,
+                date_calendar,
+                html.Hr(),
+                html.H4('Split the data', style={'textAlign': 'center', 'color': '#7FDBFF'}),
+                nwindows_input,
+                insample_dropdown,
+                html.Hr(),
+                html.H4('Strategy and parameter values', style={'textAlign': 'center', 'color': '#7FDBFF'}),
+                strategy_dropdown,
+                html.Br(),
+                form,
+                metric_dropdown
+            ],
+            width=3
+        ),
+        dbc.Col(
             [
-                dbc.Col(
-                    [
-                        dbc.Row(asset_dropdown),
-                        dbc.Row(timeframe_dropdown),
-                        dbc.Row(date_calendar),
-                        dbc.Row(nwindows_input),
-                        dbc.Row(insample_dropdown),
-           #         ]
-          #      ),
-        #        dbc.Col(
-         #           [
-                        dbc.Row(strategy_dropdown),
-                        dbc.Row(form),
-                        dbc.Row(metric_dropdown)
-                    ]
-                ),
-                dbc.Col(
-                    [
-                        price_plot
-                    ]
-                )
+                price_plot
             ]
         )
-    ]
+    ],
+    style = {'padding': 12, 'flex': 1}
 )
 
 app.layout = html.Div(
     [
-        app_heading,
+  #      app_heading,
         main_row
-    ]
+    ],
+    style={'display': 'flex', 'flex-direction': 'row'}
 )
 
 # Data callback
@@ -108,7 +109,7 @@ def make_table(selected_timeframe, selected_asset, start_date, end_date):
         fig.update_layout(
             xaxis=dict(rangeslider=dict(visible=False)),
             plot_bgcolor='rgba(0,50,90,100)', 
-            paper_bgcolor='rgba(0,50,90,10)',
+            paper_bgcolor='rgba(0,50,90,100)',
             font_color='white',
             margin=dict(l=20, r=20, t=20, b=20))
         fig.update_xaxes(
@@ -127,28 +128,81 @@ def update_strategy_children(selected_strategy):
     if selected_strategy == 'SMA Crossover':
         return html.Div(
             [
-                dbc.Label("minimum period of the first SMA (10-210)"),
-                dbc.Input(type='number', value=50, min=10, max=210, step=1),
-                dbc.Label("maximum period of the first SMA (10-210)"),
-                dbc.Input(type='number', value=100, min=10, max=210, step=1),
-                dbc.Label("minimum period of the second SMA (10-210)"),
-                dbc.Input(type='number', value=50, min=10, max=210, step=1),
-                dbc.Label("maximum period of the second SMA (10-210)"),
-                dbc.Input(type='number', value=100, min=10, max=210, step=1)
+                dbc.Label("Period of first SMA:", style={'color': '#7FDBFF'}),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                dbc.Label("minimum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        ),
+                        dbc.Col(
+                            [
+                                dbc.Label("maximum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        )
+                    ]
+                ),
+                dbc.Label("Period of second SMA:", style={'color': '#7FDBFF'}),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                dbc.Label("minimum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        ),
+                        dbc.Col(
+                            [
+                                dbc.Label("maximum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        )
+                    ]
+                ),
             ],
             className="dbc"
         )
+    
     elif selected_strategy == 'EMA Crossover':
         return html.Div(
             [
-                dbc.Label("minimum period of the first EMA (10-210)"),
-                dbc.Input(type='number', value=50, min=10, max=210, step=1),
-                dbc.Label("maximum period of the first EMA (10-210)"),
-                dbc.Input(type='number', value=100, min=10, max=210, step=1),
-                dbc.Label("minimum period of the second EMA (10-210)"),
-                dbc.Input(type='number', value=50, min=10, max=210, step=1),
-                dbc.Label("maximum period of the second EMA (10-210)"),
-                dbc.Input(type='number', value=100, min=10, max=210, step=1)
+                dbc.Label("Period of first EMA:", style={'color': '#7FDBFF'}),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                dbc.Label("minimum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        ),
+                        dbc.Col(
+                            [
+                                dbc.Label("maximum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        )
+                    ]
+                ),
+                dbc.Label("Period of second EMA:", style={'color': '#7FDBFF'}),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                dbc.Label("minimum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        ),
+                        dbc.Col(
+                            [
+                                dbc.Label("maximum (10-210)"),
+                                dbc.Input(type='number', value=50, min=10, max=210, step=1)
+                            ]
+                        )
+                    ]
+                ),
             ],
             className="dbc"
         )
@@ -156,17 +210,44 @@ def update_strategy_children(selected_strategy):
     elif selected_strategy == 'RSI':
         return html.Div(
             [
-                dbc.Label("minimum entry value for the RSI (10-40)"),
-                dbc.Input(type='number', value=20, min=10, max=40, step=1),
-                dbc.Label("maximum entry value for the RSI (20-50)"),
-                dbc.Input(type='number', value=40, min=20, max=50, step=1),
-                dbc.Label("minimum exit value for the RSI (50-80)"),
-                dbc.Input(type='number', value=60, min=50, max=80, step=1),
-                dbc.Label("maximum exit value for the RSI (60-99)"),
-                dbc.Input(type='number', value=80, min=60, max=99, step=1)
+                dbc.Label("RSI value for entry trades:", style={'color': '#7FDBFF'}),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                dbc.Label("minimum (10-40)"),
+                                dbc.Input(type='number', value=20, min=10, max=40, step=1)
+                            ]
+                        ),
+                        dbc.Col(
+                            [
+                                dbc.Label("maximum (20-50)"),
+                                dbc.Input(type='number', value=40, min=20, max=50, step=1)
+                            ]
+                        )
+                    ]
+                ),
+                dbc.Label("RSI value for exit trades:", style={'color': '#7FDBFF'}),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                dbc.Label("minimum (50-80)"),
+                                dbc.Input(type='number', value=60, min=50, max=80, step=1)
+                            ]
+                        ),
+                        dbc.Col(
+                            [
+                                dbc.Label("maximum (60-99)"),
+                                dbc.Input(type='number', value=80, min=60, max=99, step=1)
+                            ]
+                        )
+                    ]
+                ),
             ],
-            className='dbc'
+            className="dbc"
         )
+
     
     elif selected_strategy == 'MACD':
         return html.Div(
