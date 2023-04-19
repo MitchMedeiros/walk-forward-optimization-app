@@ -1,39 +1,26 @@
 from dash import html, dcc, dash_table
 from .. backtesting.simulation import insample_df, outsample_df
 
-tabs = html.Div(
+parameters_tabs = html.Div(
     [
+        html.H4("Optimized Parameters"),
         dcc.Tabs(
             [
                 dcc.Tab(
+                    children=html.Div("Datatable1"),
                     label="In-Sample Parameters",
                     value="tab-1",
-                    id="tab1",
-                    children=html.Div(
-                        "Datatable1", 
-                        className="p-4 border"
-                    )
+                    id="tab1"
                 ),
                 dcc.Tab(
+                    children=html.Div("Datatable2"),
                     label="Out-of-Sample Parameters",
-                    value="tab-2",
-                    children=html.Div(
-                        "Datatable2", 
-                        className="p-4 border"
-                    )
+                    value="tab-2"
                 )
             ],
             value="tab-1"
         )
     ]
-)
-
-parameters_tabs = html.Div(
-    [
-        html.H4("Optimized Parameters"), 
-        tabs
-    ], 
-    className="dbc"
 )
 
 insample_table = dash_table.DataTable(

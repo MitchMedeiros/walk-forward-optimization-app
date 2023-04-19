@@ -5,6 +5,5 @@ run_strategy_button = dbc.Button(
     id='load_data_button',
     color='info',
     size='lg',
-    className='mr-1',
     n_clicks=0
 )

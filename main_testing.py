@@ -11,6 +11,25 @@ from src.components.choose_strat import strategy_dropdown, strategy_output
 from src.components.choose_window import nwindows_input, insample_dropdown
 from src.components.plot_tabs import plot_tabs
 
+def format_price_plot(figure, timeframe):
+    if timeframe=='1d':
+        breaks = dict(bounds=['sat', 'mon'])
+    else:
+        breaks = dict(bounds=[16, 9.5], pattern='hour') #rangebreak for outside of regular trading hours
+
+    figure.update_layout(
+        xaxis=dict(rangeslider=dict(visible=False)),
+        plot_bgcolor='rgba(0,50,90,100)', 
+        paper_bgcolor='rgba(0,50,90,100)',
+        font_color='white',
+        margin=dict(l=20, r=20, t=20, b=20)
+    )
+    figure.update_xaxes(
+        rangebreaks=[dict(bounds=['sat', 'mon']), breaks], 
+        gridcolor='rgba(20,20,90,100)'
+    )
+    figure.update_yaxes(gridcolor='rgba(20,20,90,100)')
+
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
@@ -55,7 +74,7 @@ body_row = dbc.Row(
             width=3
         ),  
         dbc.Col(plot_tabs)
-    ]
+    ],
 )
 
 def create_layout():
@@ -64,7 +83,8 @@ def create_layout():
             header_row,
             body_row
         ],
-        fluid=True
+        fluid=True,
+        className='dbc'
     )
 
 app.layout = create_layout()
@@ -79,7 +99,7 @@ app.layout = create_layout()
         Input('date_range', 'end_date')
     ]
 )
-def make_table(selected_timeframe, selected_asset, start_date, end_date):    
+def plot_price(selected_timeframe, selected_asset, start_date, end_date):    
     df = yfinance.download(
         tickers=selected_asset, 
         start=start_date, 
@@ -99,28 +119,14 @@ def make_table(selected_timeframe, selected_asset, start_date, end_date):
             color='danger'
         )
     else:
-        if selected_timeframe=='1d':
-            breaks = dict(bounds=['sat', 'mon'])
-        else:
-            breaks = dict(bounds=[16, 9.5], pattern='hour') #intraday chart needs hour rangebreaks
-
         fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
-        fig.update_layout(
-            xaxis=dict(rangeslider=dict(visible=False)),
-            plot_bgcolor='rgba(0,50,90,100)', 
-            paper_bgcolor='rgba(0,50,90,100)',
-            font_color='white',
-            margin=dict(l=20, r=20, t=20, b=20))
-        fig.update_xaxes(
-            rangebreaks=[dict(bounds=['sat', 'mon']), breaks],
-            gridcolor='rgba(20,20,90,100)')
-        fig.update_yaxes(gridcolor='rgba(20,20,90,100)', automargin=True)
+        format_price_plot(fig, selected_timeframe)
         return dcc.Graph(figure=fig)
-
+    
 
 # Strategy callback
 @app.callback(
-    Output('strategy_form', 'children'),
+    Output('strategy_div', 'children'),
     Input('strategy_drop', 'value')
 )
 def update_strategy_children(selected_strategy):
@@ -160,9 +166,8 @@ def update_strategy_children(selected_strategy):
                             ]
                         )
                     ]
-                ),
-            ],
-            className="dbc"
+                )
+            ]
         )
     
     elif selected_strategy == 'EMA Crossover':
@@ -201,9 +206,8 @@ def update_strategy_children(selected_strategy):
                             ]
                         )
                     ]
-                ),
-            ],
-            className="dbc"
+                )
+            ]
         )
     
     elif selected_strategy == 'RSI':
@@ -242,9 +246,8 @@ def update_strategy_children(selected_strategy):
                             ]
                         )
                     ]
-                ),
-            ],
-            className="dbc"
+                )
+            ]
         )
 
     
@@ -253,13 +256,12 @@ def update_strategy_children(selected_strategy):
             [
                 dbc.Label("Choose a window for the MACD"),
                 dcc.Dropdown(options=['5','10','20','50','100'], value='5', id='macd_window'),
-            ],
-            className="dbc"
+            ]
         )
     
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8061)
+    app.run_server(debug=True, port=8062)
 
 
 
