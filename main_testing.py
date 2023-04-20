@@ -1,6 +1,5 @@
 from dash import Dash, html, dcc, Input, Output, dash_table
 import dash_bootstrap_components as dbc
-#from dash_bootstrap_components.themes import DARKLY
 import plotly.graph_objects as go
 import vectorbt as vbt
 import yfinance
@@ -11,29 +10,10 @@ from src.components.choose_strat import strategy_dropdown, strategy_output
 from src.components.choose_window import nwindows_input, insample_dropdown
 from src.components.plot_tabs import plot_tabs
 
-def format_price_plot(figure, timeframe):
-    if timeframe=='1d':
-        breaks = dict(bounds=['sat', 'mon'])
-    else:
-        breaks = dict(bounds=[16, 9.5], pattern='hour') #rangebreak for outside of regular trading hours
-
-    figure.update_layout(
-        xaxis=dict(rangeslider=dict(visible=False)),
-        plot_bgcolor='rgba(0,50,90,100)', 
-        paper_bgcolor='rgba(0,50,90,100)',
-        font_color='white',
-        margin=dict(l=20, r=20, t=20, b=20)
-    )
-    figure.update_xaxes(
-        rangebreaks=[dict(bounds=['sat', 'mon']), breaks], 
-        gridcolor='rgba(20,20,90,100)'
-    )
-    figure.update_yaxes(gridcolor='rgba(20,20,90,100)')
-
-
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
-app = Dash(__name__, external_stylesheets=[dbc_css])
+
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY, dbc_css])
 
 server = app.server
 
@@ -67,19 +47,17 @@ body_row = dbc.Row(
                         metric_dropdown
                     ],
                     gap=1,
-                    style={'textalign': 'center', 'padding': 8}
+                    style={'padding': 20}
                 )
             ],
             width=3
         ),  
         dbc.Col(
             [
-                plot_tabs,
-                html.Div(id='window_div1')
-            ],
-            width="auto"
-        ),
-    ],
+                plot_tabs
+            ]
+        )
+    ]
 )
 
 def create_layout():
@@ -88,11 +66,31 @@ def create_layout():
             header_row,
             body_row
         ],
-        fluid=True,
+        #fluid=True,
         className='dbc'
     )
 
 app.layout = create_layout()
+
+def format_price_plot(figure, timeframe):
+    if timeframe=='1d':
+        breaks = dict(bounds=['sat', 'mon'])
+    else:
+        breaks = dict(bounds=[16, 9.5], pattern='hour') #rangebreak for outside of regular trading hours
+
+    figure.update_layout(
+        xaxis=dict(rangeslider=dict(visible=False)),
+        plot_bgcolor='rgba(0,50,90,100)', 
+        paper_bgcolor='rgba(0,50,90,100)',
+        font_color='white',
+        margin=dict(l=20, r=20, t=20, b=20)
+    )
+    figure.update_xaxes(
+        rangebreaks=[dict(bounds=['sat', 'mon']), breaks], 
+        gridcolor='rgba(20,20,90,100)'
+    )
+    figure.update_yaxes(gridcolor='rgba(20,20,90,100)')
+
 
 df = yfinance.download(
     tickers="SPY", 
@@ -137,35 +135,37 @@ def plot_price(selected_timeframe, selected_asset, start_date, end_date):
         format_price_plot(fig, selected_timeframe)
         return dcc.Graph(figure=fig)
     
-# Window split callback
+# Walk-Forward Window splitting and plotting callback
 @app.callback(
-    Output('window_div1', 'children'),
+    Output('window_div', 'children'),
     [
         Input('nwindows', 'value'),
         Input('insample', 'value')
     ]
 )
-def split_data_and_plot(nwindows, insample):
-    window_length = int(len(df)/nwindows)
-    insample_length = int((insample/100)*window_length)
+def split_and_plot(nwindows, insample):
+    window_length = int((200/insample)*len(df)/nwindows)
 
     (in_price, in_dates), (out_price, out_dates) = df.vbt.rolling_split(
         n = nwindows, 
         window_len = window_length, 
-        set_lens = (insample_length,),
+        set_lens = (insample/100,),
         plot=False
     )
     fig = df.vbt.rolling_split(
         n = nwindows, 
         window_len = window_length, 
-        set_lens = (insample_length,),
+        set_lens = (insample/100,),
         plot=True
     )
     fig.update_layout(
         plot_bgcolor='rgba(0,50,90,100)', 
         paper_bgcolor='rgba(0,50,90,100)',
         font_color='white',
-        margin=dict(l=20, r=20, t=20, b=20)
+        margin=dict(l=20, r=20, t=20, b=20),
+        showlegend=False,
+        autosize=False,
+        #width=900
     )
     fig.update_xaxes(gridcolor='rgba(20,20,90,100)')
     fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
@@ -311,7 +311,7 @@ def update_strategy_children(selected_strategy):
     
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8062)
+    app.run_server(debug=True, port=8064)
 
 
 

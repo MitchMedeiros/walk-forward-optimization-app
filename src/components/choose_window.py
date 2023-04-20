@@ -15,15 +15,15 @@ insample_dropdown = html.Div(
         dcc.Dropdown(
             [
                 {
-                    "label": html.Span(['50%'], style={'color': 'LightGreen', 'font-size': 15}),
+                    "label": html.Span(['50%']),
                     "value": 50,
                 },
                 {
-                    "label": html.Span(['55%'], style={'color': 'LightGreen', 'font-size': 15}),
+                    "label": html.Span(['55%']),
                     "value": 55,
                 },
                 {
-                    "label": html.Span(['60%'], style={'color': 'LightGreen', 'font-size': 15}),
+                    "label": html.Span(['60%']),
                     "value": 60,
                 },
                 {
