@@ -3,13 +3,14 @@ import dash_bootstrap_components as dbc
 
 asset_dropdown = html.Div(
     [
-        dbc.Label("Asset"),
+        dbc.Label("Instrument"),
         dcc.Dropdown(
             options=["SPY","QQQ","VIXY"], 
             value="SPY", 
             id='asset'
         )
-    ]
+    ],
+    className="mx-auto"
 )
 
 timeframe_dropdown = html.Div(
@@ -20,7 +21,8 @@ timeframe_dropdown = html.Div(
             value='1d', 
             id='timeframe'
         )
-    ]
+    ],
+    className="mx-auto"
 )
 
 metric_dropdown = html.Div(
@@ -30,5 +32,6 @@ metric_dropdown = html.Div(
             options=["maximize returns", "maximize Sharpe ratio", "minimize max drawdown"], 
             value="maximize returns"
         )
-    ]
+    ],
+    style={'textAlign': 'center'}
 )

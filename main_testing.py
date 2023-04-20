@@ -1,6 +1,6 @@
 from dash import Dash, html, dcc, Input, Output, dash_table
 import dash_bootstrap_components as dbc
-from dash_bootstrap_components.themes import DARKLY
+#from dash_bootstrap_components.themes import DARKLY
 import plotly.graph_objects as go
 import vectorbt as vbt
 import yfinance
@@ -33,7 +33,7 @@ def format_price_plot(figure, timeframe):
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
-app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
+app = Dash(__name__, external_stylesheets=[dbc_css])
 
 server = app.server
 
@@ -52,24 +52,23 @@ body_row = dbc.Row(
     [
         dbc.Col(
             [   
-          #      dbc.Stack(
-           #         [
-                        html.H4('Choose your data', style={'color': '#7FDBFF'}),
-                        asset_dropdown,
-                        timeframe_dropdown,
+                dbc.Stack(
+                    [
+                        html.H4('Choose your data', style={'color': '#7FDBFF', 'textAlign': 'center'}),
+                        dbc.Stack([asset_dropdown,timeframe_dropdown], direction='horizontal'),
                         date_calendar,
                         html.Hr(),
-                        html.H4('Split the data', style={'color': '#7FDBFF'}),
-                        dbc.Row([nwindows_input,insample_dropdown]),
+                        html.H4('Split the data', style={'color': '#7FDBFF', 'textAlign': 'center'}),
+                        dbc.Stack([nwindows_input,insample_dropdown], direction='horizontal'),
                         html.Hr(),
-                        html.H4('Strategy and parameter values', style={'color': '#7FDBFF'}),
+                        html.H4('Strategy and parameter values', style={'color': '#7FDBFF', 'textAlign': 'center'}),
                         strategy_dropdown,
                         strategy_output,
                         metric_dropdown
-          #          ],
-           #         gap=1,
-            #        style={'textAlign': 'center', 'padding': 8}
-          #      )
+                    ],
+                    gap=1,
+                    style={'textalign': 'center', 'padding': 8}
+                )
             ],
             width=3
         ),  
@@ -215,7 +214,8 @@ def update_strategy_children(selected_strategy):
                         )
                     ]
                 )
-            ]
+            ],
+            style={'textAlign': 'center'}
         )
     
     elif selected_strategy == 'EMA Crossover':
@@ -255,7 +255,8 @@ def update_strategy_children(selected_strategy):
                         )
                     ]
                 )
-            ]
+            ],
+            style={'textAlign': 'center'}
         )
     
     elif selected_strategy == 'RSI':
@@ -295,7 +296,8 @@ def update_strategy_children(selected_strategy):
                         )
                     ]
                 )
-            ]
+            ],
+            style={'textAlign': 'center'}
         )
 
     

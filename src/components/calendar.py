@@ -13,5 +13,6 @@ date_calendar = html.Div(
             min_date_allowed=date(1990, 1, 1),
             id='date_range'
         )
-    ]
+    ],
+    style={'textAlign': 'center'}
 )
