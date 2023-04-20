@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 nwindows_input = html.Div(
     [
         dbc.Label("Number of windows (1-20)"),
-        dbc.Input(type='number', min=1, max=20, step=1, value=6, id='nwindows_in')
+        dbc.Input(type='number', min=1, max=20, step=1, value=6, id='nwindows')
     ]
 )
 
@@ -12,9 +12,46 @@ insample_dropdown = html.Div(
     [
         dbc.Label("In-sample percent"),
         dcc.Dropdown(
-            options=['50%','55%','60%','65%','70%','75%','80%','85%','90%'], 
-            value='80%', 
-            id='insample_drop'
+            [
+                {
+                    "label": html.Span(['50%'], style={'color': 'LightGreen', 'font-size': 15}),
+                    "value": 50,
+                },
+                {
+                    "label": html.Span(['55%'], style={'color': 'LightGreen', 'font-size': 15}),
+                    "value": 55,
+                },
+                {
+                    "label": html.Span(['60%'], style={'color': 'LightGreen', 'font-size': 15}),
+                    "value": 60,
+                },
+                {
+                    "label": html.Span(['65%']),
+                    "value": 65,
+                },
+                {
+                    "label": html.Span(['70%']),
+                    "value": 70,
+                },
+                {
+                    "label": html.Span(['75%']),
+                    "value": 75,
+                },
+                {
+                    "label": html.Span(['80%']),
+                    "value": 80,
+                },
+                {
+                    "label": html.Span(['85%']),
+                    "value": 85,
+                },
+                {
+                    "label": html.Span(['90%']),
+                    "value": 90,
+                }
+            ], 
+            value=80, 
+            id='insample'
         )
     ]
 )

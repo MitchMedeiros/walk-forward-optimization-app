@@ -30,6 +30,7 @@ def format_price_plot(figure, timeframe):
     )
     figure.update_yaxes(gridcolor='rgba(20,20,90,100)')
 
+
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
@@ -51,29 +52,34 @@ body_row = dbc.Row(
     [
         dbc.Col(
             [   
-                dbc.Stack(
-                    [
+          #      dbc.Stack(
+           #         [
                         html.H4('Choose your data', style={'color': '#7FDBFF'}),
                         asset_dropdown,
                         timeframe_dropdown,
                         date_calendar,
                         html.Hr(),
                         html.H4('Split the data', style={'color': '#7FDBFF'}),
-                        nwindows_input,
-                        insample_dropdown,
+                        dbc.Row([nwindows_input,insample_dropdown]),
                         html.Hr(),
                         html.H4('Strategy and parameter values', style={'color': '#7FDBFF'}),
                         strategy_dropdown,
                         strategy_output,
                         metric_dropdown
-                    ],
-                    gap=1,
-                    style={'textAlign': 'center', 'padding': 8}
-                )
+          #          ],
+           #         gap=1,
+            #        style={'textAlign': 'center', 'padding': 8}
+          #      )
             ],
             width=3
         ),  
-        dbc.Col(plot_tabs)
+        dbc.Col(
+            [
+                plot_tabs,
+                html.Div(id='window_div1')
+            ],
+            width="auto"
+        ),
     ],
 )
 
@@ -89,9 +95,18 @@ def create_layout():
 
 app.layout = create_layout()
 
+df = yfinance.download(
+    tickers="SPY", 
+    start="2023-01-01", 
+    end="2023-03-20", 
+    interval="1h"
+)
+df.drop(columns = ['Adj Close'], inplace = True)
+df.columns = ['open', 'high', 'low', 'close', 'volume']
+
 # Data callback
 @app.callback(
-        Output('plot_div', 'children'),
+        Output('candle_div', 'children'),
     [
         Input('timeframe', 'value'),
         Input('asset', 'value'),
@@ -123,6 +138,39 @@ def plot_price(selected_timeframe, selected_asset, start_date, end_date):
         format_price_plot(fig, selected_timeframe)
         return dcc.Graph(figure=fig)
     
+# Window split callback
+@app.callback(
+    Output('window_div1', 'children'),
+    [
+        Input('nwindows', 'value'),
+        Input('insample', 'value')
+    ]
+)
+def split_data_and_plot(nwindows, insample):
+    window_length = int(len(df)/nwindows)
+    insample_length = int((insample/100)*window_length)
+
+    (in_price, in_dates), (out_price, out_dates) = df.vbt.rolling_split(
+        n = nwindows, 
+        window_len = window_length, 
+        set_lens = (insample_length,),
+        plot=False
+    )
+    fig = df.vbt.rolling_split(
+        n = nwindows, 
+        window_len = window_length, 
+        set_lens = (insample_length,),
+        plot=True
+    )
+    fig.update_layout(
+        plot_bgcolor='rgba(0,50,90,100)', 
+        paper_bgcolor='rgba(0,50,90,100)',
+        font_color='white',
+        margin=dict(l=20, r=20, t=20, b=20)
+    )
+    fig.update_xaxes(gridcolor='rgba(20,20,90,100)')
+    fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
+    return dcc.Graph(figure=fig)
 
 # Strategy callback
 @app.callback(

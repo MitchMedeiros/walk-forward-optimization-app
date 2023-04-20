@@ -1,9 +1,11 @@
 datetime
 flask
+flask_caching
 dash
 dash-core-components
 dash-html-components
 dash-bootstrap-components
+dash_table
 yfinance
 vectorbt
 mod-wsgi
