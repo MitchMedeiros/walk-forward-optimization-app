@@ -66,7 +66,7 @@ def create_layout():
             header_row,
             body_row
         ],
-        #fluid=True,
+        fluid=True,
         className='dbc'
     )
 
@@ -83,7 +83,7 @@ def format_price_plot(figure, timeframe):
         plot_bgcolor='rgba(0,50,90,100)', 
         paper_bgcolor='rgba(0,50,90,100)',
         font_color='white',
-        margin=dict(l=20, r=20, t=20, b=20)
+        margin=dict(l=20, r=20, t=20, b=5)
     )
     figure.update_xaxes(
         rangebreaks=[dict(bounds=['sat', 'mon']), breaks], 
@@ -100,6 +100,11 @@ df = yfinance.download(
 )
 df.drop(columns = ['Adj Close'], inplace = True)
 df.columns = ['open', 'high', 'low', 'close', 'volume']
+df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
+
+# import pickle
+# df_pickled = pickle.dumps(df)
+# df_unpickled = pickle.loads(df_pickled)
 
 # Data callback
 @app.callback(
@@ -120,6 +125,7 @@ def plot_price(selected_timeframe, selected_asset, start_date, end_date):
     )
     df.drop(columns = ['Adj Close'], inplace = True)
     df.columns = ['open', 'high', 'low', 'close', 'volume']
+    df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
 
     if df.empty:
         return dbc.Alert(
@@ -156,19 +162,20 @@ def split_and_plot(nwindows, insample):
         n = nwindows, 
         window_len = window_length, 
         set_lens = (insample/100,),
-        plot=True
+        plot=True,
+        trace_names=['in-sample', 'out-of-sample']
     )
     fig.update_layout(
         plot_bgcolor='rgba(0,50,90,100)', 
         paper_bgcolor='rgba(0,50,90,100)',
         font_color='white',
-        margin=dict(l=20, r=20, t=20, b=20),
-        showlegend=False,
-        autosize=False,
-        #width=900
+        margin=dict(l=20, r=20, t=5, b=20),
+        legend=dict(yanchor="bottom", y=0.1, xanchor="left", x=0.03),
+        width=1110,
+        height=185
     )
-    fig.update_xaxes(gridcolor='rgba(20,20,90,100)')
-    fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
+    fig.update_xaxes(gridcolor='rgba(20,20,90,100)', rangebreaks=[dict(bounds=['sat', 'mon'])])
+    fig.update_yaxes(showgrid=False)
     return dcc.Graph(figure=fig)
 
 # Strategy callback
@@ -311,7 +318,7 @@ def update_strategy_children(selected_strategy):
     
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8064)
+    app.run_server(debug=True, port=8065)
 
 
 
