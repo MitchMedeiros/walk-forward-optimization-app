@@ -2,45 +2,57 @@ from dash import html
 import dash_bootstrap_components as dbc
 
 from . calendar import date_calendar
+from . choose_strat import strategy_dropdown, strategy_output
+from . choose_window import nwindows_input, insample_dropdown
 from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
-from . choose_strat import form
-from . choose_window import accordion
-#from . tabs import parameters_tabs
+from . plot_tabs import plot_tabs
 
-# Import all of the visual components, arrange them properly using 
-# dbc rows and columns, and bring it all together in the app layout div.
 
-app_heading = html.H3("Backtesting Parameter Optimization",style={'textAlign': 'center', 'color': '#7FDBFF'})
-
-data_row = html.Div(
+header_row = dbc.Row(
     [
-        dbc.Row(
-            [
-                dbc.Col(html.Div(asset_dropdown), width="auto"),
-                dbc.Col(html.Div(timeframe_dropdown), width="auto"),
-                dbc.Col(html.Div(date_calendar), width="auto"),
-                dbc.Col(html.Div(metric_dropdown), width="auto")
-            ]
+        dbc.Col(html.H3(
+            "Walk-Forward Optimization Using Common Indicator Strategies", 
+            style={'textAlign': 'center', 'color': '#7FDBFF'}
+            )   
         )
     ]
 )
 
-strategy_col = dbc.Col(html.Div(form), width="9")
-accordion_col = dbc.Col(html.Div(accordion), width="9")
-#parameters_col = dbc.Col(html.Div(parameters_tabs), width="auto")
+body_row = dbc.Row(
+    [
+        dbc.Col(
+            [   
+                dbc.Stack(
+                    [
+                        html.H4('Choose your data', style={'color': '#7FDBFF', 'textAlign': 'center'}),
+                        dbc.Stack([asset_dropdown,timeframe_dropdown], direction='horizontal'),
+                        date_calendar,
+                        html.Hr(),
+                        html.H4('Split the data', style={'color': '#7FDBFF', 'textAlign': 'center'}),
+                        dbc.Stack([nwindows_input,insample_dropdown], direction='horizontal'),
+                        html.Hr(),
+                        html.H4('Strategy and parameter values', style={'color': '#7FDBFF', 'textAlign': 'center'}),
+                        strategy_dropdown,
+                        strategy_output,
+                        metric_dropdown
+                    ],
+                    gap=1,
+                    style={'padding': 20}
+                )
+            ],
+            width=3
+        ),  
+        dbc.Col([plot_tabs])
+    ]
+)
 
-disclaimer = html.H3("Disclaimer: This app is still in development. It's likely not functioning yet.")
 
-def create_layout() -> html.Div:
-    return html.Div(
+def create_layout():
+    return dbc.Container(
         [
-            app_heading,
-            html.Hr(),
-            data_row,
-            strategy_col,
-            accordion_col,
-            html.Br(),
-            dbc.Col(disclaimer, width="auto")
-        ], 
-        className="app-div"
+            header_row,
+            body_row
+        ],
+        fluid=True,
+        className='dbc'
     )
