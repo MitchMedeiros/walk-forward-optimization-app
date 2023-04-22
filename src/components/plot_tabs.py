@@ -2,7 +2,7 @@ from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
-import vectorbt as vbt
+#import vectorbt as vbt
 import yfinance
 
 df = yfinance.download(
@@ -116,32 +116,32 @@ def plot_callbacks(app):
             format_price_plot(fig, selected_timeframe)
             return dcc.Graph(figure=fig)
         
-    # Callback for splitting data into walk-forward windows and plotting
-    @app.callback(
-        Output('window_div', 'children'),
-        [
-            Input('nwindows', 'value'),
-            Input('insample', 'value')
-        ]
-    )
-    def split_and_plot(nwindows, insample):
-        window_length = int((200/insample)*len(df)/nwindows)
+    # # Callback for splitting data into walk-forward windows and plotting
+    # @app.callback(
+    #     Output('window_div', 'children'),
+    #     [
+    #         Input('nwindows', 'value'),
+    #         Input('insample', 'value')
+    #     ]
+    # )
+    # def split_and_plot(nwindows, insample):
+    #     window_length = int((200/insample)*len(df)/nwindows)
 
-        (in_price, in_dates), (out_price, out_dates) = df.vbt.rolling_split(
-            n = nwindows, 
-            window_len = window_length, 
-            set_lens = (insample/100,),
-            plot=False
-        )
-        fig = df.vbt.rolling_split(
-            n = nwindows, 
-            window_len = window_length, 
-            set_lens = (insample/100,),
-            plot=True,
-            trace_names=['in-sample', 'out-of-sample']
-        )
-        format_walkforward_plot(fig)
-        return dcc.Graph(figure=fig)
+    #     (in_price, in_dates), (out_price, out_dates) = df.vbt.rolling_split(
+    #         n = nwindows, 
+    #         window_len = window_length, 
+    #         set_lens = (insample/100,),
+    #         plot=False
+    #     )
+    #     fig = df.vbt.rolling_split(
+    #         n = nwindows, 
+    #         window_len = window_length, 
+    #         set_lens = (insample/100,),
+    #         plot=True,
+    #         trace_names=['in-sample', 'out-of-sample']
+    #     )
+    #     format_walkforward_plot(fig)
+    #     return dcc.Graph(figure=fig)
 
 
 # Callback for the optimization results table
