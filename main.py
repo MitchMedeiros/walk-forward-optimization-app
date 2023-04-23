@@ -1,4 +1,4 @@
-from dash import Dash, html
+from dash import Dash
 from dash_bootstrap_components.themes import DARKLY
 
 from src.components.layout import create_layout
@@ -11,7 +11,7 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 # Instantiate the dash app
 app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
 
-# Define the webserver
+# Name the webserver object. This is passed to mod_wsgi in app.wsgi
 server = app.server
 
 # Provide the layout containing all the dash components
