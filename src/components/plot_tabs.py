@@ -1,6 +1,7 @@
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
+import pickle
 import plotly.graph_objects as go
 #import vectorbt as vbt
 import yfinance
@@ -15,7 +16,6 @@ df.drop(columns = ['Adj Close'], inplace = True)
 df.columns = ['open', 'high', 'low', 'close', 'volume']
 df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
 
-# import pickle
 # df_pickled = pickle.dumps(df)
 # df_unpickled = pickle.loads(df_pickled)
 
