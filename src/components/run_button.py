@@ -4,6 +4,6 @@ run_strategy_button = dbc.Button(
     "Run Backtest",
     id='load_data_button',
     color='info',
-   # size='lg',
-    n_clicks=0
+    n_clicks=0,
+    style={'background-color': '#7FDBFF', 'color': 'black'}
 )

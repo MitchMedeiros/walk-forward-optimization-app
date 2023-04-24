@@ -25,10 +25,10 @@ plot_tabs = dcc.Tabs(
         dcc.Tab(
             [
                 dcc.Loading(type='circle', id='candle_div'),
-                html.Span(id='window_div')
+                html.Div(id='window_div')
             ],
             label="Chart and Windows",
-            value='tab-1'
+            value='tab-1',
         ),
         dcc.Tab(
             children=[dcc.Loading(type='circle', id='general_div')],
@@ -71,7 +71,7 @@ def plot_callbacks(app):
             font_color='white',
             margin=dict(l=20, r=20, t=5, b=20),
             legend=dict(yanchor="bottom", y=0.1, xanchor="left", x=0.03),
-            width=1110,
+            width=900,
             height=185
         )
         figure.update_xaxes(

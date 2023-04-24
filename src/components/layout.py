@@ -9,7 +9,7 @@ from . plot_tabs import plot_tabs
 from . run_button import run_strategy_button
 
 
-header_row = dbc.Row(
+header = dbc.Row(
     [
         dbc.Col(html.H3(
             "Walk-Forward Optimization Using Common Indicator Strategies", 
@@ -40,12 +40,18 @@ body_row = dbc.Row(
                         run_strategy_button
                     ],
                     gap=1,
-                    style={'padding': 20}
+                    style={'padding': 1}
                 )
             ],
-            width=3
+            width=3,
+            style={'marginLeft': '5px', 'width': '20rem', 'marginTop':'7px', 'background-color': '#2b2b2b'}
         ),  
-        dbc.Col([plot_tabs])
+        dbc.Col(
+            [
+                header,
+                plot_tabs
+            ], 
+            width='auto')
     ]
 )
 
@@ -53,7 +59,6 @@ body_row = dbc.Row(
 def create_layout():
     return dbc.Container(
         [
-            header_row,
             body_row
         ],
         fluid=True,
