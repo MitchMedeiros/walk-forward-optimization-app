@@ -1,49 +1,59 @@
 from math import trunc
 import pandas as pd
 import vectorbt as vbt
+from config import data_type, db_host, db_port, db_name, db_user, db_password
 
-df = pd.read_csv("/var/www/backtest.fi/dashapp/src/data/ESZ22_1m.csv")
+def get_data_and_plot(selected_timeframe, selected_asset, start_date, end_date):
+    if data_type == 'yfinance':
+        import yfinance
 
-##### For yfinance data #####
-# import vectorbt as vbt
+        df = yfinance.download(
+            tickers=selected_asset, 
+            start=start_date, 
+            end=end_date, 
+            interval=selected_timeframe
+        )
 
-# yf_data = vbt.YFData.download(
-#     "TSLA",
-#     start='2021-04-12 09:30:00 -0400',
-#     end='2021-04-12 09:35:00 -0400',
-#     interval='1m'
-# )
+        df.drop(columns = ['Adj Close'], inplace = True)
+        df.columns = ['open', 'high', 'low', 'close', 'volume']
+        df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
 
-# yf_data.get()
+        if df.empty:
+            return dbc.Alert(
+                "You have requested too large of a date range for your selected timeframe. "
+                "For Yahoo Finance 15m data is only available within the last 60 days. "
+                "1h data is only available within the last 730 days. ",
+                id='alert',
+                dismissable=True,
+                color='danger'
+            )
+        else:
+            fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
+            format_price_plot(fig, selected_timeframe)
+            return dcc.Graph(figure=fig, id='candle_plot')
 
-# df = vbt.YFData.download('SPY').get('Close')
+    elif data_type == 'postgres':
+        import psycopg2
 
-##### For CSV ######
-#close = pd.read_csv("/directory/to/yourfile.csv")
+        connection = psycopg2.connect(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
+        cursor = connection.cursor()
 
-##### For PostgreSQL/Timescale database ######
-# import psycopg2
-# from credentials import *
-# conn = psycopg2.connect(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
-# cursor = conn.cursor()
-# cursor.execute("""SELECT date, close FROM your_table_name""")
-# df = pd.DataFrame(cursor.fetchall(), columns=["date", "close"])
-# cursor.close
+        if (connection):
+            cursor.execute(f'''SELECT * FROM {selected_asset} WHERE date BETWEEN '{start_date}' AND '{end_date}' ''')
+            df = pd.DataFrame(cursor.fetchall(), columns=["date", "close"])
+            cursor.close()
+            connection.close()
 
-num_days = len(pd.to_datetime(df['date']).dt.date.unique())
-
-df.set_index('date', inplace=True)
-close = df['close']
-
-# Walk-forward window parameters
-num_windows = trunc(num_days/10)
-len_window = 7800
-len_in_sample = (5800, )
-
-# Splits data into four-week windows with three weeks in-sample, 
-# one week out-of-sample, and a window overlap of roughly 3/4
-(in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(
-    n = num_windows, 
-    window_len = len_window, 
-    set_lens = len_in_sample
-    )
+            if df.empty:
+                return dbc.Alert(
+                    "There was an error matching your inputs to the database format. Make sure "
+                    "the table is titled the same as the selected instrument as a string, i.e. 'SPY' "
+                    "and your date column is titled: date.",
+                    id='alert',
+                    dismissable=True,
+                    color='danger'
+            )
+            else:
+                fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
+                format_price_plot(fig, selected_timeframe)
+                return dcc.Graph(figure=fig, id='candle_plot')

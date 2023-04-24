@@ -28,39 +28,25 @@ def strategy_inputs_callback(app):
             return html.Div(
                 [
                     dbc.Label("Period of first SMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
-                    dbc.Row(
-                        [
-                            dbc.Col(
-                                [
-                                    dbc.Label("minimum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Label("maximum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            )
-                        ]
+                    dcc.RangeSlider(
+                        min=10, 
+                        max=210,
+                        step=10,
+                        value=[30, 70],
+                        allowCross=False,
+                        marks=None,
+                        tooltip={"placement": "bottom", "always_visible": True}
                     ),
                     dbc.Label("Period of second SMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
-                    dbc.Row(
-                        [
-                            dbc.Col(
-                                [
-                                    dbc.Label("minimum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Label("maximum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            )
-                        ]
-                    )
+                    dcc.RangeSlider(
+                        min=10, 
+                        max=210,
+                        step=10,
+                        value=[80, 120],
+                        allowCross=False,
+                        marks=None,
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
                 ],
                 style={'textAlign': 'center'}
             )
@@ -69,39 +55,25 @@ def strategy_inputs_callback(app):
             return html.Div(
                 [
                     dbc.Label("Period of first EMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
-                    dbc.Row(
-                        [
-                            dbc.Col(
-                                [
-                                    dbc.Label("minimum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Label("maximum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            )
-                        ]
+                    dcc.RangeSlider(
+                        min=10, 
+                        max=210,
+                        step=10,
+                        value=[20, 60],
+                        allowCross=False,
+                        marks=None,
+                        tooltip={"placement": "bottom", "always_visible": True}
                     ),
                     dbc.Label("Period of second EMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
-                    dbc.Row(
-                        [
-                            dbc.Col(
-                                [
-                                    dbc.Label("minimum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Label("maximum (10-210)"),
-                                    dbc.Input(type='number', value=50, min=10, max=210, step=1)
-                                ]
-                            )
-                        ]
-                    )
+                    dcc.RangeSlider(
+                        min=10, 
+                        max=210,
+                        step=10,
+                        value=[120, 160],
+                        allowCross=False,
+                        marks=None,
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
                 ],
                 style={'textAlign': 'center'}
             )
@@ -110,39 +82,25 @@ def strategy_inputs_callback(app):
             return html.Div(
                 [
                     dbc.Label("RSI value for entry trades:", style={'color': '#7FDBFF', "marginTop":"10px"}),
-                    dbc.Row(
-                        [
-                            dbc.Col(
-                                [
-                                    dbc.Label("minimum (10-40)"),
-                                    dbc.Input(type='number', value=20, min=10, max=40, step=1)
-                                ]
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Label("maximum (20-50)"),
-                                    dbc.Input(type='number', value=40, min=20, max=50, step=1)
-                                ]
-                            )
-                        ]
+                    dcc.RangeSlider(
+                        min=20, 
+                        max=40,
+                        step=2,
+                        value=[26, 34],
+                        allowCross=False,
+                        marks=None,                        
+                        tooltip={"placement": "bottom", "always_visible": True}
                     ),
                     dbc.Label("RSI value for exit trades:", style={'color': '#7FDBFF', "marginTop":"10px"}),
-                    dbc.Row(
-                        [
-                            dbc.Col(
-                                [
-                                    dbc.Label("minimum (50-80)"),
-                                    dbc.Input(type='number', value=60, min=50, max=80, step=1)
-                                ]
-                            ),
-                            dbc.Col(
-                                [
-                                    dbc.Label("maximum (60-99)"),
-                                    dbc.Input(type='number', value=80, min=60, max=99, step=1)
-                                ]
-                            )
-                        ]
-                    )
+                    dcc.RangeSlider(
+                        min=60, 
+                        max=80,
+                        step=2,
+                        value=[66, 74],
+                        allowCross=False,
+                        marks=None,                       
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
                 ],
                 style={'textAlign': 'center'}
             )
@@ -151,7 +109,26 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'MACD':
             return html.Div(
                 [
-                    dbc.Label("Choose a window for the MACD"),
-                    dcc.Dropdown(options=['5','10','20','50','100'], value='5', id='macd_window'),
-                ]
+                    dbc.Label("MACD value for entry trades:", style={'color': '#7FDBFF', "marginTop":"10px"}),
+                    dcc.RangeSlider(
+                        min=0, 
+                        max=30,
+                        step=5,
+                        value=[10, 20],
+                        allowCross=False,
+                        marks=None,
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
+                    dbc.Label("MACD value for exit trades:", style={'color': '#7FDBFF', "marginTop":"10px"}),
+                    dcc.RangeSlider(
+                        min=30, 
+                        max=60,
+                        step=5,
+                        value=[40, 50],
+                        allowCross=False,
+                        marks=None,
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
+                ],
+                style={'textAlign': 'center'}
             )

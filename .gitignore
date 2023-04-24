@@ -2,6 +2,6 @@
 /src/__pycache__
 /src/backtesting/__pycache__
 /src/components/__pycache__
-/my_credentials.py
+/my_config.py
 /src/data
 /src/backtesting/datatest.ipynb

@@ -39,8 +39,7 @@ body_row = dbc.Row(
                         metric_dropdown,
                         run_strategy_button
                     ],
-                    gap=1,
-                    style={'padding': 1}
+                    gap=1
                 )
             ],
             width=3,
