@@ -6,6 +6,7 @@ from . choose_strat import strategy_dropdown, strategy_output
 from . choose_window import nwindows_input, insample_dropdown
 from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
 from . plot_tabs import plot_tabs
+from . run_button import run_strategy_button
 
 
 header_row = dbc.Row(
@@ -31,10 +32,12 @@ body_row = dbc.Row(
                         html.H4('Split the data', style={'color': '#7FDBFF', 'textAlign': 'center'}),
                         dbc.Stack([nwindows_input,insample_dropdown], direction='horizontal'),
                         html.Hr(),
-                        html.H4('Strategy and parameter values', style={'color': '#7FDBFF', 'textAlign': 'center'}),
+                        html.H4('Strategy and parameters', style={'color': '#7FDBFF', 'textAlign': 'center'}),
                         strategy_dropdown,
                         strategy_output,
-                        metric_dropdown
+                        html.H5('Metric to optimize', style={'color': '#7FDBFF', 'textAlign': 'center', "marginBottom":"10px"}),
+                        metric_dropdown,
+                        run_strategy_button
                     ],
                     gap=1,
                     style={'padding': 20}

@@ -1,9 +1,9 @@
 import dash_bootstrap_components as dbc
 
 run_strategy_button = dbc.Button(
-    "Load Data",
+    "Run Backtest",
     id='load_data_button',
     color='info',
-    size='lg',
+   # size='lg',
     n_clicks=0
 )

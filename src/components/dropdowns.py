@@ -6,7 +6,8 @@ asset_dropdown = html.Div(
         dbc.Label("Instrument"),
         dcc.Dropdown(
             options=["SPY","QQQ","VIXY"], 
-            value="SPY", 
+            value="SPY",
+            clearable=False, 
             id='asset'
         )
     ],
@@ -18,7 +19,8 @@ timeframe_dropdown = html.Div(
         dbc.Label("Timeframe"),
         dcc.Dropdown(
             options=['15m','1h','1d'], 
-            value='1d', 
+            value='1d',
+            clearable=False,
             id='timeframe'
         )
     ],
@@ -27,11 +29,12 @@ timeframe_dropdown = html.Div(
 
 metric_dropdown = html.Div(
     [
-        dbc.Label("Metric to optimize for"),
+       # dbc.Label("Metric to optimize for"),
         dcc.Dropdown(
-            options=["maximize returns", "maximize Sharpe ratio", "minimize max drawdown"], 
-            value="maximize returns"
+            options=["maximize return", "maximize Sharpe ratio", "minimize max drawdown"], 
+            value="maximize return",
+            clearable=False,
         )
     ],
-    style={'textAlign': 'center'}
+    style={'textAlign': 'center', "marginBottom":"10px"}
 )

@@ -6,7 +6,8 @@ strategy_dropdown = html.Div(
     [
         dcc.Dropdown(
             options=['SMA Crossover','EMA Crossover','RSI','MACD'], 
-            value='SMA Crossover', 
+            value='SMA Crossover',
+            clearable=False,
             id='strategy_drop'
         ),
     ],
@@ -26,7 +27,7 @@ def strategy_inputs_callback(app):
         if selected_strategy == 'SMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Period of first SMA:", style={'color': '#7FDBFF'}),
+                    dbc.Label("Period of first SMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
                     dbc.Row(
                         [
                             dbc.Col(
@@ -43,7 +44,7 @@ def strategy_inputs_callback(app):
                             )
                         ]
                     ),
-                    dbc.Label("Period of second SMA:", style={'color': '#7FDBFF'}),
+                    dbc.Label("Period of second SMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
                     dbc.Row(
                         [
                             dbc.Col(
@@ -67,7 +68,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'EMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Period of first EMA:", style={'color': '#7FDBFF'}),
+                    dbc.Label("Period of first EMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
                     dbc.Row(
                         [
                             dbc.Col(
@@ -84,7 +85,7 @@ def strategy_inputs_callback(app):
                             )
                         ]
                     ),
-                    dbc.Label("Period of second EMA:", style={'color': '#7FDBFF'}),
+                    dbc.Label("Period of second EMA:", style={'color': '#7FDBFF', "marginTop":"10px"}),
                     dbc.Row(
                         [
                             dbc.Col(
@@ -108,7 +109,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'RSI':
             return html.Div(
                 [
-                    dbc.Label("RSI value for entry trades:", style={'color': '#7FDBFF'}),
+                    dbc.Label("RSI value for entry trades:", style={'color': '#7FDBFF', "marginTop":"10px"}),
                     dbc.Row(
                         [
                             dbc.Col(
@@ -125,7 +126,7 @@ def strategy_inputs_callback(app):
                             )
                         ]
                     ),
-                    dbc.Label("RSI value for exit trades:", style={'color': '#7FDBFF'}),
+                    dbc.Label("RSI value for exit trades:", style={'color': '#7FDBFF', "marginTop":"10px"}),
                     dbc.Row(
                         [
                             dbc.Col(

@@ -14,7 +14,7 @@ app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css])
 # Name the webserver object. This is passed to mod_wsgi in app.wsgi
 server = app.server
 
-# Provide the layout containing all the dash components
+# Provide the layout function, containing all the dash components
 app.layout = create_layout()
 
 # Instantiate the callbacks

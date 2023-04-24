@@ -51,7 +51,8 @@ insample_dropdown = html.Div(
                     "value": 90,
                 }
             ], 
-            value=80, 
+            value=80,
+            clearable=False,
             id='insample'
         )
     ],
