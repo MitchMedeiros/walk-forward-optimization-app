@@ -1,24 +1,12 @@
 from dash import html, dcc, Input, Output, exceptions
 import dash_bootstrap_components as dbc
 import pandas as pd
-import pickle
 import plotly.graph_objects as go
-import yfinance
+import pyarrow as pa
 import vectorbt as vbt
+import yfinance
+
 from config import *
-
-df = yfinance.download(
-    tickers="SPY", 
-    start="2023-01-01", 
-    end="2023-03-20", 
-    interval="1h"
-)
-df.drop(columns = ['Adj Close'], inplace = True)
-df.columns = ['open', 'high', 'low', 'close', 'volume']
-df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-
-# df_pickled = pickle.dumps(df)
-# df_unpickled = pickle.loads(df_pickled)
 
 
 plot_tabs = dcc.Tabs(
@@ -45,7 +33,7 @@ plot_tabs = dcc.Tabs(
     value='tab-1'
 )
 
-def plot_callbacks(app):
+def candle_callback(app):
     def format_price_plot(figure, timeframe):
         if timeframe=='1d':
             breaks = dict(bounds=['sat', 'mon'])
@@ -67,6 +55,52 @@ def plot_callbacks(app):
         )
         figure.update_yaxes(gridcolor='rgba(20,20,90,100)')
 
+    # Callback to create the candlestick chart
+    @app.callback(
+            Output('candle_div', 'children'),
+        [
+            Input('data_cache', 'data'),
+            Input('timeframe', 'value')
+        ]
+    )   
+    def plot_candle(df, selected_timeframe):
+        if data_type == 'postgres':
+            if df.empty:
+                return dbc.Alert(
+                    "A connection couldn't be established to the database. Check your credentials in config.py.",
+                    id='alert',
+                    dismissable=True,
+                    color='danger'
+                )
+            else:
+                fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
+                format_price_plot(fig, selected_timeframe)
+                return dcc.Graph(figure=fig, id='candle_plot')
+        
+        elif data_type == 'yfinance':
+            if df.empty:
+                return dbc.Alert(
+                    "You have requested too large of a date range for your selected timeframe. "
+                    "For Yahoo Finance 15m data is only available within the last 60 days. "
+                    "1h data is only available within the last 730 days. ",
+                    id='alert',
+                    dismissable=True,
+                    color='danger'
+                )
+            else:
+                fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
+                format_price_plot(fig, selected_timeframe)
+                return dcc.Graph(figure=fig, id='candle_plot')
+            
+        else:
+            return dbc.Alert(
+                "Incorrect data_type value provided in config.py",
+                id='alert',
+                dismissable=True,
+                color='danger'
+            )
+        
+def window_callback(app):
     def format_walkforward_plot(figure):
         figure.update_layout(
             plot_bgcolor='rgba(0,50,90,100)', 
@@ -81,83 +115,18 @@ def plot_callbacks(app):
             rangebreaks=[dict(bounds=['sat', 'mon'])],
             gridcolor='rgba(20,20,90,100)'
         )
-        figure.update_yaxes(showgrid=False)
+        figure.update_yaxes(showgrid=False)    
 
-
-    # Callback to create the candlestick chart
-    @app.callback(
-            Output('candle_div', 'children'),
-        [
-            Input('timeframe', 'value'),
-            Input('asset', 'value'),
-            Input('date_range', 'start_date'),
-            Input('date_range', 'end_date')
-        ]
-    )   
-    def get_data_and_plot(selected_timeframe, selected_asset, start_date, end_date):
-        if data_type == 'yfinance':
-            import yfinance
-
-            df = yfinance.download(
-                tickers=selected_asset, 
-                start=start_date, 
-                end=end_date, 
-                interval=selected_timeframe
-            )
-
-            df.drop(columns = ['Adj Close'], inplace = True)
-            df.columns = ['open', 'high', 'low', 'close', 'volume']
-            df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-
-            if df.empty:
-                return dbc.Alert(
-                    "You have requested too large of a date range for your selected timeframe. "
-                    "For Yahoo Finance 15m data is only available within the last 60 days. "
-                    "1h data is only available within the last 730 days. ",
-                    id='alert',
-                    dismissable=True,
-                    color='danger'
-                )
-            else:
-                fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
-                format_price_plot(fig, selected_timeframe)
-                return dcc.Graph(figure=fig, id='candle_plot')
-
-        elif data_type == 'postgres':
-            import psycopg2
-
-            connection = psycopg2.connect(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
-            cursor = connection.cursor()
-
-            if (connection):
-                cursor.execute(f'''SELECT * FROM {selected_asset} WHERE date BETWEEN '{start_date}' AND '{end_date}' ''')
-                df = pd.DataFrame(cursor.fetchall(), columns=["date", "close"])
-                cursor.close()
-                connection.close()
-
-                if df.empty:
-                    return dbc.Alert(
-                        "There was an error matching your inputs to the database format. Make sure "
-                        "the table is titled the same as the selected instrument as a string, i.e. 'SPY' "
-                        "and your date column is titled: date.",
-                        id='alert',
-                        dismissable=True,
-                        color='danger'
-                )
-                else:
-                    fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
-                    format_price_plot(fig, selected_timeframe)
-                    return dcc.Graph(figure=fig, id='candle_plot')
-        
     # Callback for splitting data into walk-forward windows and plotting
     @app.callback(
         Output('window_div', 'children'),
         [
+            Input('data_cache', 'data'),
             Input('nwindows', 'value'),
             Input('insample', 'value')
         ]
     )
-    def plot_windows(nwindows, insample):
+    def plot_windows(df, nwindows, insample):
         window_length = int((200/insample)*len(df)/nwindows)
 
         fig = df.vbt.rolling_split(
@@ -170,9 +139,11 @@ def plot_callbacks(app):
         format_walkforward_plot(fig)
         return dcc.Graph(figure=fig, id='window_plot')
     
+
+    # # Callback to align window plot with candlestick chart
     # @app.callback(
-    # Output("window_plot", "figure"), 
-    # Input("candle_plot", "relayoutData"),
+    # Output('window_plot', 'figure'), 
+    # Input('candle_plot', 'relayoutData'),
     # )
     # def get_layout(relayout_data: dict):
     #     suppress_callback_exceptions=True
