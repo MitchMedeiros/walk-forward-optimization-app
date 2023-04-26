@@ -3,7 +3,7 @@ import pandas as pd
 from statistics import mean
 import vectorbt as vbt
 
-from . data import num_windows, num_days, in_price, out_price
+from .. data.data import num_windows, num_days, in_price, out_price
 from . strategies import ind
 
 vbt.settings.set_theme('dark')

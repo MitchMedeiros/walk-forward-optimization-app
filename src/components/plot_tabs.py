@@ -25,7 +25,7 @@ plot_tabs = dcc.Tabs(
             children=[dcc.Loading(type='circle', id='detailed_div')],
             label="Results By Window",
             value='tab-3'
-        )        
+        )
     ],
     value='tab-1'
 )
@@ -43,11 +43,14 @@ def candle_callback(app):
     def plot_candles(df, selected_timeframe):
         if data_type == 'postgres' and df.empty:
             return dbc.Alert(
-                "Error: A connection could not be established to the database or the select query failed.",
+                "Error: A connection could not be established to the database or the select query failed. "
+                "Make sure your database crediental are corrently entered in config.py. "
+                "Also ensure your database table is titled the same as the selected instrument "
+                "and your columns are titled: date, open, high, low, close, volume.",
                 id='alert',
                 dismissable=True,
                 color='danger'
-            )          
+            )
         elif data_type == 'yfinance' and df.empty:
             return dbc.Alert(
                 "You have requested too large of a date range for your selected timeframe. "
@@ -56,7 +59,7 @@ def candle_callback(app):
                 id='alert',
                 dismissable=True,
                 color='danger'
-            ) 
+            )
         else:
             if selected_timeframe=='1d':
                 breaks = dict(bounds=['sat', 'mon'])
@@ -80,7 +83,7 @@ def candle_callback(app):
             return dcc.Graph(figure=fig, id='candle_plot')
 
 
-# Callback for splitting the price data into walk-forward windows and plotting        
+# Callback for splitting the price data into walk-forward windows and plotting
 def window_callback(app):
     @app.callback(
         Output('window_div', 'children'),
@@ -114,7 +117,7 @@ def window_callback(app):
         )
         fig.update_yaxes(showgrid=False)
         return dcc.Graph(figure=fig, id='window_plot')
-    
+
 
 # # Added to window callback to align window plot with candlestick chart
 # # Need to sort out relayoutdata input

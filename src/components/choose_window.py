@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 nwindows_input = html.Div(
     [
         dbc.Label("Windows (1-20)"),
-        dbc.Input(type='number', min=1, max=20, step=1, value=6, id='nwindows', )
+        dbc.Input(min=1, max=20, step=1, value=6, type='number', id='nwindows')
     ],
     className="mx-auto"
 )
@@ -50,7 +50,7 @@ insample_dropdown = html.Div(
                     "label": html.Span(['90%']),
                     "value": 90,
                 }
-            ], 
+            ],
             value=80,
             clearable=False,
             id='insample'
