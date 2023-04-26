@@ -23,3 +23,12 @@ db_port = '5432'
 db_name = ''
 db_user = ''
 db_password = ''
+
+# Set to True to run the app locally. Set to False for production on a webserver.
+run_locally = True
+
+# Used if run_locally is True. Primarily for trouble-shooting callback issues.
+debug_bool = True
+
+# Used if run_locally is True. Port to access the app. The default is 8050.
+port_number = 8060
