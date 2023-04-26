@@ -11,7 +11,7 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 
 
 # Instantiate a dash app
-app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css], title='Walk-Forward Optimization App')
+app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css], title='Backtesting App', update_title='Optimizing...')
 
 # Name the webserver object. This is passed to mod_wsgi in app.wsgi
 server = app.server
