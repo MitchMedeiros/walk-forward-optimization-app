@@ -9,7 +9,6 @@ from config import run_locally, debug_bool, port_number
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
-
 # Instantiate a dash app
 app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css], title='Backtesting App', update_title='Optimizing...')
 

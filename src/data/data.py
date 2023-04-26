@@ -1,7 +1,7 @@
 from dash import html, dcc, Input, Output
 from flask_caching import Cache
 import pandas as pd
-import pyarrow as pa
+import pickle
 import os
 
 from config import *
@@ -27,8 +27,8 @@ def create_cache(app):
 cache_store = dcc.Store(id='data_cache')
 error = html.Span(id='error_message')
 
+# Callback for storing queried data in the cache to be input into all other callbacks
 def data_callback(app):
-    # Callback to store queried data in the cache
     @app.callback(
             Output('data_cache', 'data'),
         [
