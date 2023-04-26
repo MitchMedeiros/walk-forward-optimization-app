@@ -12,8 +12,8 @@ cache_type = 'redis'
 data_type = 'yfinance'
 
 '''
-Add your postgres or timescale database credentials below. 
-Note about tables formatting: the tables should have the same name as those 
+Used if data_type is 'postgres'. Provide your postgreSQL or timescaleDB credentials below. 
+Note about table formatting: the tables in your DB should have the same name as those 
 in the instrument dropdown, and only columns named date, open, high, low, close, volume. 
 One of these columns should be the index for the table.
 '''
@@ -24,11 +24,14 @@ db_name = ''
 db_user = ''
 db_password = ''
 
-# Set to True to run the app locally. Set to False for production on a webserver.
+# Set to True to run the app locally. Set to False for production to only run the app through a wsgi.
 run_locally = True
 
-# Used if run_locally is True. Primarily for trouble-shooting callback issues.
+# Used if run_locally is True. Primarily for trouble-shooting callback issues. Default is False.
 debug_bool = True
 
 # Used if run_locally is True. Port to access the app. The default is 8050.
 port_number = 8060
+
+# Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. Default is True.
+locally_style_bool = True
