@@ -32,94 +32,106 @@ plot_tabs = dcc.Tabs(
 )
 
 
-# Callback for ploting the candlestick chart
-def candle_callback(app):
-    @app.callback(
-        Output('candle_div', 'children'),
-        [
-            Input('data_cache', 'data'),
-            Input('timeframe', 'value')
-        ]
-    )
-    def plot_candles(df_serial, selected_timeframe):
-        df = pickle.loads(df_serial)
-        if data_type == 'postgres' and df.empty:
-            return dbc.Alert(
-                "Error: A connection could not be established to the database or the select query failed. "
-                "Make sure your database crediental are corrently entered in config.py. "
-                "Also ensure your database table is titled the same as the selected instrument "
-                "and your columns are titled: date, open, high, low, close, volume.",
-                id='alert',
-                dismissable=True,
-                color='danger'
-            )
-        elif data_type == 'yfinance' and df.empty:
-            return dbc.Alert(
-                "You have requested too large of a date range for your selected timeframe. "
-                "For Yahoo Finance 15m data is only available within the last 60 days. "
-                "1h data is only available within the last 730 days. ",
-                id='alert',
-                dismissable=True,
-                color='danger'
-            )
-        else:
-            if selected_timeframe=='1d':
-                breaks = dict(bounds=['sat', 'mon'])
-            else:
-                breaks = dict(bounds=[16, 9.5], pattern='hour')
-            fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
-            fig.update_layout(
-                xaxis=dict(rangeslider=dict(visible=False)),
-                plot_bgcolor='rgba(0,50,90,100)',
-                paper_bgcolor='rgba(0,50,90,100)',
-                font_color='white',
-                margin=dict(l=40, r=8, t=12, b=0),
-                #xaxis_range=["2023-02-01", "2023-02-22"]
-            )
-            fig.update_xaxes(
-                rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
-                gridcolor='rgba(20,20,90,100)',
-                showticklabels=False
-            )
-            fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
-            return dcc.Graph(figure=fig, id='candle_plot')
+# # Callback for ploting the candlestick chart
+# def candle_callback(app):
+#     from main_test import get_data
+#     @app.callback(
+#         Output('candle_div', 'children'),
+#         [   
+#             Input('timeframe', 'value'),
+#             Input('asset', 'value'),
+#             Input('date_range', 'start_date'),
+#             Input('date_range', 'end_date')
+#         ]
+#     )
+#     def plot_candles(selected_timeframe, selected_asset, start_date, end_date):
+#         df_serial = get_data(selected_timeframe, selected_asset, start_date, end_date)
+#         df = pickle.loads(df_serial)
+
+#         if data_type == 'postgres' and df.empty:
+#             return dbc.Alert(
+#                 "Error: A connection could not be established to the database or the select query failed. "
+#                 "Make sure your database crediental are corrently entered in config.py. "
+#                 "Also ensure your database table is titled the same as the selected instrument "
+#                 "and your columns are titled: date, open, high, low, close, volume.",
+#                 id='alert',
+#                 dismissable=True,
+#                 color='danger'
+#             )
+#         elif data_type == 'yfinance' and df.empty:
+#             return dbc.Alert(
+#                 "You have requested too large of a date range for your selected timeframe. "
+#                 "For Yahoo Finance 15m data is only available within the last 60 days. "
+#                 "1h data is only available within the last 730 days. ",
+#                 id='alert',
+#                 dismissable=True,
+#                 color='danger'
+#             )
+#         else:
+#             if selected_timeframe=='1d':
+#                 breaks = dict(bounds=['sat', 'mon'])
+#             else:
+#                 breaks = dict(bounds=[16, 9.5], pattern='hour')
+#             fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
+#             fig.update_layout(
+#                 xaxis=dict(rangeslider=dict(visible=False)),
+#                 plot_bgcolor='rgba(0,50,90,100)',
+#                 paper_bgcolor='rgba(0,50,90,100)',
+#                 font_color='white',
+#                 margin=dict(l=40, r=8, t=12, b=8),
+#                 #xaxis_range=["2023-02-01", "2023-02-22"]
+#             )
+#             fig.update_xaxes(
+#                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
+#                 gridcolor='rgba(20,20,90,100)',
+#                 #showticklabels=False
+#             )
+#             fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
+#             return dcc.Graph(figure=fig, id='candle_plot')
 
 
-# Callback for splitting the price data into walk-forward windows and plotting
-def window_callback(app):
-    @app.callback(
-        Output('window_div', 'children'),
-        [
-            Input('data_cache', 'data'),
-            Input('nwindows', 'value'),
-            Input('insample', 'value')
-        ]
-    )
-    def plot_windows(df_serial, nwindows, insample):
-        df = pickle.loads(df_serial)
-        window_length = int((200/insample)*len(df)/nwindows)
-        fig = df.vbt.rolling_split(
-            n = nwindows,
-            window_len = window_length,
-            set_lens = (insample/100,),
-            plot=True,
-            trace_names=['in-sample', 'out-of-sample']
-        )
-        fig.update_layout(
-            plot_bgcolor='rgba(0,50,90,100)',
-            paper_bgcolor='rgba(0,50,90,100)',
-            font_color='white',
-            margin=dict(l=40, r=12, t=0, b=20),
-            legend=dict(yanchor="bottom", y=0.04, xanchor="left", x=0.03, bgcolor='rgba(0,50,90,0)'),
-            width=900,
-            height=185
-        )
-        fig.update_xaxes(
-            rangebreaks=[dict(bounds=['sat', 'mon'])],
-            gridcolor='rgba(20,20,90,100)'
-        )
-        fig.update_yaxes(showgrid=False)
-        return dcc.Graph(figure=fig, id='window_plot')
+# # Callback for splitting the price data into walk-forward windows and plotting
+# def window_callback(app):
+#     from main_test import get_data
+#     @app.callback(
+#         Output('window_div', 'children'),
+#         [
+#             Input('nwindows', 'value'),
+#             Input('insample', 'value'),
+#             Input('timeframe', 'value'),
+#             Input('asset', 'value'),
+#             Input('date_range', 'start_date'),
+#             Input('date_range', 'end_date')
+#         ]
+#     )
+#     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
+#         df_serial = get_data(selected_timeframe, selected_asset, start_date, end_date)
+#         df = pickle.loads(df_serial)
+
+#         window_length = int((200/insample)*len(df)/nwindows)
+#         fig = df.vbt.rolling_split(
+#             n = nwindows,
+#             window_len = window_length,
+#             set_lens = (insample/100,),
+#             plot=True,
+#             trace_names=['in-sample', 'out-of-sample']
+#         )
+#         fig.update_layout(
+#             plot_bgcolor='rgba(0,50,90,100)',
+#             paper_bgcolor='rgba(0,50,90,100)',
+#             font_color='white',
+#             margin=dict(l=40, r=12, t=0, b=20),
+#             legend=dict(yanchor="bottom", y=0.04, xanchor="left", x=0.03, bgcolor='rgba(0,50,90,0)'),
+#             width=900,
+#             height=185
+#         )
+#         fig.update_xaxes(
+#             rangebreaks=[dict(bounds=['sat', 'mon'])],
+#             gridcolor='rgba(20,20,90,100)'
+#         )
+#         fig.update_yaxes(showgrid=False)
+#         return dcc.Graph(figure=fig, id='window_plot')
+
 
 
 # # Added to window callback to align window plot with candlestick chart

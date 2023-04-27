@@ -7,12 +7,10 @@ from . choose_window import nwindows_input, insample_dropdown
 from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
 from . plot_tabs import plot_tabs
 from . run_button import run_strategy_button
-from .. data.data import cache_store
 
 def create_layout():
     return dbc.Container(
         [
-            cache_store,
             dbc.Row(
                 [
                     dbc.Col(

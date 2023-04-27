@@ -1,37 +1,22 @@
-from dash import html, dcc, Input, Output
+from dash import Input, Output
 from flask_caching import Cache
 import pandas as pd
 import pickle
-import os
 
-from config import cache_type, data_type
-
-cache_store = dcc.Store(id='data_cache')
-
-error = html.Span(id='error_message')
-
-# def create_cache(app):
-#     if cache_type == 'redis':
-#         #config_dict={'CACHE_TYPE': 'RedisCache', 'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://localhost:6379')}
-#         cache = Cache(config={'CACHE_TYPE':'RedisCache', 'CACHE_REDIS_HOST':'0.0.0.0', 'CACHE_REDIS_PORT':6379})
-#     elif cache_type == 'browser':
-#         cache = Cache(config={'CACHE_TYPE':'FileSystemCache', 'CACHE_DIR':'callback_cache', 'CACHE_THRESHOLD':50})
-#     cache.init_app(app)
+from config import data_type
 
 
 # Callback for storing queried data in the cache to be input into all other callbacks
-def data_callback(app):
-    cache = Cache(config={'CACHE_TYPE':'RedisCache', 'CACHE_REDIS_HOST':'0.0.0.0', 'CACHE_REDIS_PORT':6379})
-    cache.init_app(app.server)
+def data_callback(app, cache):
     @app.callback(
-            Output('data_cache', 'data'),
+        Output('dummy_output', 'children'), # A nonexistent component; the returned objects are cached and not output anywhere.
         [
             Input('timeframe', 'value'),
             Input('asset', 'value'),
             Input('date_range', 'start_date'),
             Input('date_range', 'end_date')
         ]
-    )  
+    )
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
         if data_type == 'postgres':
@@ -64,9 +49,9 @@ def data_callback(app):
                 interval=selected_timeframe
             )
 
-            df.drop(columns = ['Adj Close'], inplace = True)
-            df.columns = ['open', 'high', 'low', 'close', 'volume']
+            #df.drop(columns = ['Adj Close'], inplace = True)
+            df.columns = ['open', 'high', 'low', 'close', 'volume', 'adj_close']
             df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-            #df_serial = pickle.dumps(df)
-            df_serial = df.to_dict('records')
-            return df_serial
+            #df_serial = pickle.dumps(df, protocol=5)
+            #return df_serial
+            return df
