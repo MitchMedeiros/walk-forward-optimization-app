@@ -1,5 +1,6 @@
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
+from flask_caching import Cache
 
 strategy_dropdown = html.Div(
     [

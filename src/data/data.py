@@ -7,19 +7,22 @@ import os
 from config import cache_type, data_type
 
 cache_store = dcc.Store(id='data_cache')
+
 error = html.Span(id='error_message')
 
+# def create_cache(app):
+#     if cache_type == 'redis':
+#         #config_dict={'CACHE_TYPE': 'RedisCache', 'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://localhost:6379')}
+#         cache = Cache(config={'CACHE_TYPE':'RedisCache', 'CACHE_REDIS_HOST':'0.0.0.0', 'CACHE_REDIS_PORT':6379})
+#     elif cache_type == 'browser':
+#         cache = Cache(config={'CACHE_TYPE':'FileSystemCache', 'CACHE_DIR':'callback_cache', 'CACHE_THRESHOLD':50})
+#     cache.init_app(app)
 
-def create_cache(app):
-    cache = Cache()
-    if cache_type == 'redis':
-        cache.init_app(app.server, config={'CACHE_TYPE': 'redis', 'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://localhost:6379')})
-
-    elif cache_type == 'browser':
-        cache.init_app(app.server, config={'CACHE_TYPE': 'FileSystemCache', 'CACHE_DIR': 'callback_cache'})
 
 # Callback for storing queried data in the cache to be input into all other callbacks
 def data_callback(app):
+    cache = Cache(config={'CACHE_TYPE':'RedisCache', 'CACHE_REDIS_HOST':'0.0.0.0', 'CACHE_REDIS_PORT':6379})
+    cache.init_app(app.server)
     @app.callback(
             Output('data_cache', 'data'),
         [
@@ -28,7 +31,8 @@ def data_callback(app):
             Input('date_range', 'start_date'),
             Input('date_range', 'end_date')
         ]
-    )   
+    )  
+    @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
         if data_type == 'postgres':
             import psycopg2
@@ -45,10 +49,10 @@ def data_callback(app):
                 df.set_index('date', inplace=True)
                 cursor.close()
                 connection.close()
-                # return df
+                return df
             else:
                 error_frame = pd.DataFrame(columns=['first']) # To signal to dcc.Graph where the postgres data retrieval failed
-                # return error_frame
+                return error_frame
 
         elif data_type == 'yfinance':
             import yfinance
@@ -63,4 +67,6 @@ def data_callback(app):
             df.drop(columns = ['Adj Close'], inplace = True)
             df.columns = ['open', 'high', 'low', 'close', 'volume']
             df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-            # return df
+            #df_serial = pickle.dumps(df)
+            df_serial = df.to_dict('records')
+            return df_serial

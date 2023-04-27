@@ -2,6 +2,7 @@ from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
+import pickle
 import vectorbt as vbt
 
 from config import data_type
@@ -40,7 +41,8 @@ def candle_callback(app):
             Input('timeframe', 'value')
         ]
     )
-    def plot_candles(df, selected_timeframe):
+    def plot_candles(df_serial, selected_timeframe):
+        df = pickle.loads(df_serial)
         if data_type == 'postgres' and df.empty:
             return dbc.Alert(
                 "Error: A connection could not be established to the database or the select query failed. "
@@ -93,7 +95,8 @@ def window_callback(app):
             Input('insample', 'value')
         ]
     )
-    def plot_windows(df, nwindows, insample):
+    def plot_windows(df_serial, nwindows, insample):
+        df = pickle.loads(df_serial)
         window_length = int((200/insample)*len(df)/nwindows)
         fig = df.vbt.rolling_split(
             n = nwindows,
