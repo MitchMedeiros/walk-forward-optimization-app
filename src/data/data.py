@@ -6,17 +6,8 @@ import pickle
 from config import data_type
 
 
-# Callback for storing queried data in the cache to be input into all other callbacks
-def data_callback(app, cache):
-    @app.callback(
-        Output('dummy_output', 'children'), # A nonexistent component; the returned objects are cached and not output anywhere.
-        [
-            Input('timeframe', 'value'),
-            Input('asset', 'value'),
-            Input('date_range', 'start_date'),
-            Input('date_range', 'end_date')
-        ]
-    )
+
+def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
         if data_type == 'postgres':
@@ -48,10 +39,9 @@ def data_callback(app, cache):
                 end=end_date,
                 interval=selected_timeframe
             )
-
             #df.drop(columns = ['Adj Close'], inplace = True)
             df.columns = ['open', 'high', 'low', 'close', 'volume', 'adj_close']
             df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-            #df_serial = pickle.dumps(df, protocol=5)
-            #return df_serial
             return df
+        
+    return get_data(selected_timeframe, selected_asset, start_date, end_date)
