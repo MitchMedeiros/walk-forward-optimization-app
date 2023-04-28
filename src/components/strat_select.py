@@ -1,6 +1,5 @@
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
-from flask_caching import Cache
 
 strategy_dropdown = html.Div(
     [
@@ -15,7 +14,6 @@ strategy_dropdown = html.Div(
 )
 
 strategy_output = html.Div(id='strategy_div')
-
 
 # Callback to create parameter input components based on selected strategy
 def strategy_inputs_callback(app):

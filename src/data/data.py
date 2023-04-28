@@ -1,11 +1,6 @@
-from dash import Input, Output
-from flask_caching import Cache
 import pandas as pd
-import pickle
 
 from config import data_type
-
-
 
 def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
     @cache.memoize()
@@ -31,9 +26,9 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                 return error_frame
 
         elif data_type == 'yfinance':
-            import yfinance
+            from yfinance import download
 
-            df = yfinance.download(
+            df = download(
                 tickers=selected_asset,
                 start=start_date,
                 end=end_date,

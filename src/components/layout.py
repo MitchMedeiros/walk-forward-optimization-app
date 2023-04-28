@@ -1,12 +1,10 @@
 from dash import html
 import dash_bootstrap_components as dbc
 
-from . calendar import date_calendar
-from . choose_strat import strategy_dropdown, strategy_output
-from . choose_window import nwindows_input, insample_dropdown
-from . dropdowns import asset_dropdown, timeframe_dropdown, metric_dropdown
-from . plot_tabs import plot_tabs
-from . run_button import run_strategy_button
+from . strat_select import strategy_dropdown, strategy_output
+from . data_comps import asset_dropdown, timeframe_dropdown, date_calendar
+from . plotting import nwindows_input, insample_dropdown, plot_tabs
+from . run_strategy import metric_dropdown, run_strategy_button
 
 def create_layout():
     return dbc.Container(
