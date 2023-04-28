@@ -12,7 +12,7 @@ plot_tabs = dcc.Tabs(
         dcc.Tab(
             [
                 dcc.Loading(type='circle', id='candle_div'),
-                html.Div(id='window_div')
+                dcc.Loading(type='circle', id='window_div')
             ],
             label="Price History and Windows",
             value='tab-1',

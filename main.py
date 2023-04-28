@@ -3,8 +3,8 @@ from dash_bootstrap_components.themes import DARKLY
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import pandas as pd
-import pickle
 from flask_caching import Cache
+import pyarrow as pa
 
 from src.components.layout import create_layout
 #from src.components.plot_tabs import candle_callback, window_callback
@@ -31,62 +31,97 @@ server = app.server
 if cache_type == 'redis':
     cache = Cache(config={'CACHE_TYPE':'RedisCache', 'CACHE_REDIS_HOST':redis_host, 'CACHE_REDIS_PORT':redis_port})
 elif cache_type == 'browser':
-    cache = Cache(config={'CACHE_TYPE':'FileSystemCache', 'CACHE_DIR':'callback_cache', 'CACHE_THRESHOLD':50})
+    cache = Cache(config={'CACHE_TYPE':'FileSystemCache', 'CACHE_DIR':'file_cache', 'CACHE_THRESHOLD':40})
 cache.init_app(app.server)
 
 # Provide the layout, containing all the dash components to be displayed
 app.layout = create_layout()
 
-# The callback for querying data and storing it in the Redis/FileSystem cache via flask-caching. 
-# The cached data is served to all other callbacks by calling the memoized function inside them.
-@app.callback(
-    Output('dummy_output', 'children'), # A nonexistent component; the returned objects are cached and not output anywhere.
-    [
-        Input('timeframe', 'value'),
-        Input('asset', 'value'),
-        Input('date_range', 'start_date'),
-        Input('date_range', 'end_date')
-    ]
-)
-@cache.memoize()
-def get_data(selected_timeframe, selected_asset, start_date, end_date):
-    if data_type == 'postgres':
-        import psycopg2
-        from config import db_host, db_port, db_name, db_user, db_password
 
-        connection = psycopg2.connect(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
-        cursor = connection.cursor()
-        select_query = f'''SELECT * FROM {selected_asset} WHERE date BETWEEN '{start_date}' AND '{end_date}' '''
+def cached_df(selected_timeframe, selected_asset, start_date, end_date):
+    @cache.memoize()
+    def get_data(selected_timeframe, selected_asset, start_date, end_date):
+        if data_type == 'postgres':
+            import psycopg2
+            from config import db_host, db_port, db_name, db_user, db_password
 
-        if (connection):
-            cursor.execute(select_query)
-            df = pd.DataFrame(cursor.fetchall(), columns=['date', 'open', 'high', 'low', 'close', 'volume'])
-            df = df.astype({'date': 'datetime', 'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-            df.set_index('date', inplace=True)
-            cursor.close()
-            connection.close()
+            connection = psycopg2.connect(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
+            cursor = connection.cursor()
+            select_query = f'''SELECT * FROM {selected_asset} WHERE date BETWEEN '{start_date}' AND '{end_date}' '''
+
+            if (connection):
+                cursor.execute(select_query)
+                df = pd.DataFrame(cursor.fetchall(), columns=['date', 'open', 'high', 'low', 'close', 'volume'])
+                df = df.astype({'date': 'datetime', 'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
+                df.set_index('date', inplace=True)
+                cursor.close()
+                connection.close()
+                return df
+            else:
+                error_frame = pd.DataFrame(columns=['first']) # To signal to dcc.Graph where the postgres data retrieval failed
+                return error_frame
+
+        elif data_type == 'yfinance':
+            import yfinance
+
+            df = yfinance.download(
+                tickers=selected_asset,
+                start=start_date,
+                end=end_date,
+                interval=selected_timeframe
+            )
+            #df.drop(columns = ['Adj Close'], inplace = True)
+            df.columns = ['open', 'high', 'low', 'close', 'volume', 'adj_close']
+            print(df.info())
+            df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
+            print(df.info())
             return df
-        else:
-            error_frame = pd.DataFrame(columns=['first']) # To signal to dcc.Graph where the postgres data retrieval failed
-            return error_frame
+        
+    return get_data(selected_timeframe, selected_asset, start_date, end_date)
 
-    elif data_type == 'yfinance':
-        import yfinance
 
-        df = yfinance.download(
-            tickers=selected_asset,
-            start=start_date,
-            end=end_date,
-            interval=selected_timeframe
+# Callback for splitting the price data into walk-forward windows and plotting
+def window_callback(app):
+    @app.callback(
+        Output('window_div', 'children'),
+        [
+            Input('nwindows', 'value'),
+            Input('insample', 'value'),
+            Input('timeframe', 'value'),
+            Input('asset', 'value'),
+            Input('date_range', 'start_date'),
+            Input('date_range', 'end_date')
+        ]
+    )
+    def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
+        df = cached_df(selected_timeframe, selected_asset, start_date, end_date)
+        window_length = int((200/insample)*len(df)/nwindows)
+
+        fig = df.vbt.rolling_split(
+            n = nwindows,
+            window_len = window_length,
+            set_lens = (insample/100,),
+            plot=True,
+            trace_names=['in-sample', 'out-of-sample']
         )
+        fig.update_layout(
+            plot_bgcolor='rgba(0,50,90,100)',
+            paper_bgcolor='rgba(0,50,90,100)',
+            font_color='white',
+            margin=dict(l=40, r=12, t=0, b=20),
+            legend=dict(yanchor="bottom", y=0.04, xanchor="left", x=0.03, bgcolor='rgba(0,50,90,0)'),
+            width=900,
+            height=185
+        )
+        fig.update_xaxes(
+            rangebreaks=[dict(bounds=['sat', 'mon'])],
+            showgrid=False,
+            showticklabels=False
+        )
+        fig.update_yaxes(showgrid=False)
 
-        #df.drop(columns = ['Adj Close'], inplace = True)
-        df.columns = ['open', 'high', 'low', 'close', 'volume', 'adj_close']
-        df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
-        #df_serial = pickle.dumps(df, protocol=5)
-        #return df_serial
-        return df
-
+        return dcc.Graph(figure=fig, id='window_plot')
+    
 # Callback for ploting the candlestick chart
 def candle_callback(app):
     @app.callback(
@@ -99,8 +134,7 @@ def candle_callback(app):
         ]
     )
     def plot_candles(selected_timeframe, selected_asset, start_date, end_date):
-        df = get_data(selected_timeframe, selected_asset, start_date, end_date)
-        #df = pickle.loads(df_serial)
+        df = cached_df(selected_timeframe, selected_asset, start_date, end_date)
 
         if data_type == 'postgres' and df.empty:
             return dbc.Alert(
@@ -138,56 +172,13 @@ def candle_callback(app):
             fig.update_xaxes(
                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
                 gridcolor='rgba(20,20,90,100)',
-                #showticklabels=False
             )
             fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
             return dcc.Graph(figure=fig, id='candle_plot')
 
 
-# Callback for splitting the price data into walk-forward windows and plotting
-def window_callback(app):
-    @app.callback(
-        Output('window_div', 'children'),
-        [
-            Input('nwindows', 'value'),
-            Input('insample', 'value'),
-            Input('timeframe', 'value'),
-            Input('asset', 'value'),
-            Input('date_range', 'start_date'),
-            Input('date_range', 'end_date')
-        ]
-    )
-    def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
-        df = get_data(selected_timeframe, selected_asset, start_date, end_date)
-        #df = pickle.loads(df_serial)
-
-        window_length = int((200/insample)*len(df)/nwindows)
-        fig = df.vbt.rolling_split(
-            n = nwindows,
-            window_len = window_length,
-            set_lens = (insample/100,),
-            plot=True,
-            trace_names=['in-sample', 'out-of-sample']
-        )
-        fig.update_layout(
-            plot_bgcolor='rgba(0,50,90,100)',
-            paper_bgcolor='rgba(0,50,90,100)',
-            font_color='white',
-            margin=dict(l=40, r=12, t=0, b=20),
-            legend=dict(yanchor="bottom", y=0.04, xanchor="left", x=0.03, bgcolor='rgba(0,50,90,0)'),
-            width=900,
-            height=185
-        )
-        fig.update_xaxes(
-            rangebreaks=[dict(bounds=['sat', 'mon'])],
-            gridcolor='rgba(20,20,90,100)'
-        )
-        fig.update_yaxes(showgrid=False)
-        return dcc.Graph(figure=fig, id='window_plot')
-
 # Instantiates the callbacks and deploys the app locally if run_locally is True.
 def run_app(app_name):
-    # data_callback(app_name)
     candle_callback(app_name)
     window_callback(app_name)
     strategy_inputs_callback(app_name)

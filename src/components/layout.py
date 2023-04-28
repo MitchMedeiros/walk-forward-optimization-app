@@ -10,7 +10,7 @@ from . run_button import run_strategy_button
 
 def create_layout():
     return dbc.Container(
-        [
+        [   
             dbc.Row(
                 [
                     dbc.Col(

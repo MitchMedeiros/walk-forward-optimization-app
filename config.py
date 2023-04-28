@@ -8,7 +8,7 @@ To do this set cache_type to 'browser' and data_type to 'yfinance'.
 # Caching through the 'browser' or 'redis'
 cache_type = 'redis'
 
-redis_host = '0.0.0.0'
+redis_host = '127.0.0.1'
 
 redis_port = 6379
 
@@ -38,7 +38,7 @@ debug_bool = True
 callback_suppress = True
 
 # Used if run_locally is True. Port to access the app. The default is 8050.
-port_number = 8061
+port_number = 8062
 
 # Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. Default is True.
 locally_style = True
