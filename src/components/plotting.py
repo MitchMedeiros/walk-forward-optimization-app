@@ -115,7 +115,7 @@ def candle_callback(app, cache):
             fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
             return dcc.Graph(figure=fig, id='candle_plot')
 
-# Callback for splitting the price data into walk-forward windows and plotting
+# Callback for plotting the walk-forward windows
 def window_callback(app, cache):
     @app.callback(
         Output('window_div', 'children'),

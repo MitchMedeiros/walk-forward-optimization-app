@@ -2,6 +2,7 @@ import pandas as pd
 
 from config import data_type
 
+# Queries the data from the database or yfinance and caches it via flask-cache for use in multiple callbacks
 def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):

@@ -2,6 +2,7 @@
 /src/__pycache__
 /src/backtesting/__pycache__
 /src/components/__pycache__
+src/data/__pycache__
 /my_config.py
 testbook.ipynb
 main_testing.py
