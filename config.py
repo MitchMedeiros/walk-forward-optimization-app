@@ -5,18 +5,23 @@ A key function is allowing the app to be run without a postgres or redis databas
 To do this set cache_type to 'browser' and data_type to 'yfinance'.
 '''
 
-# Caching through the 'browser' or 'redis'
+# Data caching with 'files' or 'redis'
 cache_type = 'redis'
 
 redis_host = '127.0.0.1'
 
 redis_port = 6379
 
+# Provided to the FileSystemCache CACHE_OPTIONS if you need to alter user/group/other permissions. 
+# Ex. {'mode':0o770} would give full permissions to the owner and group for the created cache files.
+# Newly created files in the cache directory should be owned by the apache user i.e. www-data if using the default permissions.
+permissions = {'mode':0o600}
+
 # Set to 'yfinance' or 'postgres' to use the corresponding data source
 data_type = 'yfinance'
 
 '''
-Used if data_type is 'postgres'. Provide your postgreSQL or timescaleDB credentials below. 
+The below variables are used if data_type is 'postgres'. Provide your postgreSQL or timescaleDB credentials below. 
 Note about table formatting: the tables in your DB should have the same name as those 
 in the instrument dropdown, and only columns named date, open, high, low, close, volume. 
 One of these columns should be the index for the table.
@@ -37,8 +42,8 @@ debug_bool = True
 # Suppress callback exceptions if they are intentional. Default is False.
 callback_suppress = True
 
-# Used if run_locally is True. Port to access the app. The default is 8050.
-port_number = 8062
+# Used if run_locally is True. The port to access the app.
+port_number = 8050
 
 # Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. Default is True.
 locally_style = True
