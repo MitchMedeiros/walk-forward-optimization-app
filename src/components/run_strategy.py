@@ -9,7 +9,7 @@ metric_dropdown = html.Div(
             clearable=False,
         )
     ],
-    style={'textAlign': 'center', "marginBottom":"10px"}
+    style={'text-align': 'center', "margin-bottom":"10px"}
 )
 
 run_strategy_button = dbc.Button(
@@ -17,5 +17,5 @@ run_strategy_button = dbc.Button(
     id='load_data_button',
     color='info',
     n_clicks=0,
-    style={'background-color': '#7FDBFF', 'color': 'black'}
+    style={'background-color': '#7FDBFF', 'color': 'black', 'width': '100%'}
 )

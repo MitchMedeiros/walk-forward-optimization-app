@@ -1,16 +1,15 @@
 import pandas as pd
 
-from config import data_type
+import config
 
 # Queries the data from the database or yfinance and caches it via flask-cache for use in multiple callbacks
 def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
-        if data_type == 'postgres':
+        if config.data_type == 'postgres':
             import psycopg2
-            from config import db_host, db_port, db_name, db_user, db_password
 
-            connection = psycopg2.connect(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
+            connection = psycopg2.connect(host=config.db_host, port=config.db_port, database=config.db_name, user=config.db_user, password=config.db_password)
             cursor = connection.cursor()
             select_query = f'''SELECT * FROM {selected_asset} WHERE date BETWEEN '{start_date}' AND '{end_date}' '''
 
@@ -26,7 +25,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                 error_frame = pd.DataFrame(columns=['first']) # To signal to dcc.Graph where the postgres data retrieval failed
                 return error_frame
 
-        elif data_type == 'yfinance':
+        elif config.data_type == 'yfinance':
             from yfinance import download
 
             df = download(

@@ -6,13 +6,13 @@ asset_dropdown = html.Div(
     [
         dbc.Label("Instrument"),
         dcc.Dropdown(
-            options=["SPY","QQQ","VIXY"],
-            value="SPY",
+            options=['SPY','QQQ','VIXY'],
+            value='SPY',
             clearable=False,
             id='asset'
         )
     ],
-    className="mx-auto"
+    className='mx-auto'
 )
 
 timeframe_dropdown = html.Div(
@@ -25,7 +25,7 @@ timeframe_dropdown = html.Div(
             id='timeframe'
         )
     ],
-    className="mx-auto"
+    className='mx-auto'
 )
 
 date_calendar = html.Div(
@@ -40,5 +40,5 @@ date_calendar = html.Div(
             id='date_range'
         )
     ],
-    style={'textAlign': 'center'}
+    style={'text-align': 'center'}
 )

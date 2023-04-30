@@ -34,7 +34,7 @@ db_user = ''
 db_password = ''
 
 # Set to True to run the app locally. Set to False for production to only run the app through a wsgi.
-run_locally = True
+run_locally = False
 
 # Used if run_locally is True. Primarily for trouble-shooting callback issues and viewing callback process times. Default is False.
 debug_bool = True
