@@ -26,7 +26,7 @@ server = app.server
 if config.cache_type == 'redis':
     cache = Cache(config={'CACHE_TYPE':'RedisCache', 'CACHE_REDIS_HOST':config.redis_host, 'CACHE_REDIS_PORT':config.redis_port})
 elif config.cache_type == 'files':
-    cache = Cache(config={'CACHE_TYPE':'FileSystemCache', 'CACHE_DIR':'/var/www/backtest.fi/dashapp/cache', 'CACHE_THRESHOLD':40, 'CACHE_OPTIONS':config.permissions})
+    cache = Cache(config={'CACHE_TYPE':'FileSystemCache', 'CACHE_DIR':config.cache_directory, 'CACHE_THRESHOLD':config.cache_size, 'CACHE_OPTIONS':config.permissions})
 cache.init_app(app.server)
 
 # Provide the layout, containing all the dash components to be displayed
