@@ -10,7 +10,7 @@ strategy_dropdown = html.Div(
             id='strategy_drop'
         ),
     ],
-    style={'text-align': 'center'}
+    style={'text-align':'center'}
 )
 
 strategy_output = html.Div(id='strategy_div')
@@ -25,7 +25,7 @@ def strategy_inputs_callback(app):
         if selected_strategy == 'SMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Period of first SMA:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("Period of first SMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=210,
@@ -33,9 +33,9 @@ def strategy_inputs_callback(app):
                         value=[30, 70],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement': 'bottom', 'always_visible': True}
                     ),
-                    dbc.Label("Period of second SMA:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("Period of second SMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=210,
@@ -43,16 +43,16 @@ def strategy_inputs_callback(app):
                         value=[80, 120],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible':True}
                     )
                 ],
-                style={'text-align': 'center', 'cursor': 'pointer'}
+                style={'text-align':'center', 'cursor':'pointer'}
             )
 
         elif selected_strategy == 'EMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Period of first EMA:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("Period of first EMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=210,
@@ -62,7 +62,7 @@ def strategy_inputs_callback(app):
                         marks=None,
                         tooltip={"placement": "bottom", "always_visible": True}
                     ),
-                    dbc.Label("Period of second EMA:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("Period of second EMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=210,
@@ -70,7 +70,7 @@ def strategy_inputs_callback(app):
                         value=[120, 160],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible': True}
                     ),
                 ],
                 style={'text-align': 'center'}
@@ -79,7 +79,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'RSI':
             return html.Div(
                 [
-                    dbc.Label("RSI value for entry trades:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("RSI value for entry trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=20,
                         max=40,
@@ -87,9 +87,9 @@ def strategy_inputs_callback(app):
                         value=[26, 34],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible':True}
                     ),
-                    dbc.Label("RSI value for exit trades:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("RSI value for exit trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=60,
                         max=80,
@@ -97,7 +97,7 @@ def strategy_inputs_callback(app):
                         value=[66, 74],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible':True}
                     ),
                 ],
                 style={'text-align': 'center'}
@@ -106,7 +106,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'MACD':
             return html.Div(
                 [
-                    dbc.Label("MACD value for entry trades:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("MACD value for entry trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=0,
                         max=30,
@@ -114,9 +114,9 @@ def strategy_inputs_callback(app):
                         value=[10, 20],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible':True}
                     ),
-                    dbc.Label("MACD value for exit trades:", style={'color': '#7FDBFF', "margin-top":"10px"}),
+                    dbc.Label("MACD value for exit trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=30,
                         max=60,
@@ -124,8 +124,8 @@ def strategy_inputs_callback(app):
                         value=[40, 50],
                         allowCross=False,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible':True}
                     ),
                 ],
-                style={'text-align': 'center'}
+                style={'text-align':'center'}
             )

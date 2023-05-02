@@ -95,7 +95,7 @@ def candle_callback(app, cache):
                 color='danger'
             )
         else:
-            if selected_timeframe=='1d':
+            if selected_timeframe == '1d':
                 breaks = dict(bounds=['sat', 'mon'])
             else:
                 breaks = dict(bounds=[16, 9.5], pattern='hour')
@@ -131,14 +131,9 @@ def window_callback(app, cache):
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
         df = cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
         window_length = int((200/insample)*len(df)/nwindows)
+        window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
 
-        fig = df.vbt.rolling_split(
-            n = nwindows,
-            window_len = window_length,
-            set_lens = (insample/100,),
-            plot=True,
-            trace_names=['in-sample', 'out-of-sample']
-        )
+        fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
         fig.update_layout(
             plot_bgcolor='rgba(0,50,90,100)',
             paper_bgcolor='rgba(0,50,90,100)',
@@ -158,48 +153,14 @@ def window_callback(app, cache):
 
 
 
-# # Added to window callback to align window plot with candlestick chart
-# # Need to sort out relayoutdata input
+# # Add to window_callback to align window plot with candlestick chart
+# # Need to work out how to input relayoutdata correctly
+
 # @app.callback(
 # Output('window_plot', 'figure'), 
 # Input('candle_plot', 'relayoutData'),
 # )
 # def get_layout(relayout_data: dict):
-#     suppress_callback_exceptions=True
-
 #     if relayout_data:
 #         return json.dumps(relayout_data)
 #     raise exceptions.PreventUpdate
-
-
-# # Callback for the general results table
-# @app.callback(
-#     Output()
-#     Input('nwindows', 'value'),
-#     Input('insample', 'value'),
-#     Input('load_data_button','n_clicks')
-# )
-# def get_general_results(nwindows, insample):
-#     num_days = len(pd.to_datetime(df['date']).dt.date.unique())
-#     window_length = int((200/insample)*len(df)/nwindows)
-
-#     (in_price, in_dates), (out_price, out_dates) = df.vbt.rolling_split(
-#         n = nwindows, 
-#         window_len = window_length, 
-#         set_lens = (insample/100,),
-#         plot=False
-#     )
-
-    # return dash_table.DataTable(
-    #     data=insample_df.to_dict('records'),
-    #     columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
-    #     style_as_list_view=True,
-    #     style_header={
-    #         'backgroundColor': 'rgb(30, 30, 30)',
-    #         'color': 'white'
-    #     },
-    #     style_data={
-    #         'backgroundColor': 'rgb(50, 50, 50)',
-    #         'color': 'white'
-    #     },
-    # )

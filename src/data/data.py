@@ -16,7 +16,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
             if (connection):
                 cursor.execute(select_query)
                 df = pd.DataFrame(cursor.fetchall(), columns=['date', 'open', 'high', 'low', 'close', 'volume'])
-                df = df.astype({'date': 'datetime', 'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
+                df = df.astype({'date':'datetime', 'open':'float16', 'high':'float16', 'low':'float16', 'close':'float16', 'volume':'int32'})
                 df.set_index('date', inplace=True)
                 cursor.close()
                 connection.close()
@@ -36,7 +36,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
             )
             #df.drop(columns = ['Adj Close'], inplace = True)
             df.columns = ['open', 'high', 'low', 'close', 'volume', 'adj_close']
-            df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
+            df = df.astype({'open':'float16', 'high':'float16', 'low':'float16', 'close':'float16', 'volume':'int32'})
             return df
         
     return get_data(selected_timeframe, selected_asset, start_date, end_date)

@@ -40,5 +40,5 @@ date_calendar = html.Div(
             id='date_range'
         )
     ],
-    style={'text-align': 'center'}
+    style={'text-align':'center'}
 )
