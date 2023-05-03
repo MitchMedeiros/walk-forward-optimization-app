@@ -25,25 +25,15 @@ def strategy_inputs_callback(app):
         if selected_strategy == 'SMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Period of first SMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of SMA periods:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
-                        max=210,
+                        max=300,
                         step=10,
-                        value=[30, 70],
+                        value=[20, 200],
                         allowCross=False,
                         marks=None,
                         tooltip={'placement': 'bottom', 'always_visible': True}
-                    ),
-                    dbc.Label("Period of second SMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                    dcc.RangeSlider(
-                        min=10,
-                        max=210,
-                        step=10,
-                        value=[80, 120],
-                        allowCross=False,
-                        marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True}
                     )
                 ],
                 style={'text-align':'center', 'cursor':'pointer'}
@@ -52,7 +42,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'EMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Period of first EMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of EMA periods:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=210,
@@ -61,17 +51,7 @@ def strategy_inputs_callback(app):
                         allowCross=False,
                         marks=None,
                         tooltip={"placement": "bottom", "always_visible": True}
-                    ),
-                    dbc.Label("Period of second EMA:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                    dcc.RangeSlider(
-                        min=10,
-                        max=210,
-                        step=10,
-                        value=[120, 160],
-                        allowCross=False,
-                        marks=None,
-                        tooltip={'placement':'bottom', 'always_visible': True}
-                    ),
+                    )
                 ],
                 style={'text-align': 'center'}
             )
@@ -79,7 +59,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'RSI':
             return html.Div(
                 [
-                    dbc.Label("RSI value for entry trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of RSI entry and exit values:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=20,
                         max=40,
@@ -88,17 +68,7 @@ def strategy_inputs_callback(app):
                         allowCross=False,
                         marks=None,
                         tooltip={'placement':'bottom', 'always_visible':True}
-                    ),
-                    dbc.Label("RSI value for exit trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                    dcc.RangeSlider(
-                        min=60,
-                        max=80,
-                        step=2,
-                        value=[66, 74],
-                        allowCross=False,
-                        marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True}
-                    ),
+                    )
                 ],
                 style={'text-align': 'center'}
             )

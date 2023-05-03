@@ -6,6 +6,7 @@ import config
 def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
+        import vectorbt
         if config.data_type == 'postgres':
             import psycopg2
 

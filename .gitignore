@@ -4,6 +4,5 @@
 /src/components/__pycache__
 src/data/__pycache__
 /my_config.py
-testbook.ipynb
-main_testing.py
-main_test.py
+/src/testing
+new_book.ipynb

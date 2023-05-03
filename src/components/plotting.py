@@ -41,14 +41,14 @@ plot_tabs = dcc.Tabs(
     [
         dcc.Tab(
             [
-                dcc.Loading(type='circle', id='candle_div'),
-                dcc.Loading(type='circle', id='window_div')
+                dcc.Loading(type='circle', id='candle_div', style={'margin-top':'150px'}),
+                dcc.Loading(type='circle', id='window_div', style={'margin-top':'150px'})
             ],
             label="Price History and Windows",
             value='tab-1',
         ),
         dcc.Tab(
-            [dcc.Loading(type='circle', id='general_div')],
+            [dcc.Loading(type='circle', id='general_div', style={'margin-top':'150px'})],
             label="General Backtest Results",
             value='tab-2'
         ),

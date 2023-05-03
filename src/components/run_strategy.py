@@ -34,25 +34,6 @@ def closed_arange(start, stop, step, dtype=None):
         array = np.concatenate([array, end_value])
     return array
 
-## The following are global lists to be used in the callback
-one_param_columns = ["Parameter 1"]
-two_param_columns = ["Parameter 1","Parameter 2"]
-three_param_columns = ["Parameter 1","Parameter 2","Parameter 3"]
-four_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4"]
-five_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4","Parameter 5"]
-# Lists for appending optimized parameters and results to for the chosen optimization metric. 
-average_return_values, max_return_values, max_return_params = [],[],[]
-average_sharpe_values, max_sharpe_values, max_sharpe_params = [],[],[]
-average_maxdrawdown_values, min_maxdrawdown_values, min_maxdrawdown_params = [],[],[]
-# Lists for storing the realized results of our optimized strategy.
-realized_returns, difference_in_returns = [],[]
-realized_sharpe, difference_in_sharpe = [],[]
-realized_maxdrawdown, difference_in_maxdrawdown = [],[]
-# Lists for showing the hypothetical highest possible results for the chosen strategy for the out-of-sample data.
-average_return_values_h, max_return_values_h, max_return_params_h = [],[],[]
-average_sharpe_values_h, max_sharpe_values_h, max_sharpe_params_h = [],[],[]
-average_maxdrawdown_values_h, min_maxdrawdown_values_h, min_maxdrawdown_params_h = [],[],[]
-
 # Callback for the general results table
 def run_callback(app, cache):
     @app.callback(
@@ -85,27 +66,26 @@ def run_callback(app, cache):
 
             pf_kwargs = dict(freq = selected_timeframe, init_cash=10000)
 
+            ## The following are global lists to be used in the callback
+            one_param_columns = ["Parameter 1"]
+            two_param_columns = ["Parameter 1","Parameter 2"]
+            three_param_columns = ["Parameter 1","Parameter 2","Parameter 3"]
+            four_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4"]
+            five_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4","Parameter 5"]
+            # Lists for appending optimized parameters and results to for the chosen optimization metric. 
+            average_return_values, max_return_values, max_return_params = [],[],[]
+            average_sharpe_values, max_sharpe_values, max_sharpe_params = [],[],[]
+            average_maxdrawdown_values, min_maxdrawdown_values, min_maxdrawdown_params = [],[],[]
+            # Lists for storing the realized results of our optimized strategy.
+            realized_returns, difference_in_returns = [],[]
+            realized_sharpe, difference_in_sharpe = [],[]
+            realized_maxdrawdown, difference_in_maxdrawdown = [],[]
+            # Lists for showing the hypothetical highest possible results for the chosen strategy for the out-of-sample data.
+            average_return_values_h, max_return_values_h, max_return_params_h = [],[],[]
+            average_sharpe_values_h, max_sharpe_values_h, max_sharpe_params_h = [],[],[]
+            average_maxdrawdown_values_h, min_maxdrawdown_values_h, min_maxdrawdown_params_h = [],[],[]
+
             if selected_strategy == 'SMA Crossover':
-
-                ## The following are global lists to be used in the callback
-                one_param_columns = ["Parameter 1"]
-                two_param_columns = ["Parameter 1","Parameter 2"]
-                three_param_columns = ["Parameter 1","Parameter 2","Parameter 3"]
-                four_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4"]
-                five_param_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4","Parameter 5"]
-                # Lists for appending optimized parameters and results to for the chosen optimization metric. 
-                average_return_values, max_return_values, max_return_params = [],[],[]
-                average_sharpe_values, max_sharpe_values, max_sharpe_params = [],[],[]
-                average_maxdrawdown_values, min_maxdrawdown_values, min_maxdrawdown_params = [],[],[]
-                # Lists for storing the realized results of our optimized strategy.
-                realized_returns, difference_in_returns = [],[]
-                realized_sharpe, difference_in_sharpe = [],[]
-                realized_maxdrawdown, difference_in_maxdrawdown = [],[]
-                # Lists for showing the hypothetical highest possible results for the chosen strategy for the out-of-sample data.
-                average_return_values_h, max_return_values_h, max_return_params_h = [],[],[]
-                average_sharpe_values_h, max_sharpe_values_h, max_sharpe_params_h = [],[],[]
-                average_maxdrawdown_values_h, min_maxdrawdown_values_h, min_maxdrawdown_params_h = [],[],[]
-
                 def backtest_windows(price, periods):
                     fast_sma, slow_sma = vbt.IndicatorFactory.from_talib('SMA').run_combs(price, periods)
                     entries = fast_sma.real_crossed_above(slow_sma.real)
