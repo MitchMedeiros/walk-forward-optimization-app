@@ -32,8 +32,9 @@ def strategy_inputs_callback(app):
                         step=10,
                         value=[20, 200],
                         allowCross=False,
+                        pushable=10,
                         marks=None,
-                        tooltip={'placement': 'bottom', 'always_visible': True},
+                        tooltip={'placement':'bottom', 'always_visible':True},
                         id='sma_range'
                     )
                 ],
@@ -46,15 +47,17 @@ def strategy_inputs_callback(app):
                     dbc.Label("Range of EMA periods:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
-                        max=210,
+                        max=300,
                         step=10,
-                        value=[20, 60],
+                        value=[20, 200],
                         allowCross=False,
+                        pushable=10,
                         marks=None,
-                        tooltip={"placement": "bottom", "always_visible": True}
+                        tooltip={'placement':'bottom', 'always_visible':True},
+                        id='ema_range'
                     )
                 ],
-                style={'text-align': 'center'}
+                style={'text-align':'center', 'cursor':'pointer'}
             )
 
         elif selected_strategy == 'RSI':
@@ -62,16 +65,18 @@ def strategy_inputs_callback(app):
                 [
                     dbc.Label("Range of RSI entry and exit values:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
-                        min=20,
-                        max=40,
+                        min=10,
+                        max=100,
                         step=2,
-                        value=[26, 34],
+                        value=[20, 80],
                         allowCross=False,
+                        pushable=6,
                         marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True}
+                        tooltip={'placement':'bottom', 'always_visible':True},
+                        id='rsi_range'
                     )
                 ],
-                style={'text-align': 'center'}
+                style={'text-align':'center', 'cursor':'pointer'}
             )
 
         elif selected_strategy == 'MACD':

@@ -9,7 +9,7 @@ from .. data.data import cached_df
 nwindows_input = html.Div(
     [
         dbc.Label("Windows (1-20)"),
-        dbc.Input(min=1, max=20, step=1, value=6, type='number', id='nwindows')
+        dbc.Input(min=1, max=20, step=1, value=5, type='number', id='nwindows')
     ],
     className='mx-auto'
 )
@@ -29,7 +29,7 @@ insample_dropdown = html.Div(
                 {'label': '85%', 'value': 85,},
                 {'label': '90%', 'value': 90,}
             ],
-            value=80,
+            value=70,
             clearable=False,
             id='insample'
         )
@@ -48,7 +48,12 @@ plot_tabs = dcc.Tabs(
             value='tab-1',
         ),
         dcc.Tab(
-            [dcc.Loading(type='circle', id='general_div', style={'margin-top':'150px'})],
+            [
+                dbc.Label("In-sample/out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                dcc.Loading(type='circle', id='insample_div', style={'margin-top':'150px'}),
+                dbc.Label("Hypothetical maximum out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                dcc.Loading(type='circle', id='outsample_div')
+            ],
             label="General Backtest Results",
             value='tab-2'
         ),

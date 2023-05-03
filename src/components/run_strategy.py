@@ -37,7 +37,10 @@ def closed_arange(start, stop, step, dtype=None):
 # Callback for the general results table
 def run_callback(app, cache):
     @app.callback(
-        Output('general_div', 'children'),
+        [
+            Output('insample_div', 'children'),
+            Output('outsample_div', 'children')
+        ],
         [
             Input('strategy_drop', 'value'),
             Input('nwindows', 'value'),
@@ -51,7 +54,7 @@ def run_callback(app, cache):
         ]
     )
     def get_general_results(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, sma_range, n_clicks):
-        if n_clicks:
+        #if n_clicks:
             df = cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
             close = df['close']
             close = close.astype({'close':'double'})
@@ -64,6 +67,8 @@ def run_callback(app, cache):
             else: 
                 ndays_df = pd.DataFrame(df.index)
                 num_days = len(ndays_df['Datetime'].dt.date.unique())
+                del(ndays_df)
+            del(df, in_dates, out_dates)
 
             pf_kwargs = dict(freq = selected_timeframe, init_cash=10000)
 
@@ -96,7 +101,7 @@ def run_callback(app, cache):
                 for i in range(nwindows):
                     pf = backtest_windows(in_price[i], closed_arange(sma_range[0], sma_range[1], 10, np.int16))
                     pf_t = backtest_windows(out_price[i], [pf.total_return().idxmax()[0], pf.total_return().idxmax()[1]])
-                    pf_h = backtest_windows(out_price[i], closed_arange(20, 200, 10, np.int16))
+                    pf_h = backtest_windows(out_price[i], closed_arange(sma_range[0], sma_range[1], 10, np.int16))
 
 
                     # Saves the optimized values for inputing into the out-of-sample windows plus showing metrics later.
@@ -133,48 +138,51 @@ def run_callback(app, cache):
                     min_maxdrawdown_values_h.append(round(pf_h.max_drawdown().min()*100,3))
                     min_maxdrawdown_params_h.append(pf_h.max_drawdown().idxmin())
 
-                column_list = two_param_columns
+            del(pf, pf_t, pf_h)
 
-                # Converting the lists with important stats into dataframes to be displayed as tables.
-                realized_returns = pd.DataFrame(realized_returns, columns=["Realized Returns (%)"])
-                difference_in_returns = pd.DataFrame(difference_in_returns, columns=["Difference from In-Sample (%)"])
+            column_list = two_param_columns
 
-                average_return_values = pd.DataFrame(average_return_values, columns=["In-Sample Average Return (%)"])
-                max_return_values = pd.DataFrame(max_return_values, columns=["In-sample Maximized Return (%)"])
-                max_return_params = pd.DataFrame(max_return_params, columns=column_list)
+            # Converting the lists with important stats into dataframes to be displayed as tables.
+            realized_returns = pd.DataFrame(realized_returns, columns=["Realized Returns (%)"])
+            difference_in_returns = pd.DataFrame(difference_in_returns, columns=["Difference from In-Sample (%)"])
 
-                average_return_values_h = pd.DataFrame(average_return_values_h, columns=["Out-of-Sample Average Return (%)"])
-                max_return_values_h = pd.DataFrame(max_return_values_h, columns=["Out-of-Sample Maximized Return (%)"])
-                max_return_params_h = pd.DataFrame(max_return_params_h, columns=column_list)
+            average_return_values = pd.DataFrame(average_return_values, columns=["In-Sample Average Return (%)"])
+            max_return_values = pd.DataFrame(max_return_values, columns=["In-sample Maximized Return (%)"])
+            max_return_params = pd.DataFrame(max_return_params, columns=column_list)
 
-                realized_sharpe = pd.DataFrame(realized_sharpe, columns=["Realized Sharpe Ratio"])
-                difference_in_sharpe = pd.DataFrame(difference_in_sharpe, columns=["Difference from In-Sample"])
+            average_return_values_h = pd.DataFrame(average_return_values_h, columns=["Out-of-Sample Average Return (%)"])
+            max_return_values_h = pd.DataFrame(max_return_values_h, columns=["Out-of-Sample Maximized Return (%)"])
+            max_return_params_h = pd.DataFrame(max_return_params_h, columns=column_list)
 
-                average_sharpe_values = pd.DataFrame(average_sharpe_values, columns=["In-Sample Average Sharpe Ratio"])
-                max_sharpe_values = pd.DataFrame(max_sharpe_values, columns=["In-sample Maximized Sharpe Ratio"])
-                max_sharpe_params = pd.DataFrame(max_sharpe_params, columns=column_list)
+            realized_sharpe = pd.DataFrame(realized_sharpe, columns=["Realized Sharpe Ratio"])
+            difference_in_sharpe = pd.DataFrame(difference_in_sharpe, columns=["Difference from In-Sample"])
 
-                average_sharpe_values_h = pd.DataFrame(average_sharpe_values_h, columns=["Out-of-Sample Average Sharpe Ratio"])
-                max_sharpe_values_h = pd.DataFrame(max_sharpe_values_h, columns=["Out-of-Sample Maximized Sharpe Ratio"])
-                max_sharpe_params_h = pd.DataFrame(max_sharpe_params_h, columns=column_list)
+            average_sharpe_values = pd.DataFrame(average_sharpe_values, columns=["In-Sample Average Sharpe Ratio"])
+            max_sharpe_values = pd.DataFrame(max_sharpe_values, columns=["In-sample Maximized Sharpe Ratio"])
+            max_sharpe_params = pd.DataFrame(max_sharpe_params, columns=column_list)
 
-                realized_maxdrawdown = pd.DataFrame(realized_maxdrawdown, columns=["Realized Max Drawdown (%)"])
-                difference_in_maxdrawdown = pd.DataFrame(difference_in_maxdrawdown, columns=["Difference from In-Sample (%)"])
+            average_sharpe_values_h = pd.DataFrame(average_sharpe_values_h, columns=["Out-of-Sample Average Sharpe Ratio"])
+            max_sharpe_values_h = pd.DataFrame(max_sharpe_values_h, columns=["Out-of-Sample Maximized Sharpe Ratio"])
+            max_sharpe_params_h = pd.DataFrame(max_sharpe_params_h, columns=column_list)
 
-                average_maxdrawdown_values = pd.DataFrame(average_maxdrawdown_values, columns=["In-Sample Average Max Drawdown (%)"])
-                min_maxdrawdown_values = pd.DataFrame(min_maxdrawdown_values, columns=["In-sample Minimized Max Drawdown (%)"])
-                min_maxdrawdown_params = pd.DataFrame(min_maxdrawdown_params, columns=column_list)
+            realized_maxdrawdown = pd.DataFrame(realized_maxdrawdown, columns=["Realized Max Drawdown (%)"])
+            difference_in_maxdrawdown = pd.DataFrame(difference_in_maxdrawdown, columns=["Difference from In-Sample (%)"])
 
-                average_maxdrawdown_values_h = pd.DataFrame(average_maxdrawdown_values_h, columns=["Out-of-Sample Average Max Drawdown (%)"])
-                min_maxdrawdown_values_h = pd.DataFrame(min_maxdrawdown_values_h, columns=["Out-of-sample Minimized Max Drawdown (%)"])
-                min_maxdrawdown_params_h = pd.DataFrame(min_maxdrawdown_params_h, columns=column_list)
+            average_maxdrawdown_values = pd.DataFrame(average_maxdrawdown_values, columns=["In-Sample Average Max Drawdown (%)"])
+            min_maxdrawdown_values = pd.DataFrame(min_maxdrawdown_values, columns=["In-sample Minimized Max Drawdown (%)"])
+            min_maxdrawdown_params = pd.DataFrame(min_maxdrawdown_params, columns=column_list)
 
-                # Combines the dataframes for the chosen optimization metric into a single dataframe with the window number
-                n = np.arange(1, nwindows+1)
-                n = pd.DataFrame(n, columns=["Window"])
+            average_maxdrawdown_values_h = pd.DataFrame(average_maxdrawdown_values_h, columns=["Out-of-Sample Average Max Drawdown (%)"])
+            min_maxdrawdown_values_h = pd.DataFrame(min_maxdrawdown_values_h, columns=["Out-of-sample Minimized Max Drawdown (%)"])
+            min_maxdrawdown_params_h = pd.DataFrame(min_maxdrawdown_params_h, columns=column_list)
 
-                insample_df = pd.concat([n, realized_returns, difference_in_returns, average_return_values, max_return_values, max_return_params], axis=1)
-                outsample_df = pd.concat([n, average_return_values_h, max_return_values_h, max_return_params_h], axis=1)
+            # Combines the dataframes for the chosen optimization metric into a single dataframe with the window number
+            n = np.arange(1, nwindows+1)
+            #n = closed_arange(1, nwindows)
+            n = pd.DataFrame(n, columns=["Window"])
+
+            insample_df = pd.concat([n, max_return_params, realized_returns, max_return_values, difference_in_returns, average_return_values], axis=1)
+            outsample_df = pd.concat([n, max_return_params_h, max_return_values_h, average_return_values_h], axis=1)
             
 
             # elif selected_strategy == 'EMA Crossover':
@@ -193,4 +201,17 @@ def run_callback(app, cache):
                     'backgroundColor':'rgb(50, 50, 50)',
                     'color':'white'
                 },
-            )
+            ), dash_table.DataTable(
+                    data=outsample_df.to_dict('records'),
+                    columns=[{'name':str(i), 'id':str(i)} for i in outsample_df.columns],
+                    style_as_list_view=True,
+                    style_header={
+                        'backgroundColor':'rgb(30, 30, 30)',
+                        'color':'white'
+                    },
+                    style_data={
+                        'backgroundColor':'rgb(50, 50, 50)',
+                        'color':'white'
+                    },
+                )
+    
