@@ -46,10 +46,11 @@ def run_callback(app, cache):
             Input('asset', 'value'),
             Input('date_range', 'start_date'),
             Input('date_range', 'end_date'),
+            Input('sma_range', 'value'),
             Input('run_button', 'n_clicks')
         ]
     )
-    def get_general_results(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, n_clicks):
+    def get_general_results(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, sma_range, n_clicks):
         if n_clicks:
             df = cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
             close = df['close']
@@ -93,7 +94,7 @@ def run_callback(app, cache):
                     return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
                 
                 for i in range(nwindows):
-                    pf = backtest_windows(in_price[i], closed_arange(20, 200, 10, np.int16))
+                    pf = backtest_windows(in_price[i], closed_arange(sma_range[0], sma_range[1], 10, np.int16))
                     pf_t = backtest_windows(out_price[i], [pf.total_return().idxmax()[0], pf.total_return().idxmax()[1]])
                     pf_h = backtest_windows(out_price[i], closed_arange(20, 200, 10, np.int16))
 

@@ -33,7 +33,8 @@ def strategy_inputs_callback(app):
                         value=[20, 200],
                         allowCross=False,
                         marks=None,
-                        tooltip={'placement': 'bottom', 'always_visible': True}
+                        tooltip={'placement': 'bottom', 'always_visible': True},
+                        id='sma_range'
                     )
                 ],
                 style={'text-align':'center', 'cursor':'pointer'}

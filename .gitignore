@@ -6,3 +6,4 @@ src/data/__pycache__
 /my_config.py
 /src/testing
 new_book.ipynb
+/src/components/strategy_copy.py
