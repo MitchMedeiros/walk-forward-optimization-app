@@ -5,7 +5,7 @@ import pandas as pd
 from statistics import mean
 import vectorbt as vbt
 
-from .. data.data import cached_df
+import src.data.data as data
 
 metric_dropdown = html.Div(
     [
@@ -35,11 +35,12 @@ def closed_arange(start, stop, step, dtype=None):
     return array
 
 # Callback for the general results table
-def run_callback(app, cache):
+def simulation_callback(app, cache):
     @app.callback(
         [
             Output('insample_div', 'children'),
-            Output('outsample_div', 'children')
+            Output('outsample_div', 'children'),
+            Output('results_div', 'children')
         ],
         [
             Input('strategy_drop', 'value'),
@@ -53,9 +54,9 @@ def run_callback(app, cache):
             Input('run_button', 'n_clicks')
         ]
     )
-    def get_general_results(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, sma_range, n_clicks):
+    def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, sma_range, n_clicks):
         #if n_clicks:
-            df = cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+            df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
             close = df['close']
             close = close.astype({'close':'double'})
 
@@ -65,9 +66,9 @@ def run_callback(app, cache):
             if selected_timeframe == '1d':
                 num_days = len(df)
             else: 
-                ndays_df = pd.DataFrame(df.index)
-                num_days = len(ndays_df['Datetime'].dt.date.unique())
-                del(ndays_df)
+                date_df = pd.DataFrame(df.index)
+                num_days = len(date_df['Datetime'].dt.date.unique())
+                del(date_df)
             del(df, in_dates, out_dates)
 
             pf_kwargs = dict(freq = selected_timeframe, init_cash=10000)
@@ -138,11 +139,32 @@ def run_callback(app, cache):
                     min_maxdrawdown_values_h.append(round(pf_h.max_drawdown().min()*100,3))
                     min_maxdrawdown_params_h.append(pf_h.max_drawdown().idxmin())
 
-            del(pf, pf_t, pf_h)
+            # elif selected_strategy == 'EMA Crossover':
+            # elif selected_strategy == 'RSI':
+            # elif selected_strategy == 'MACD':
 
+            del(pf, pf_t, pf_h)
             column_list = two_param_columns
 
-            # Converting the lists with important stats into dataframes to be displayed as tables.
+            # Create the first results table before arrays are overwritten.
+            averaged_table = dbc.Table(
+                [
+                    html.Tbody(
+                        [
+                            html.Tr([html.Td("Average return per window"), html.Td(f"{round(mean(realized_returns),3)}%")]),
+                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(sum(realized_returns)*(261/(num_days/nwindows)),3)}%")]),
+                            html.Tr([html.Td("Average difference in return"), html.Td(f"{round(mean(difference_in_returns),3)}%")]),
+                            html.Tr([html.Td("Average Sharpe ratio"), html.Td(f"{round(mean(realized_sharpe),3)}")]),
+                            html.Tr([html.Td("Average difference in Sharpe ratio"), html.Td(f"{round(mean(difference_in_sharpe),3)}")]),
+                            html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(realized_maxdrawdown),3)}%")]),
+                            html.Tr([html.Td("Average difference in max drawdown"), html.Td(f"{round(mean(difference_in_maxdrawdown),3)}%")])
+                        ]
+                    )
+                ], 
+                bordered=False
+            )
+
+            # Converting the lists with important stats into dataframes to be displayed as two tables.
             realized_returns = pd.DataFrame(realized_returns, columns=["Realized Returns (%)"])
             difference_in_returns = pd.DataFrame(difference_in_returns, columns=["Difference from In-Sample (%)"])
 
@@ -176,18 +198,11 @@ def run_callback(app, cache):
             min_maxdrawdown_values_h = pd.DataFrame(min_maxdrawdown_values_h, columns=["Out-of-sample Minimized Max Drawdown (%)"])
             min_maxdrawdown_params_h = pd.DataFrame(min_maxdrawdown_params_h, columns=column_list)
 
-            # Combines the dataframes for the chosen optimization metric into a single dataframe with the window number
-            n = np.arange(1, nwindows+1)
-            #n = closed_arange(1, nwindows)
-            n = pd.DataFrame(n, columns=["Window"])
+            window_number = pd.DataFrame(np.arange(1, nwindows+1), columns=["Window"])
 
-            insample_df = pd.concat([n, max_return_params, realized_returns, max_return_values, difference_in_returns, average_return_values], axis=1)
-            outsample_df = pd.concat([n, max_return_params_h, max_return_values_h, average_return_values_h], axis=1)
-            
-
-            # elif selected_strategy == 'EMA Crossover':
-            # elif selected_strategy == 'RSI':
-            # elif selected_strategy == 'MACD':
+            # Combine the individual dataframes into concatinated dataframes for displaying
+            insample_df = pd.concat([window_number, max_return_params, realized_returns, max_return_values, difference_in_returns, average_return_values], axis=1)
+            outsample_df = pd.concat([window_number, max_return_params_h, max_return_values_h, average_return_values_h], axis=1)
 
             return dash_table.DataTable(
                 data=insample_df.to_dict('records'),
@@ -213,5 +228,4 @@ def run_callback(app, cache):
                         'backgroundColor':'rgb(50, 50, 50)',
                         'color':'white'
                     },
-                )
-    
+                ), averaged_table

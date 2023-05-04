@@ -3,13 +3,13 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import vectorbt as vbt
 
-from config import data_type
-from .. data.data import cached_df
+import config
+import src.data.data as data
 
 nwindows_input = html.Div(
     [
-        dbc.Label("Windows (1-20)"),
-        dbc.Input(min=1, max=20, step=1, value=5, type='number', id='nwindows')
+        dbc.Label("Windows (4-15)"),
+        dbc.Input(min=4, max=15, step=1, value=5, type='number', id='nwindows')
     ],
     className='mx-auto'
 )
@@ -41,25 +41,28 @@ plot_tabs = dcc.Tabs(
     [
         dcc.Tab(
             [
-                dcc.Loading(type='circle', id='candle_div', style={'margin-top':'150px'}),
-                dcc.Loading(type='circle', id='window_div', style={'margin-top':'150px'})
+                dcc.Loading(type='graph', id='candle_div', style={'margin-top':'150px'}),
+                dcc.Loading(type='graph', id='window_div', style={'margin-top':'150px'})
             ],
             label="Price History and Windows",
             value='tab-1',
         ),
         dcc.Tab(
             [
-                dbc.Label("In-sample/out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                dcc.Loading(type='circle', id='insample_div', style={'margin-top':'150px'}),
-                dbc.Label("Hypothetical maximum out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                dcc.Loading(type='circle', id='outsample_div')
+                dcc.Loading(type='dot', id='results_div', style={'margin-top':'50px'}),
+                html.H5("In-sample/out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                dcc.Loading(type='dot', id='insample_div', style={'margin-top':'150px'}),
+                html.H5("Hypothetical maximum out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                dcc.Loading(type='dot', id='outsample_div')
             ],
-            label="General Backtest Results",
+            label="Tabular Backtest Results",
             value='tab-2'
         ),
         dcc.Tab(
-            [dcc.Loading(type='circle', id='detailed_div')],
-            label="Results By Window",
+            [
+                dcc.Loading(type='circle', id='detailed_div')
+            ],
+            label="Visual Backtest Results",
             value='tab-3'
         )
     ],
@@ -78,9 +81,9 @@ def candle_callback(app, cache):
         ]
     )
     def plot_candles(selected_timeframe, selected_asset, start_date, end_date):
-        df = cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+        df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-        if data_type == 'postgres' and df.empty:
+        if config.data_type == 'postgres' and df.empty:
             return dbc.Alert(
                 "Error: A connection could not be established to the database or the select query failed. "
                 "Make sure your database crediental are corrently entered in config.py. "
@@ -90,7 +93,7 @@ def candle_callback(app, cache):
                 dismissable=True,
                 color='danger'
             )
-        elif data_type == 'yfinance' and df.empty:
+        elif config.data_type == 'yfinance' and df.empty:
             return dbc.Alert(
                 "You have requested too large of a date range for your selected timeframe. "
                 "For Yahoo Finance 15m data is only available within the last 60 days. "
@@ -134,7 +137,7 @@ def window_callback(app, cache):
         ]
     )
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
-        df = cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+        df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
         window_length = int((200/insample)*len(df)/nwindows)
         window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
 
