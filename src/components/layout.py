@@ -9,7 +9,17 @@ from . strat_select import strategy_dropdown, strategy_output
 def create_layout():
     return dbc.Container(
         [   
-            dbc.Row(html.H3("Walk-Forward Optimization Using Common Indicator Strategies", style={'color':'#7FDBFF', 'text-align':'center'}), style={'background-color':'#2b2b2b'}),
+            dbc.Navbar(
+                dbc.Row(
+                    [
+                        dbc.Col(html.Img(src='assets/favicon.ico', height="35px"), style={'margin-left':'45px'}),
+                        dbc.Col(dbc.NavbarBrand("Walk-Forward Optimization Using Common Indicator Strategies", style={'color':'white', 'font-size':'20px'})),
+                    ],
+                    align="center"
+                ),
+                color="info",
+                style={'margin-bottom':'15px'}
+            ),
             dbc.Row(
                 [
                     dbc.Col(
@@ -28,17 +38,14 @@ def create_layout():
                             run_strategy_button
                         ],
                         xs=12, lg=3,
-                        style={'margin-left':'5px', 'margin-top':'7px', 'background-color':'#2b2b2b'}
+                        style={'margin-left':'5px', 'background-color':'#2b2b2b'}
                     ),
-                    dbc.Col(
-                        [
-                            #html.H3("Walk-Forward Optimization Using Common Indicator Strategies", style={'text-align':'center', 'color':'#7FDBFF'}),
-                            plot_tabs
-                        ],
-                        xs=12, lg=8
-                    )
+                    dbc.Col(plot_tabs, xs=12, lg=8)
                 ]
-            )
+            ),
+            dbc.Row(html.Footer("Disclaimer: This application is intended for educational purposes only "
+                              "and should not be considered as investment advice or suggestion. The underlying data "
+                              "and computations within this app may be inaccurate and should be treated as such.", style={'margin-top':'40px', 'margin-bottom':'10px'}))
         ],
         fluid=True,
         className='dbc'

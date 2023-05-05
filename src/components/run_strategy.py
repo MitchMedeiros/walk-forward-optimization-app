@@ -88,13 +88,13 @@ def simulation_callback(app, cache):
             if nwindows == 1: 
                 window_length = len(df)
             else:
-                window_length = int((3/2)+(len(df)/nwindows))
-
-            del(df, in_dates, out_dates)
+                window_length = int((3/2)*(len(df)/nwindows))
 
             window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
 
             (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
+
+            del(df, in_dates, out_dates)
 
             pf_kwargs = dict(freq = selected_timeframe, init_cash=10000)
 

@@ -1,3 +1,5 @@
+from math import sqrt
+
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
@@ -8,8 +10,8 @@ import src.data.data as data
 
 nwindows_input = html.Div(
     [
-        dbc.Label("Windows (1-15)"),
-        dbc.Input(min=1, max=15, step=1, value=5, type='number', id='nwindows')
+        dbc.Label("Windows (2-12)"),
+        dbc.Input(min=2, max=12, step=1, value=5, type='number', id='nwindows')
     ],
     className='mx-auto'
 )
@@ -154,10 +156,14 @@ def window_callback(app, cache):
     )
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
         df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+
         if nwindows == 1: 
             window_length = len(df)
         else:
-            window_length = int((3/2)+(len(df)/nwindows))
+            window_length = int(((7/4)*len(df))/nwindows)
+
+            #((8/7)*len(df)/nwindows)+15*sqrt((2*len(df)/nwindows))
+
         window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
 
         fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
