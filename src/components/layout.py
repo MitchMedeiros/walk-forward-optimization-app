@@ -24,7 +24,6 @@ def create_layout():
                             html.H4("Strategy Details", style={'color':'#7FDBFF', 'text-align':'center', 'margin-bottom':'15px'}),
                             strategy_dropdown,
                             strategy_output,
-                            html.H6("Metric to optimize", style={'color':'#7FDBFF', 'text-align':'center', 'margin-top':'10px', 'margin-bottom':'10px'}),
                             metric_dropdown,
                             run_strategy_button
                         ],
@@ -36,7 +35,7 @@ def create_layout():
                             #html.H3("Walk-Forward Optimization Using Common Indicator Strategies", style={'text-align':'center', 'color':'#7FDBFF'}),
                             plot_tabs
                         ],
-                        xs='auto'
+                        xs=12, lg=8
                     )
                 ]
             )

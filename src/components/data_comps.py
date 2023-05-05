@@ -1,6 +1,7 @@
+from datetime import date, timedelta
+
 from dash import html, dcc
 import dash_bootstrap_components as dbc
-from datetime import date, timedelta
 
 asset_dropdown = html.Div(
     [

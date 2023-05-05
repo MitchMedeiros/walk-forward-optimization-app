@@ -25,7 +25,7 @@ def strategy_inputs_callback(app):
         if selected_strategy == 'SMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Range of SMA periods:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of SMA periods", style={'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=300,
@@ -44,7 +44,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'EMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Range of EMA periods:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of EMA periods", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=300,
@@ -63,7 +63,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'RSI':
             return html.Div(
                 [
-                    dbc.Label("Range of RSI entry and exit values:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of RSI entry and exit values", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=100,
@@ -82,7 +82,7 @@ def strategy_inputs_callback(app):
         elif selected_strategy == 'MACD':
             return html.Div(
                 [
-                    dbc.Label("MACD value for entry trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("MACD value for entry trades", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=0,
                         max=30,
@@ -92,7 +92,7 @@ def strategy_inputs_callback(app):
                         marks=None,
                         tooltip={'placement':'bottom', 'always_visible':True}
                     ),
-                    dbc.Label("MACD value for exit trades:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("MACD value for exit trades", style={'color':'#7FDBFF', 'margin-top':'10px'}),
                     dcc.RangeSlider(
                         min=30,
                         max=60,

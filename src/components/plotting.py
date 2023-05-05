@@ -8,8 +8,8 @@ import src.data.data as data
 
 nwindows_input = html.Div(
     [
-        dbc.Label("Windows (4-15)"),
-        dbc.Input(min=4, max=15, step=1, value=5, type='number', id='nwindows')
+        dbc.Label("Windows (1-15)"),
+        dbc.Input(min=1, max=15, step=1, value=5, type='number', id='nwindows')
     ],
     className='mx-auto'
 )
@@ -50,10 +50,26 @@ plot_tabs = dcc.Tabs(
         dcc.Tab(
             [
                 dcc.Loading(type='dot', id='results_div', style={'margin-top':'50px'}),
-                html.H5("In-sample/out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                dcc.Loading(type='dot', id='insample_div', style={'margin-top':'150px'}),
-                html.H5("Hypothetical maximum out-of-sample results by window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                dcc.Loading(type='dot', id='outsample_div')
+                dbc.Accordion(
+                    [
+                        dbc.AccordionItem(
+                            [dcc.Loading(type='dot', id='insample_div', style={'margin-top':'150px'})],
+                            title="Comparison of Results by Window"
+                        ),
+                        dbc.AccordionItem(
+                            [dcc.Loading(type='dot', id='outsample_div')],
+                            title="Highest Possible Out-of-Sample Results",
+                        )
+                    ],
+                    always_open=True,
+                    flush=True,
+                    active_item=('item-0', 'item-1'),
+                    style={'color':'#7FDBFF'}
+                )
+                # html.H5("Comparison of Results by Window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                # dcc.Loading(type='dot', id='insample_div', style={'margin-top':'150px'}),
+                # html.H5("Highest Possible Out-of-Sample Results:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                # dcc.Loading(type='dot', id='outsample_div')
             ],
             label="Tabular Backtest Results",
             value='tab-2'
@@ -138,7 +154,10 @@ def window_callback(app, cache):
     )
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
         df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
-        window_length = int((200/insample)*len(df)/nwindows)
+        if nwindows == 1: 
+            window_length = len(df)
+        else:
+            window_length = int((3/2)+(len(df)/nwindows))
         window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
 
         fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
