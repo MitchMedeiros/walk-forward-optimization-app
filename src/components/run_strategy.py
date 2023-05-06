@@ -1,3 +1,4 @@
+from math import pi, atan
 from statistics import mean
 
 from dash import html, dcc, Input, Output, dash_table
@@ -42,6 +43,13 @@ def generate_loading_button(app):
                     ]
         else:
             return "Run Backtest"
+        
+def overlap_factor(nwindows):
+    factors = [.375, .5, .56, .6, .625, .64]
+    if nwindows < 8:
+        return factors[nwindows-2]
+    else:
+        return (13/(9*pi))*atan(nwindows)
 
 # For creating a numpy array with a closed interval instead of half-open.
 def closed_arange(start, stop, step, dtype=None):
@@ -73,7 +81,7 @@ def simulation_callback(app, cache):
         ]
     )
     def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, sma_range, n_clicks):
-        #if n_clicks:
+        if n_clicks:
             df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
             close = df['close']
             close = close.astype({'close':'double'})
@@ -85,18 +93,13 @@ def simulation_callback(app, cache):
                 num_days = len(date_df['Datetime'].dt.date.unique())
                 del(date_df)
 
-            if nwindows == 1: 
-                window_length = len(df)
-            else:
-                window_length = int((3/2)*(len(df)/nwindows))
-
-            window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
+            window_kwargs = dict(n=nwindows, window_len=int(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
 
             (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
 
-            del(df, in_dates, out_dates)
-
             pf_kwargs = dict(freq=selected_timeframe, init_cash=10000)
+
+            del(df, in_dates, out_dates)
 
             # Lists for appending optimized parameters and results to for the chosen optimization metric. 
             average_return_values, max_return_values, max_return_params = [],[],[]
@@ -247,3 +250,5 @@ def simulation_callback(app, cache):
                         'color':'white'
                     },
                 ), averages_table, #["Run Backtest"]
+        else:
+            pass

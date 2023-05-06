@@ -37,7 +37,7 @@ app.layout = create_layout()
 candle_callback(app, cache)
 window_callback(app, cache)
 strategy_inputs_callback(app)
-generate_loading_button(app)
+#generate_loading_button(app)
 simulation_callback(app, cache)
 
 # Deploys the app locally if run_locally is True.

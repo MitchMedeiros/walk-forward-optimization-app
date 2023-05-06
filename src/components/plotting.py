@@ -1,5 +1,3 @@
-from math import pi, atan
-
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
@@ -7,6 +5,7 @@ import vectorbt as vbt
 
 import config
 import src.data.data as data
+from . run_strategy import overlap_factor
 
 nwindows_input = html.Div(
     [
@@ -38,28 +37,28 @@ insample_dropdown = html.Div(
     ],
     className='mx-auto'
 )
-
+# The component that contains everything in the body of the app.
 plot_tabs = dbc.Tabs(
     [
         dbc.Tab(
             [
-                dcc.Loading(type='graph', id='candle_div', style={'margin-top':'150px'}),
-                dcc.Loading(type='graph', id='window_div', style={'margin-top':'150px'})
+                dcc.Loading(type='graph', id='candle_div', style={'margin-top':'110px'}),
+                dcc.Loading(type='graph', id='window_div', style={'margin-top':'110px'})
             ],
             label="Price History and Windows",
             active_label_style={'color': '#7FDBFF'}
         ),
         dbc.Tab(
             [
-                dcc.Loading(type='dot', id='results_div', style={'margin-top':'50px'}),
+                dcc.Loading(type='dot', id='results_div', style={'margin-top':'160px'}),
                 dbc.Accordion(
                     [
                         dbc.AccordionItem(
-                            [dcc.Loading(type='dot', id='insample_div', style={'margin-top':'150px'})],
+                            [html.Div(id='insample_div')],
                             title="Comparison of Results by Window"
                         ),
                         dbc.AccordionItem(
-                            [dcc.Loading(type='dot', id='outsample_div')],
+                            [html.Div(id='outsample_div')],
                             title="Highest Possible Out-of-Sample Results",
                         )
                     ],
@@ -68,17 +67,13 @@ plot_tabs = dbc.Tabs(
                     active_item=('item-0', 'item-1'),
                     style={'color':'#7FDBFF'}
                 )
-                # html.H5("Comparison of Results by Window:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                # dcc.Loading(type='dot', id='insample_div', style={'margin-top':'150px'}),
-                # html.H5("Highest Possible Out-of-Sample Results:", style={'color':'#7FDBFF', 'margin-top':'10px'}),
-                # dcc.Loading(type='dot', id='outsample_div')
             ],
             label="Tabular Backtest Results",
             active_label_style={'color': '#7FDBFF'}
         ),
         dbc.Tab(
             [
-                dcc.Loading(type='circle', id='detailed_div')
+                dcc.Loading(type='cube', id='detailed_div')
             ],
             label="Visual Backtest Results",
             active_label_style={'color': '#7FDBFF'}
@@ -156,14 +151,7 @@ def window_callback(app, cache):
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
         df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-        def factor(nwindows):
-            factors = [.375, .5, .56, .6, .625, .64]
-            if nwindows < 8:
-                return factors[nwindows-2]
-            else:
-                return (13/(9*pi))*atan(nwindows)
-
-        window_kwargs = dict(n=nwindows, window_len=int(len(df)/((1-factor(nwindows))*nwindows)), set_lens=(insample/100,))
+        window_kwargs = dict(n=nwindows, window_len=int(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
         fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
         fig.update_layout(
             plot_bgcolor='rgba(0,50,90,100)',

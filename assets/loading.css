@@ -1,0 +1,3 @@
+*[data-dash-is-loading="true"]{
+    visibility: hidden;
+}
