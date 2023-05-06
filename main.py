@@ -41,5 +41,5 @@ generate_loading_button(app)
 simulation_callback(app, cache)
 
 # Deploys the app locally if run_locally is True.
-if __name__ == '__main__' and config.run_locally:
+if __name__ == '__main__':# and config.run_locally:
     app.run(debug=config.debug_bool, port=config.port_number)

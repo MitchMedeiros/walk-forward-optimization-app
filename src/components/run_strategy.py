@@ -96,14 +96,8 @@ def simulation_callback(app, cache):
 
             del(df, in_dates, out_dates)
 
-            pf_kwargs = dict(freq = selected_timeframe, init_cash=10000)
+            pf_kwargs = dict(freq=selected_timeframe, init_cash=10000)
 
-            ## Lists to be used for table creation
-            one_parameter_columns = ["Parameter 1"]
-            two_parameter_columns = ["Parameter 1","Parameter 2"]
-            three_parameter_columns = ["Parameter 1","Parameter 2","Parameter 3"]
-            four_parameter_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4"]
-            five_parameter_columns = ["Parameter 1","Parameter 2","Parameter 3","Parameter 4","Parameter 5"]
             # Lists for appending optimized parameters and results to for the chosen optimization metric. 
             average_return_values, max_return_values, max_return_params = [],[],[]
             average_sharpe_values, max_sharpe_values, max_sharpe_params = [],[],[]
@@ -130,7 +124,6 @@ def simulation_callback(app, cache):
                     pf_insample = backtest_windows(in_price[i], selected_sma_range)
                     pf_outsample = backtest_windows(out_price[i], [pf_insample.total_return().idxmax()[0], pf_insample.total_return().idxmax()[1]])
                     pf_outsample_optimized = backtest_windows(out_price[i], selected_sma_range)
-
 
                     # Saves the optimized values for inputing into the out-of-sample windows plus showing metrics later.
                     average_return_values.append(round(pf_insample.total_return().mean()*100,3))
@@ -170,7 +163,7 @@ def simulation_callback(app, cache):
             # elif selected_strategy == 'MACD':
 
             del(pf_insample, pf_outsample, pf_outsample_optimized)
-            columns_list = two_parameter_columns
+            columns_list = ["Slow SMA period", "Fast SMA period"]
 
             # Create the first results table before arrays are overwritten.
             averages_table = dbc.Table(

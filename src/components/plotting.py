@@ -1,4 +1,4 @@
-from math import sqrt
+from math import pi, atan
 
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
@@ -31,7 +31,7 @@ insample_dropdown = html.Div(
                 {'label': '85%', 'value': 85,},
                 {'label': '90%', 'value': 90,}
             ],
-            value=70,
+            value=75,
             clearable=False,
             id='insample'
         )
@@ -39,17 +39,17 @@ insample_dropdown = html.Div(
     className='mx-auto'
 )
 
-plot_tabs = dcc.Tabs(
+plot_tabs = dbc.Tabs(
     [
-        dcc.Tab(
+        dbc.Tab(
             [
                 dcc.Loading(type='graph', id='candle_div', style={'margin-top':'150px'}),
                 dcc.Loading(type='graph', id='window_div', style={'margin-top':'150px'})
             ],
             label="Price History and Windows",
-            value='tab-1',
+            active_label_style={'color': '#7FDBFF'}
         ),
-        dcc.Tab(
+        dbc.Tab(
             [
                 dcc.Loading(type='dot', id='results_div', style={'margin-top':'50px'}),
                 dbc.Accordion(
@@ -74,17 +74,16 @@ plot_tabs = dcc.Tabs(
                 # dcc.Loading(type='dot', id='outsample_div')
             ],
             label="Tabular Backtest Results",
-            value='tab-2'
+            active_label_style={'color': '#7FDBFF'}
         ),
-        dcc.Tab(
+        dbc.Tab(
             [
                 dcc.Loading(type='circle', id='detailed_div')
             ],
             label="Visual Backtest Results",
-            value='tab-3'
+            active_label_style={'color': '#7FDBFF'}
         )
-    ],
-    value='tab-1'
+    ]
 )
 
 # Callback for ploting the candlestick chart
@@ -157,15 +156,14 @@ def window_callback(app, cache):
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
         df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-        if nwindows == 1: 
-            window_length = len(df)
-        else:
-            window_length = int(((7/4)*len(df))/nwindows)
+        def factor(nwindows):
+            factors = [.375, .5, .56, .6, .625, .64]
+            if nwindows < 8:
+                return factors[nwindows-2]
+            else:
+                return (13/(9*pi))*atan(nwindows)
 
-            #((8/7)*len(df)/nwindows)+15*sqrt((2*len(df)/nwindows))
-
-        window_kwargs = dict(n=nwindows, window_len=window_length, set_lens=(insample/100,))
-
+        window_kwargs = dict(n=nwindows, window_len=int(len(df)/((1-factor(nwindows))*nwindows)), set_lens=(insample/100,))
         fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
         fig.update_layout(
             plot_bgcolor='rgba(0,50,90,100)',
