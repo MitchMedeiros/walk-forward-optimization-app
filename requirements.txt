@@ -2,6 +2,8 @@ dash
 dash-bootstrap-components
 dash-core-components
 dash-html-components
+dash-iconify
+dash_mantine_components
 dash_table
 datetime
 flask

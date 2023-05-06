@@ -39,7 +39,7 @@ db_user = ''
 db_password = ''
 
 # Set to True to run the app locally. Set to False for production to only run the app through a wsgi.
-run_locally = False
+run_locally = True
 
 # Used if run_locally is True. Primarily for trouble-shooting callback issues and viewing callback process times.
 debug_bool = True
@@ -51,4 +51,4 @@ callback_suppress = False
 port_number = 8050
 
 # Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. Dash default value is True.
-locally_style = True
+locally_style = False

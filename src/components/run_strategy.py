@@ -3,6 +3,8 @@ from statistics import mean
 
 from dash import html, dcc, Input, Output, dash_table
 import dash_bootstrap_components as dbc
+from dash_iconify import DashIconify
+import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
 import vectorbt as vbt
@@ -21,12 +23,12 @@ metric_dropdown = html.Div(
     style={'text-align':'center', 'margin-bottom':'10px'}
 )
 
-run_strategy_button = dbc.Button(
-    "Run Backtest",
-    id='run_button',
-    color='info',
-    n_clicks=0,
-    style={'background-color':'#7FDBFF', 'color':'black', 'width':'100%'}
+run_strategy_button = dmc.Button(
+    "Run Backtest", 
+    leftIcon=DashIconify(icon="mdi:finance", color="pink", width=30), 
+    variant="gradient", 
+    style={'width':'100%'}, 
+    id='run_button'
 )
 
 def generate_loading_button(app):
