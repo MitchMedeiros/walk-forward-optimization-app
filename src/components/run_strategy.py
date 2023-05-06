@@ -93,11 +93,19 @@ def simulation_callback(app, cache):
                 num_days = len(date_df['Datetime'].dt.date.unique())
                 del(date_df)
 
-            window_kwargs = dict(n=nwindows, window_len=int(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
+            window_kwargs = dict(n=nwindows, window_len=round(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
 
             (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
 
-            pf_kwargs = dict(freq=selected_timeframe, init_cash=10000)
+            trading_day_conversion = 24/6.5
+            if selected_timeframe == '15m':
+                time_interval = str(round(15*trading_day_conversion,4))+'m'
+            elif selected_timeframe == '1h':
+                time_interval = str(round(60*trading_day_conversion,4))+'m'
+            elif selected_timeframe == '1d':
+                time_interval = selected_timeframe
+
+            pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
 
             del(df, in_dates, out_dates)
 

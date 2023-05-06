@@ -151,7 +151,7 @@ def window_callback(app, cache):
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
         df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-        window_kwargs = dict(n=nwindows, window_len=int(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
+        window_kwargs = dict(n=nwindows, window_len=round(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
         fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
         fig.update_layout(
             plot_bgcolor='rgba(0,50,90,100)',
