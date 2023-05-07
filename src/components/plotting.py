@@ -41,6 +41,17 @@ insample_dropdown = html.Div(
     className='mx-auto'
 )
 
+def badge(displayed_text):
+    return dmc.Badge(
+        displayed_text,
+        variant='gradient',
+        gradient={'from': 'blue', 'to': 'violet'},
+        opacity=0.85,
+        size='lg',
+        radius='md',
+        style={'width': '100%'}
+    )
+
 plot_tabs = dbc.Tabs(
     [
         dbc.Tab(
@@ -57,29 +68,28 @@ plot_tabs = dbc.Tabs(
                     [
                         dmc.AccordionItem(
                             [
-                                dmc.AccordionControl("Averaged Results", style={'color': 'white'}),
-                                dmc.AccordionPanel([dcc.Loading(type='dot', id='results_div', style={'margin-top': '0px'})])
+                                dmc.AccordionControl(badge("Averaged Results")),
+                                dmc.AccordionPanel(dcc.Loading(type='dot', id='results_div'))
                             ],
                             value='averaged'
                         ),
                         dmc.AccordionItem(
                             [
-                                dmc.AccordionControl("Comparison of Results by Window", style={'color': 'white'}),
-                                dmc.AccordionPanel([html.Div(id='insample_div')])
+                                dmc.AccordionControl(badge("Comparison of Results by Window")),
+                                dmc.AccordionPanel(html.Div(id='insample_div'))
                             ],
                             value='insample'
                         ),
                         dmc.AccordionItem(
                             [
-                                dmc.AccordionControl("Highest Possible Out-of-Sample Results", style={'color': 'white'}),
-                                dmc.AccordionPanel([html.Div(id='outsample_div')])
+                                dmc.AccordionControl(badge("Highest Possible Out-of-Sample Results")),
+                                dmc.AccordionPanel(html.Div(id='outsample_div'))
                             ],
                             value='outsample'
                         )
                     ],
                     value=['averaged', 'insample', 'outsample'],
                     chevronPosition='left',
-                    transitionDuration=150,
                     styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
                 )
             ],
@@ -177,7 +187,7 @@ def window_callback(app, cache):
                 font_color='white',
                 margin=dict(l=40, r=12, t=0, b=20),
                 legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='rgba(0,50,90,0)'),
-                width=900,
+                width=980,
                 height=185
             )
             fig.update_xaxes(

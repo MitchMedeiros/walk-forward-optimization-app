@@ -23,7 +23,7 @@ header = dbc.Navbar(
 
 def create_layout():
     return dmc.MantineProvider(
-        theme={"colorScheme": "dark"},
+        theme={'colorScheme': 'dark'},
         children=[
             dbc.Container(
                 [
@@ -48,7 +48,7 @@ def create_layout():
                                 xs=12, lg=3,
                                 style={'margin-left': '12px', 'background-color': '#2b2b2b'}
                             ),
-                            dbc.Col(plot_tabs, xs=12, lg=8)
+                            dbc.Col(plot_tabs, xs=12, lg='auto')
                         ]
                     ),
                     # dbc.Row(html.Footer("Disclaimer: This application is intended for educational purposes only "
