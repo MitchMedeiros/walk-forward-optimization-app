@@ -25,7 +25,7 @@ metric_dropdown = html.Div(
 
 run_strategy_button = dmc.Button(
     "Run Backtest",
-    leftIcon=DashIconify(icon="mdi:finance", color="pink", width=30),
+    leftIcon=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
     variant="gradient",
     style={'width': '100%', 'margin-top': '15px'},
     n_clicks=0,
