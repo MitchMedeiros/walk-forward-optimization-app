@@ -9,7 +9,6 @@ datetime
 flask
 flask_caching
 mod-wsgi
-orjson
 psycopg2
 redis
 vectorbt

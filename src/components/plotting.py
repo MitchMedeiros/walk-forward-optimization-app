@@ -8,7 +8,7 @@ import config
 import src.data.data as data
 from . run_strategy import overlap_factor
 
-#html.Img(src='https://api.iconify.design/carbon/chart-candlestick.svg?color=%237fdbff', height="35px"),
+# html.Img(src='https://api.iconify.design/carbon/chart-candlestick.svg?color=%237fdbff', height="35px"),
 nwindows_input = html.Div(
     [
         dbc.Label("Windows (2-12)"),
@@ -22,15 +22,15 @@ insample_dropdown = html.Div(
         dbc.Label("In-sample percent"),
         dcc.Dropdown(
             [
-                {'label': '50%', 'value': 50,},
-                {'label': '55%', 'value': 55,},
-                {'label': '60%', 'value': 60,},
-                {'label': '65%', 'value': 65,},
-                {'label': '70%', 'value': 70,},
-                {'label': '75%', 'value': 75,},
-                {'label': '80%', 'value': 80,},
-                {'label': '85%', 'value': 85,},
-                {'label': '90%', 'value': 90,}
+                {'label': '50%', 'value': 50},
+                {'label': '55%', 'value': 55},
+                {'label': '60%', 'value': 60},
+                {'label': '65%', 'value': 65},
+                {'label': '70%', 'value': 70},
+                {'label': '75%', 'value': 75},
+                {'label': '80%', 'value': 80},
+                {'label': '85%', 'value': 85},
+                {'label': '90%', 'value': 90}
             ],
             value=75,
             clearable=False,
@@ -44,15 +44,15 @@ plot_tabs = dbc.Tabs(
     [
         dbc.Tab(
             [
-                dcc.Loading(type='graph', id='candle_div', style={'margin-top':'110px'}),
-                dcc.Loading(type='graph', id='window_div', style={'margin-top':'110px'})
+                dcc.Loading(type='graph', id='candle_div', style={'margin-top': '110px'}),
+                dcc.Loading(type='graph', id='window_div', style={'margin-top': '110px'})
             ],
             label="Price History and Windows",
             active_label_style={'color': '#7FDBFF'}
         ),
         dbc.Tab(
             [
-                dcc.Loading(type='dot', id='results_div', style={'margin-top':'160px'}),
+                dcc.Loading(type='dot', id='results_div', style={'margin-top': '160px'}),
                 dbc.Accordion(
                     [
                         dbc.AccordionItem(
@@ -67,7 +67,7 @@ plot_tabs = dbc.Tabs(
                     always_open=True,
                     flush=True,
                     active_item=('item-0', 'item-1'),
-                    style={'color':'#7FDBFF'}
+                    style={'color': '#7FDBFF'}
                 )
             ],
             label="Tabular Backtest Results",
@@ -87,7 +87,7 @@ plot_tabs = dbc.Tabs(
 def candle_callback(app, cache):
     @app.callback(
         Output('candle_div', 'children'),
-        [   
+        [
             Input('timeframe', 'value'),
             Input('asset', 'value'),
             Input('date_range', 'start_date'),
@@ -128,7 +128,7 @@ def candle_callback(app, cache):
                 paper_bgcolor='rgba(0,50,90,100)',
                 font_color='white',
                 margin=dict(l=40, r=8, t=12, b=8),
-                #xaxis_range=["2023-02-01", "2023-02-22"]
+                # xaxis_range=["2023-02-01", "2023-02-22"]
             )
             fig.update_xaxes(
                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
@@ -156,7 +156,7 @@ def window_callback(app, cache):
         else:
             df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-            window_kwargs = dict(n=nwindows, window_len=round(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
+            window_kwargs = dict(n=nwindows, window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)), set_lens=(insample / 100,))
             fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
             fig.update_layout(
                 plot_bgcolor='rgba(0,50,90,100)',
@@ -173,15 +173,12 @@ def window_callback(app, cache):
                 showticklabels=False
             )
             fig.update_yaxes(showgrid=False)
-            return dcc.Graph(figure=fig, id='window_plot')     
-
-
+            return dcc.Graph(figure=fig, id='window_plot')
 
 # # Add to window_callback to align window plot with candlestick chart
 # # Need to work out how to input relayoutdata correctly
-
 # @app.callback(
-# Output('window_plot', 'figure'), 
+# Output('window_plot', 'figure'),
 # Input('candle_plot', 'relayoutData'),
 # )
 # def get_layout(relayout_data: dict):

@@ -7,7 +7,7 @@ asset_dropdown = html.Div(
     [
         dbc.Label("Instrument"),
         dcc.Dropdown(
-            options=['SPY','QQQ','VIXY'],
+            options=['SPY', 'QQQ', 'VIXY'],
             value='SPY',
             clearable=False,
             id='asset'
@@ -20,7 +20,7 @@ timeframe_dropdown = html.Div(
     [
         dbc.Label("Timeframe"),
         dcc.Dropdown(
-            options=['15m','1h','1d'],
+            options=['15m', '1h', '1d'],
             value='1h',
             clearable=False,
             id='timeframe'
@@ -36,10 +36,10 @@ date_calendar = html.Div(
         dcc.DatePickerRange(
             start_date=date(2021, 8, 1),
             end_date=date(2023, 4, 30),
-            max_date_allowed=(date.today()-timedelta(days=1)),
+            max_date_allowed=(date.today() - timedelta(days=1)),
             min_date_allowed=date(1990, 1, 1),
             id='date_range'
         )
     ],
-    style={'text-align':'center'}
+    style={'text-align': 'center'}
 )

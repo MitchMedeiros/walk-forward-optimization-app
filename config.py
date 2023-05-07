@@ -1,7 +1,7 @@
 '''
 This config file is intended to allow important changes to the app to be made without needing to understand
-the structure of this app. An import option is whether or not to run the app with your own postgres 
-and/or redis database. 
+the structure of this app. An import option is whether or not to run the app with your own postgres
+and/or redis database.
 To do this set cache_type to 'browser' and data_type to 'yfinance'.
 '''
 
@@ -12,10 +12,10 @@ redis_host = '127.0.0.1'
 
 redis_port = 6379
 
-# If using 'files' caching. This CACHE_OPTIONS allows you to alter the user/group/other permissions for newly created cache files. 
+# If using 'files' caching. This CACHE_OPTIONS allows you to alter the user/group/other permissions for newly created cache files.
 # Ex. {'mode':0o770} would give full permissions (rwx) to the owner and group and no permissions to other.
 # Newly created files in the cache directory should be owned by the apache user i.e. www-data if using the default permissions below.
-permissions = {'mode':0o600}
+permissions = {'mode': 0o600}
 
 # Absolute directory to the folder you wish to store the cache files in.
 cache_directory = '/var/www/backtest.fi/dashapp/cache'
@@ -27,9 +27,9 @@ cache_size = 40
 data_type = 'yfinance'
 
 '''
-The below variables are used if data_type is 'postgres'. Provide your postgreSQL or timescaleDB credentials below. 
-A note about table formatting: the tables in your DB should have the same name as those 
-in the instrument dropdown, and only columns named date, open, high, low, close, volume. 
+The below variables are used if data_type is 'postgres'. Provide your postgreSQL or timescaleDB credentials below.
+A note about table formatting: the tables in your DB should have the same name as those
+in the instrument dropdown, and only columns named date, open, high, low, close, volume.
 One of these columns should be the index for the table.
 '''
 db_host = 'localhost'

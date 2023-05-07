@@ -7,3 +7,4 @@ src/data/__pycache__
 /src/testing
 new_book.ipynb
 /src/components/strategy_copy.py
+.vscode

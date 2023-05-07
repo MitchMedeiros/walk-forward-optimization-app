@@ -4,13 +4,13 @@ import dash_bootstrap_components as dbc
 strategy_dropdown = html.Div(
     [
         dcc.Dropdown(
-            options=['SMA Crossover','EMA Crossover','RSI','MACD'],
+            options=['SMA Crossover', 'EMA Crossover', 'RSI', 'MACD'],
             value='SMA Crossover',
             clearable=False,
             id='strategy_drop'
         ),
     ],
-    style={'text-align':'center'}
+    style={'text-align': 'center'}
 )
 
 strategy_output = html.Div(id='strategy_div')
@@ -25,7 +25,7 @@ def strategy_inputs_callback(app):
         if selected_strategy == 'SMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Range of SMA periods", style={'margin-top':'10px'}),
+                    dbc.Label("Range of SMA periods", style={'margin-top': '10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=300,
@@ -34,17 +34,17 @@ def strategy_inputs_callback(app):
                         allowCross=False,
                         pushable=10,
                         marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True},
+                        tooltip={'placement': 'bottom', 'always_visible': True},
                         id='sma_range'
                     )
                 ],
-                style={'text-align':'center', 'cursor':'pointer'}
+                style={'text-align': 'center', 'cursor': 'pointer'}
             )
 
         elif selected_strategy == 'EMA Crossover':
             return html.Div(
                 [
-                    dbc.Label("Range of EMA periods", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of EMA periods", style={'color': '#7FDBFF', 'margin-top': '10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=300,
@@ -53,17 +53,17 @@ def strategy_inputs_callback(app):
                         allowCross=False,
                         pushable=10,
                         marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True},
+                        tooltip={'placement': 'bottom', 'always_visible': True},
                         id='ema_range'
                     )
                 ],
-                style={'text-align':'center', 'cursor':'pointer'}
+                style={'text-align': 'center', 'cursor': 'pointer'}
             )
 
         elif selected_strategy == 'RSI':
             return html.Div(
                 [
-                    dbc.Label("Range of RSI entry and exit values", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("Range of RSI entry and exit values", style={'color': '#7FDBFF', 'margin-top': '10px'}),
                     dcc.RangeSlider(
                         min=10,
                         max=100,
@@ -72,17 +72,17 @@ def strategy_inputs_callback(app):
                         allowCross=False,
                         pushable=6,
                         marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True},
+                        tooltip={'placement': 'bottom', 'always_visible': True},
                         id='rsi_range'
                     )
                 ],
-                style={'text-align':'center', 'cursor':'pointer'}
+                style={'text-align': 'center', 'cursor': 'pointer'}
             )
 
         elif selected_strategy == 'MACD':
             return html.Div(
                 [
-                    dbc.Label("MACD value for entry trades", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("MACD value for entry trades", style={'color': '#7FDBFF', 'margin-top': '10px'}),
                     dcc.RangeSlider(
                         min=0,
                         max=30,
@@ -90,9 +90,9 @@ def strategy_inputs_callback(app):
                         value=[10, 20],
                         allowCross=False,
                         marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True}
+                        tooltip={'placement': 'bottom', 'always_visible': True}
                     ),
-                    dbc.Label("MACD value for exit trades", style={'color':'#7FDBFF', 'margin-top':'10px'}),
+                    dbc.Label("MACD value for exit trades", style={'color': '#7FDBFF', 'margin-top': '10px'}),
                     dcc.RangeSlider(
                         min=30,
                         max=60,
@@ -100,8 +100,8 @@ def strategy_inputs_callback(app):
                         value=[40, 50],
                         allowCross=False,
                         marks=None,
-                        tooltip={'placement':'bottom', 'always_visible':True}
+                        tooltip={'placement': 'bottom', 'always_visible': True}
                     ),
                 ],
-                style={'text-align':'center'}
+                style={'text-align': 'center'}
             )
