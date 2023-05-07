@@ -2,6 +2,10 @@ from datetime import date, timedelta
 
 from dash import html, dcc
 import dash_bootstrap_components as dbc
+from dash_iconify import DashIconify
+import dash_mantine_components as dmc
+
+import config
 
 asset_dropdown = html.Div(
     [
@@ -29,17 +33,28 @@ timeframe_dropdown = html.Div(
     className='mx-auto'
 )
 
-date_calendar = html.Div(
-    [
-        dbc.Label("Dates"),
-        html.Br(),
-        dcc.DatePickerRange(
-            start_date=date(2021, 8, 1),
-            end_date=date(2023, 4, 30),
-            max_date_allowed=(date.today() - timedelta(days=1)),
-            min_date_allowed=date(1990, 1, 1),
-            id='date_range'
-        )
-    ],
-    style={'text-align': 'center'}
+# date_calendar = html.Div(
+#     [
+#         dbc.Label("Dates"),
+#         html.Br(),
+#         dcc.DatePickerRange(
+#             start_date=date(2021, 8, 1),
+#             end_date=date(2023, 4, 30),
+#             max_date_allowed=(date.today() - timedelta(days=1)),
+#             min_date_allowed=date(1990, 1, 1),
+#             id='date_range'
+#         )
+#     ],
+#     style={'text-align': 'center'}
+# )
+
+date_calendar = dmc.DateRangePicker(
+    minDate=date(1990, 1, 1),
+    maxDate=(date.today() - timedelta(days=1)),
+    value=[config.calendar_start, config.calendar_end],
+    allowSingleDateInRange=True,
+    amountOfMonths=2,
+    icon=DashIconify(icon="clarity:date-line"),
+    style={"width": '90%', "margin-top": "12px"},
+    id='date_range'
 )

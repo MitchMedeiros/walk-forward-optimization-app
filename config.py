@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 '''
 This config file is intended to allow important changes to the app to be made without needing to understand
 the structure of this app. An import option is whether or not to run the app with your own postgres
@@ -52,3 +54,7 @@ port_number = 8050
 
 # Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. Dash default value is True.
 locally_style = False
+
+# Adjust the dates the calendar component starts and ends on by default when the app is loaded.
+calendar_start = (date.today() - timedelta(days=580))
+calendar_end = (date.today() - timedelta(days=20))

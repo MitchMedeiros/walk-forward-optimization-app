@@ -70,17 +70,16 @@ def simulation_callback(app, cache):
             Input('insample', 'value'),
             Input('timeframe', 'value'),
             Input('asset', 'value'),
-            Input('date_range', 'start_date'),
-            Input('date_range', 'end_date'),
+            Input('date_range', 'value'),
             Input('sma_range', 'value'),
             Input('run_button', 'n_clicks')
         ]
     )
     def perform_backtest(selected_strategy, nwindows, insample,
                          selected_timeframe, selected_asset,
-                         start_date, end_date, sma_range, n_clicks):
+                         dates, sma_range, n_clicks):
         if n_clicks == 0 or ctx.triggered_id == 'run_button':
-            df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+            df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
             close = df['close']
             close = close.astype({'close': 'double'})
 

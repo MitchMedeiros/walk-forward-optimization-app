@@ -87,7 +87,8 @@ plot_tabs = dbc.Tabs(
             label="Visual Backtest Results",
             active_label_style={'color': '#7FDBFF'}
         )
-    ]
+    ],
+    style={'margin-top': '2px'}
 )
 
 # Callback for ploting the candlestick chart
@@ -97,12 +98,11 @@ def candle_callback(app, cache):
         [
             Input('timeframe', 'value'),
             Input('asset', 'value'),
-            Input('date_range', 'start_date'),
-            Input('date_range', 'end_date')
+            Input('date_range', 'value')
         ]
     )
-    def plot_candles(selected_timeframe, selected_asset, start_date, end_date):
-        df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+    def plot_candles(selected_timeframe, selected_asset, dates):
+        df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
         if config.data_type == 'postgres' and df.empty:
             return dbc.Alert(
@@ -153,15 +153,14 @@ def window_callback(app, cache):
             Input('insample', 'value'),
             Input('timeframe', 'value'),
             Input('asset', 'value'),
-            Input('date_range', 'start_date'),
-            Input('date_range', 'end_date')
+            Input('date_range', 'value')
         ]
     )
-    def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
+    def plot_windows(nwindows, insample, selected_timeframe, selected_asset, dates):
         if ctx.triggered_id == 'timeframe' or ctx.triggered_id == 'asset':
             raise PreventUpdate
         else:
-            df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+            df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
             window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
                                  window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
