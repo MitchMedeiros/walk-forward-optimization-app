@@ -14,8 +14,7 @@ def create_layout():
                     [
                         dbc.Col(html.Img(src='assets/favicon.ico', height="35px"), style={'margin-left':'45px'}),
                         dbc.Col(dbc.NavbarBrand("Walk-Forward Optimization Using Common Indicator Strategies", style={'color':'white', 'font-size':'20px'})),
-                    ],
-                    align="center"
+                    ]
                 ),
                 color="info",
                 style={'margin-bottom':'15px'}
@@ -43,9 +42,8 @@ def create_layout():
                     dbc.Col(plot_tabs, xs=12, lg=8)
                 ]
             ),
-            dbc.Row(html.Footer("Disclaimer: This application is intended for educational purposes only "
-                              "and should not be considered as investment advice or suggestion. The underlying data "
-                              "and computations within this app may be inaccurate and should be treated as such.", style={'margin-top':'40px', 'margin-bottom':'10px'}))
+            #dbc.Row(html.Footer("Disclaimer: This application is intended for educational purposes only "
+            #                  "and does not serve as investment advice or suggestion.", style={'margin-top':'40px', 'margin-bottom':'10px'}))
         ],
         fluid=True,
         className='dbc'

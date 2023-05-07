@@ -1,5 +1,6 @@
-from dash import html, dcc, Input, Output
+from dash import html, dcc, Input, Output, ctx
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 import vectorbt as vbt
 
@@ -7,6 +8,7 @@ import config
 import src.data.data as data
 from . run_strategy import overlap_factor
 
+#html.Img(src='https://api.iconify.design/carbon/chart-candlestick.svg?color=%237fdbff', height="35px"),
 nwindows_input = html.Div(
     [
         dbc.Label("Windows (2-12)"),
@@ -149,26 +151,29 @@ def window_callback(app, cache):
         ]
     )
     def plot_windows(nwindows, insample, selected_timeframe, selected_asset, start_date, end_date):
-        df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
+        if ctx.triggered_id == 'timeframe' or ctx.triggered_id == 'asset':
+            raise PreventUpdate
+        else:
+            df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-        window_kwargs = dict(n=nwindows, window_len=round(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
-        fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
-        fig.update_layout(
-            plot_bgcolor='rgba(0,50,90,100)',
-            paper_bgcolor='rgba(0,50,90,100)',
-            font_color='white',
-            margin=dict(l=40, r=12, t=0, b=20),
-            legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='rgba(0,50,90,0)'),
-            width=900,
-            height=185
-        )
-        fig.update_xaxes(
-            rangebreaks=[dict(bounds=['sat', 'mon'])],
-            showgrid=False,
-            showticklabels=False
-        )
-        fig.update_yaxes(showgrid=False)
-        return dcc.Graph(figure=fig, id='window_plot')     
+            window_kwargs = dict(n=nwindows, window_len=round(len(df)/((1-overlap_factor(nwindows))*nwindows)), set_lens=(insample/100,))
+            fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
+            fig.update_layout(
+                plot_bgcolor='rgba(0,50,90,100)',
+                paper_bgcolor='rgba(0,50,90,100)',
+                font_color='white',
+                margin=dict(l=40, r=12, t=0, b=20),
+                legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='rgba(0,50,90,0)'),
+                width=900,
+                height=185
+            )
+            fig.update_xaxes(
+                rangebreaks=[dict(bounds=['sat', 'mon'])],
+                showgrid=False,
+                showticklabels=False
+            )
+            fig.update_yaxes(showgrid=False)
+            return dcc.Graph(figure=fig, id='window_plot')     
 
 
 

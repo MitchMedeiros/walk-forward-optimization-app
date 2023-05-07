@@ -1,8 +1,9 @@
 from math import pi, atan
 from statistics import mean
 
-from dash import html, dcc, Input, Output, dash_table
+from dash import html, dcc, Input, Output, dash_table, clientside_callback, ctx
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 import numpy as np
@@ -20,32 +21,35 @@ metric_dropdown = html.Div(
             clearable=False,
         )
     ],
-    style={'text-align':'center', 'margin-bottom':'10px'}
+    style={'text-align':'center'}
 )
 
 run_strategy_button = dmc.Button(
     "Run Backtest", 
     leftIcon=DashIconify(icon="mdi:finance", color="pink", width=30), 
     variant="gradient", 
-    style={'width':'100%'}, 
+    style={'width':'100%', 'margin-top':'15px'}, 
     id='run_button'
+)
+
+clientside_callback(
+    "function updateLoadingState(n_clicks) {return true}",
+    Output("run_button", "loading", allow_duplicate=True),
+    Input("run_button", "n_clicks"),
+    prevent_initial_call=True,
 )
 
 def generate_loading_button(app):
     @app.callback(
-        Output('run_button', 'children'),
-        Input('run_button', 'n_clicks')
+        Output('run_button', "loading"),
+        Input('run_button', "n_clicks"),
+        prevent_initial_call=True,
     )
-    def start_loading(n_clicks):
-        suppress_initial_callback = True
-        if n_clicks:
-            return [
-                        dbc.Spinner(size="sm", color="info", type="grow"), 
-                        " Backtesting..."
-                    ]
-        else:
-            return "Run Backtest"
-        
+    def load_from_db(n_clicks):
+        from time import sleep
+        sleep(4)
+        return None
+
 def overlap_factor(nwindows):
     factors = [.375, .5, .56, .6, .625, .64]
     if nwindows < 8:
@@ -67,8 +71,7 @@ def simulation_callback(app, cache):
         [
             Output('insample_div', 'children'),
             Output('outsample_div', 'children'),
-            Output('results_div', 'children'),
-            #Output('run_button', 'children')
+            Output('results_div', 'children')
         ],
         [
             Input('strategy_drop', 'value'),
@@ -83,7 +86,9 @@ def simulation_callback(app, cache):
         ]
     )
     def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe, selected_asset, start_date, end_date, sma_range, n_clicks):
-        if n_clicks:
+        if ctx.triggered_id != 'run_button':
+            return None, None, None
+        else:
             df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
             close = df['close']
             close = close.astype({'close':'double'})
@@ -259,6 +264,4 @@ def simulation_callback(app, cache):
                         'backgroundColor':'rgb(50, 50, 50)',
                         'color':'white'
                     },
-                ), averages_table, #["Run Backtest"]
-        else:
-            pass
+                ), averages_table
