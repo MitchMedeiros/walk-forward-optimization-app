@@ -53,9 +53,15 @@ plot_tabs = dbc.Tabs(
         ),
         dbc.Tab(
             [
-                dcc.Loading(type='dot', id='results_div', style={'margin-top': '160px'}),
                 dmc.AccordionMultiple(
                     [
+                        dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl("Averaged Results", style={'color': 'white'}),
+                                dmc.AccordionPanel([dcc.Loading(type='dot', id='results_div', style={'margin-top': '0px'})])
+                            ],
+                            value='averaged'
+                        ),
                         dmc.AccordionItem(
                             [
                                 dmc.AccordionControl("Comparison of Results by Window", style={'color': 'white'}),
@@ -71,7 +77,7 @@ plot_tabs = dbc.Tabs(
                             value='outsample'
                         )
                     ],
-                    value=['insample', 'outsample'],
+                    value=['averaged', 'insample', 'outsample'],
                     chevronPosition='left',
                     transitionDuration=150,
                     styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
