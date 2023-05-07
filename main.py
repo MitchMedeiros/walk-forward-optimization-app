@@ -38,7 +38,7 @@ cache.init_app(app.server)
 # Provide the layout, containing all the dash components to be displayed
 app.layout = create_layout()
 
-# Instantiate the callbacks
+# Instantiate the imported callbacks
 candle_callback(app, cache)
 window_callback(app, cache)
 strategy_inputs_callback(app)

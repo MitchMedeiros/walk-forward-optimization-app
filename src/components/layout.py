@@ -17,7 +17,7 @@ def create_layout():
                     ]
                 ),
                 color="info",
-                style={'margin-bottom': '15px'}
+                style={'margin-bottom': '7px', 'padding': '12px'}
             ),
             dbc.Row(
                 [

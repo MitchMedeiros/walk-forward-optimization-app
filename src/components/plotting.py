@@ -1,6 +1,7 @@
 from dash import html, dcc, Input, Output, ctx
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
+import dash_mantine_components as dmc
 import plotly.graph_objects as go
 import vectorbt as vbt
 
@@ -39,7 +40,7 @@ insample_dropdown = html.Div(
     ],
     className='mx-auto'
 )
-# The component that contains everything in the body of the app.
+
 plot_tabs = dbc.Tabs(
     [
         dbc.Tab(
@@ -53,21 +54,27 @@ plot_tabs = dbc.Tabs(
         dbc.Tab(
             [
                 dcc.Loading(type='dot', id='results_div', style={'margin-top': '160px'}),
-                dbc.Accordion(
+                dmc.AccordionMultiple(
                     [
-                        dbc.AccordionItem(
-                            [html.Div(id='insample_div')],
-                            title="Comparison of Results by Window"
+                        dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl("Comparison of Results by Window", style={'color': 'white'}),
+                                dmc.AccordionPanel([html.Div(id='insample_div')])
+                            ],
+                            value='insample'
                         ),
-                        dbc.AccordionItem(
-                            [html.Div(id='outsample_div')],
-                            title="Highest Possible Out-of-Sample Results",
+                        dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl("Highest Possible Out-of-Sample Results", style={'color': 'white'}),
+                                dmc.AccordionPanel([html.Div(id='outsample_div')])
+                            ],
+                            value='outsample'
                         )
                     ],
-                    always_open=True,
-                    flush=True,
-                    active_item=('item-0', 'item-1'),
-                    style={'color': '#7FDBFF'}
+                    value=['insample', 'outsample'],
+                    chevronPosition='left',
+                    transitionDuration=150,
+                    styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
                 )
             ],
             label="Tabular Backtest Results",
@@ -156,7 +163,8 @@ def window_callback(app, cache):
         else:
             df = data.cached_df(cache, selected_timeframe, selected_asset, start_date, end_date)
 
-            window_kwargs = dict(n=nwindows, window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)), set_lens=(insample / 100,))
+            window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
+                                 window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
             fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
             fig.update_layout(
                 plot_bgcolor='rgba(0,50,90,100)',

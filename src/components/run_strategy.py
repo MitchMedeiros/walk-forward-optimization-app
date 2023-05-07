@@ -187,9 +187,9 @@ def simulation_callback(app, cache):
                             html.Tr([html.Td("Average return per window"), html.Td(f"{round(mean(realized_returns), 3)}%")]),
                             html.Tr([html.Td("Average Sharpe ratio"), html.Td(f"{round(mean(realized_sharpe), 3)}")]),
                             html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(realized_maxdrawdown), 3)}%")]),
-                            html.Tr([html.Td("Difference in return from in-sample"), html.Td(f"{round(mean(difference_in_returns), 3)}%")]),
-                            html.Tr([html.Td("Difference in Sharpe ratio from in-sample"), html.Td(f"{round(mean(difference_in_sharpe), 3)}")]),
-                            html.Tr([html.Td("Difference in max drawdown from in-sample"), html.Td(f"{round(mean(difference_in_maxdrawdown), 3)}%")])
+                            # html.Tr([html.Td("Difference in return from in-sample"), html.Td(f"{round(mean(difference_in_returns), 3)}%")]),
+                            # html.Tr([html.Td("Difference in Sharpe ratio from in-sample"), html.Td(f"{round(mean(difference_in_sharpe), 3)}")]),
+                            # html.Tr([html.Td("Difference in max drawdown from in-sample"), html.Td(f"{round(mean(difference_in_maxdrawdown), 3)}%")])
                         ]
                     )
                 ],
