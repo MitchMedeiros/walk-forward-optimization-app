@@ -41,6 +41,6 @@ date_calendar = dmc.DateRangePicker(
     allowSingleDateInRange=True,
     clearable=False,
     icon=DashIconify(icon="clarity:date-line"),
-    style={"width": '95%', "margin-top": "12px", 'margin-left': 'auto', 'margin-right': 'auto'},
+    style={"width": '95%', 'margin-left': 'auto', 'margin-right': 'auto'},
     id='date_range'
 )

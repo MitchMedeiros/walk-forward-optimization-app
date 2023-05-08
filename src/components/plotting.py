@@ -41,7 +41,7 @@ insample_dropdown = html.Div(
     className='mx-auto'
 )
 
-def badge(displayed_text):
+def title_badge(displayed_text):
     return dmc.Badge(
         displayed_text,
         variant='gradient',
@@ -68,21 +68,21 @@ plot_tabs = dbc.Tabs(
                     [
                         dmc.AccordionItem(
                             [
-                                dmc.AccordionControl(badge("Averaged Results")),
+                                dmc.AccordionControl(title_badge("Averaged Results")),
                                 dmc.AccordionPanel(dcc.Loading(type='dot', id='results_div'))
                             ],
                             value='averaged'
                         ),
                         dmc.AccordionItem(
                             [
-                                dmc.AccordionControl(badge("Comparison of Results by Window")),
+                                dmc.AccordionControl(title_badge("Comparison of Results by Window")),
                                 dmc.AccordionPanel(html.Div(id='insample_div'))
                             ],
                             value='insample'
                         ),
                         dmc.AccordionItem(
                             [
-                                dmc.AccordionControl(badge("Highest Possible Out-of-Sample Results")),
+                                dmc.AccordionControl(title_badge("Highest Possible Out-of-Sample Results")),
                                 dmc.AccordionPanel(html.Div(id='outsample_div'))
                             ],
                             value='outsample'
@@ -121,24 +121,26 @@ def candle_callback(app, cache):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
         if config.data_type == 'postgres' and df.empty:
-            return dbc.Alert(
-                "Error: A connection could not be established to the database or the select query failed. "
+            return dmc.Alert(
+                "A connection could not be established to the database or the select query failed. "
                 "Make sure your database crediental are corrently entered in config.py. "
                 "Also ensure your database table is titled the same as the selected instrument "
                 "and your columns are titled: date, open, high, low, close, volume.",
-                id='alert',
-                dismissable=True,
-                color='danger'
-            )
+                title="Error Querying Database",
+                color='red',
+                withCloseButton=True,
+                id='db_alert',
+            ),
         elif config.data_type == 'yfinance' and df.empty:
-            return dbc.Alert(
-                "You have requested too large of a date range for your selected timeframe. "
+            return dmc.Alert(
+                "You have requested data too far in the past for your selected timeframe. "
                 "For Yahoo Finance 15m data is only available within the last 60 days. "
                 "1h data is only available within the last 730 days. ",
-                id='alert',
-                dismissable=True,
-                color='danger'
-            )
+                title="Invalid Date and Timeframe Selection",
+                color='red',
+                withCloseButton=True,
+                id='yfinance_alert',
+            ),
         else:
             if selected_timeframe == '1d':
                 breaks = dict(bounds=['sat', 'mon'])
