@@ -1,16 +1,30 @@
 from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
+from dash_iconify import DashIconify
+import dash_mantine_components as dmc
 
-strategy_dropdown = html.Div(
-    [
-        dcc.Dropdown(
-            options=['SMA Crossover', 'EMA Crossover', 'RSI', 'MACD'],
-            value='SMA Crossover',
-            clearable=False,
-            id='strategy_drop'
-        ),
-    ],
-    style={'text-align': 'center'}
+strategy_dropdown = dmc.Select(
+    data=['SMA Crossover', 'EMA Crossover', 'RSI', 'MACD'],
+    value='SMA Crossover',
+    label="Strategy",
+    icon=DashIconify(icon='arcticons:stockswidget'),
+    searchable=True,
+    nothingFound="Strategy not found",
+    className='mx-auto',
+    style={"width": 180, 'text-align': 'center'},
+    id='strategy_drop'
+)
+
+metric_dropdown = dmc.Select(
+    data=['maximize return', 'maximize Sharpe ratio', 'minimize max drawdown'],
+    value='maximize return',
+    label="Metric to optimize",
+    icon=DashIconify(icon='arcticons:stockswidget'),
+    searchable=True,
+    nothingFound="Metric not found",
+    className='mx-auto',
+    style={"width": 225, 'text-align': 'center'},
+    id='metric_drop'
 )
 
 strategy_output = html.Div(id='strategy_div')

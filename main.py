@@ -5,8 +5,8 @@ from flask_caching import Cache
 import config
 from src.components.layout import create_layout
 from src.components.plotting import candle_callback, window_callback
-from src.components.run_strategy import simulation_callback
-from src.components.strat_select import strategy_inputs_callback
+from src.components.run_backtest import simulation_callback
+from src.components.strategy_inputs import strategy_inputs_callback
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 

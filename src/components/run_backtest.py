@@ -1,7 +1,7 @@
-from math import pi, atan
+from math import atan, pi
 from statistics import mean
 
-from dash import html, dcc, Input, Output, dash_table, clientside_callback, ctx
+from dash import clientside_callback, ctx, dash_table, html, Input, Output
 import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
@@ -11,24 +11,12 @@ import vectorbt as vbt
 
 import src.data.data as data
 
-metric_dropdown = html.Div(
-    [
-        dbc.Label("Metric to optimize for", style={'margin-top': '10px'}),
-        dcc.Dropdown(
-            ["maximize return", "maximize Sharpe ratio", "minimize max drawdown"],
-            value="maximize return",
-            clearable=False,
-        )
-    ],
-    style={'text-align': 'center'}
-)
-
 run_strategy_button = dmc.Button(
     "Run Backtest",
     leftIcon=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
     variant="gradient",
-    style={'width': '100%', 'margin-top': '15px'},
     n_clicks=0,
+    style={'width': '100%', 'margin-top': '15px'},
     id='run_button'
 )
 

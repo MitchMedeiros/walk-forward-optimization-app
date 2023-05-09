@@ -1,12 +1,12 @@
 from dash import html
 import dash_bootstrap_components as dbc
-import dash_mantine_components as dmc
 from dash_iconify import DashIconify
+import dash_mantine_components as dmc
 
-from . data_comps import asset_dropdown, timeframe_dropdown, date_calendar
-from . plotting import nwindows_input, insample_dropdown, plot_tabs
-from . run_strategy import metric_dropdown, run_strategy_button
-from . strat_select import strategy_dropdown, strategy_output
+from . data_inputs import asset_dropdown, date_calendar, timeframe_dropdown
+from . plotting import plot_tabs, insample_dropdown, nwindows_input
+from . run_backtest import run_strategy_button
+from . strategy_inputs import metric_dropdown, strategy_dropdown, strategy_output
 
 page_header = dbc.Navbar(
     dbc.Row(
@@ -17,8 +17,8 @@ page_header = dbc.Navbar(
             ]
         )
     ),
+    color='#2b2b2b',
     className='bg-dark',
-    # color='#2b2b2b',
     style={'margin-bottom': '7px', 'padding': '10px'}
 )
 
@@ -33,19 +33,17 @@ def sidebar_header(displayed_text, margins={'margin-bottom': '10px', 'margin-lef
                 radius='xl',
                 variant='filled',
                 opacity=0.7,
-                style={'margin-right': 'auto', 'margin-bottom': '20px'},
-                id='strategy_info'
+                style={'margin-right': 'auto', 'margin-bottom': '20px'}
             )
         ],
         direction='horizontal',
+        gap=2,
         style=margins,
-        gap=2
     )
 
 def create_layout():
     return dmc.MantineProvider(
-        theme={'colorScheme': 'dark'},
-        children=[
+        [
             dbc.Container(
                 [
                     page_header,
@@ -71,12 +69,11 @@ def create_layout():
                             ),
                             dbc.Col(plot_tabs, xs=12, lg='auto')
                         ]
-                    ),
-                    # dbc.Row(html.Footer("Disclaimer: This application is intended for educational purposes only "
-                    #                  "and does not serve as investment advice or suggestion.", style={'margin-top':'40px', 'margin-bottom':'10px'}))
+                    )
                 ],
                 fluid=True,
                 className='dbc'
             )
-        ]
+        ],
+        theme={'colorScheme': 'dark'}
     )
