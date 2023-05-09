@@ -1,44 +1,59 @@
-from dash import html, dcc, Input, Output, ctx
+from dash import ctx, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
+from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 import plotly.graph_objects as go
 import vectorbt as vbt
 
 import config
 import src.data.data as data
-from . run_strategy import overlap_factor
+from . run_backtest import overlap_factor
 
-# html.Img(src='https://api.iconify.design/carbon/chart-candlestick.svg?color=%237fdbff', height="35px"),
-nwindows_input = html.Div(
-    [
-        dbc.Label("Windows (2-12)"),
-        dbc.Input(min=2, max=12, step=1, value=5, type='number', id='nwindows')
+nwindows_input = dmc.Select(
+    data=[
+        {'label': '2', 'value': 2},
+        {'label': '3', 'value': 3},
+        {'label': '4', 'value': 4},
+        {'label': '5', 'value': 5},
+        {'label': '6', 'value': 6},
+        {'label': '7', 'value': 7},
+        {'label': '8', 'value': 8},
+        {'label': '9', 'value': 9},
+        {'label': '10', 'value': 10},
+        {'label': '11', 'value': 11},
+        {'label': '12', 'value': 12}
     ],
-    className='mx-auto'
+    value=5,
+    label="Windows",
+    icon=DashIconify(icon='fluent-mdl2:sections'),
+    searchable=True,
+    nothingFound="Number not found",
+    className='mx-auto',
+    style={"width": 130, 'text-align': 'center'},
+    id='nwindows'
 )
 
-insample_dropdown = html.Div(
-    [
-        dbc.Label("In-sample percent"),
-        dcc.Dropdown(
-            [
-                {'label': '50%', 'value': 50},
-                {'label': '55%', 'value': 55},
-                {'label': '60%', 'value': 60},
-                {'label': '65%', 'value': 65},
-                {'label': '70%', 'value': 70},
-                {'label': '75%', 'value': 75},
-                {'label': '80%', 'value': 80},
-                {'label': '85%', 'value': 85},
-                {'label': '90%', 'value': 90}
-            ],
-            value=75,
-            clearable=False,
-            id='insample'
-        )
+insample_dropdown = dmc.Select(
+    data=[
+        {'label': '50%', 'value': 50},
+        {'label': '55%', 'value': 55},
+        {'label': '60%', 'value': 60},
+        {'label': '65%', 'value': 65},
+        {'label': '70%', 'value': 70},
+        {'label': '75%', 'value': 75},
+        {'label': '80%', 'value': 80},
+        {'label': '85%', 'value': 85},
+        {'label': '90%', 'value': 90}
     ],
-    className='mx-auto'
+    value=75,
+    label="In-sample percent",
+    icon=DashIconify(icon='material-symbols:splitscreen-left-outline'),
+    searchable=True,
+    nothingFound="Percentage not found",
+    className='mx-auto',
+    style={"width": 130, 'text-align': 'center'},
+    id='insample'
 )
 
 def title_badge(displayed_text):
@@ -56,8 +71,8 @@ plot_tabs = dbc.Tabs(
     [
         dbc.Tab(
             [
-                dcc.Loading(type='graph', id='candle_div', style={'margin-top': '110px'}),
-                dcc.Loading(type='graph', id='window_div', style={'margin-top': '110px'})
+                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='candle_div'),
+                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='window_div')
             ],
             label="Price History and Windows",
             active_label_style={'color': '#7FDBFF'}
