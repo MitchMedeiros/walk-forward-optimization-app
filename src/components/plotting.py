@@ -197,6 +197,7 @@ def window_callback(app, cache):
 
             window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
                                  window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
+
             fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
             fig.update_layout(
                 plot_bgcolor='rgba(0,50,90,100)',

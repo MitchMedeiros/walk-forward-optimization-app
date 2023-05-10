@@ -21,7 +21,7 @@ run_strategy_button = dmc.Button(
     id='run_button'
 )
 
-# Adjusts window length based on the number of windows, providing a 75% overlap
+# Adjusts window length based on the number of windows, providing a 75% overlap. Also used in plotting.py.
 def overlap_factor(nwindows):
     factors = [.375, .5, .56, .6, .625, .64]
     if nwindows < 8:
@@ -64,37 +64,31 @@ def simulation_callback(app, cache):
             Input('run_button', 'n_clicks')
         ]
     )
-    def perform_backtest(selected_strategy, nwindows, insample,
-                         selected_timeframe, selected_asset,
-                         dates, sma_range, n_clicks):
-        if n_clicks == 0 or ctx.triggered_id == 'run_button':
+    def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe,
+                         selected_asset, dates, sma_range, n_clicks):
+        if ctx.triggered_id == 'run_button' or n_clicks == 0:
             df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
             close = df['close']
             close = close.astype({'close': 'double'})
+
+            window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
+                                 window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
+            (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
 
             if selected_timeframe == '1d':
                 num_days = len(df)
             else:
                 date_df = pd.DataFrame(df.index)
                 num_days = len(date_df['Datetime'].dt.date.unique())
-                del date_df
-            
+
+            # Effectively converts from a 24 hour day to a 6.5 hour trading day for the test duration to be correct.
             trading_day_conversion = 24 / 6.5
-            if selected_timeframe == '15m':
-                time_interval = str(round(15 * trading_day_conversion, 4)) + 'm'
-            elif selected_timeframe == '1h':
-                time_interval = str(round(60 * trading_day_conversion, 4)) + 'm'
-            elif selected_timeframe == '1d':
+            if selected_timeframe == '1d':
                 time_interval = '1d'
+            else:
+                time_interval = "{}{}".format(round(int(selected_timeframe[:-1]) * trading_day_conversion, 4), 'm')
 
             pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
-
-            window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
-                                 window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
-
-            (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
-
-            del df, in_dates, out_dates
 
             # Lists for appending optimized parameters and results to for the chosen optimization metric.
             average_return_values, max_return_values, max_return_params = [], [], []
@@ -114,7 +108,8 @@ def simulation_callback(app, cache):
                     fast_sma, slow_sma = vbt.IndicatorFactory.from_talib('SMA').run_combs(price, periods)
                     entries = fast_sma.real_crossed_above(slow_sma.real)
                     exits = fast_sma.real_crossed_below(slow_sma.real)
-                    return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+                    pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+                    return pf
 
                 selected_range = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
 
@@ -162,8 +157,6 @@ def simulation_callback(app, cache):
             # elif selected_strategy == 'EMA Crossover':
             # elif selected_strategy == 'RSI':
             # elif selected_strategy == 'MACD':
-
-            del pf_insample, pf_outsample, pf_outsample_optimized
 
             # Create the first results table before arrays are overwritten.
             averages_table = dbc.Table(
