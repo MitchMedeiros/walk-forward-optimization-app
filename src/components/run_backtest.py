@@ -1,3 +1,4 @@
+from itertools import combinations
 from math import atan, pi
 from statistics import mean
 
@@ -77,22 +78,21 @@ def simulation_callback(app, cache):
                 date_df = pd.DataFrame(df.index)
                 num_days = len(date_df['Datetime'].dt.date.unique())
                 del date_df
-
-            window_kwargs = dict(n=nwindows,
-                                 window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)),
-                                 set_lens=(insample / 100,))
-
-            (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
-
+            
             trading_day_conversion = 24 / 6.5
             if selected_timeframe == '15m':
                 time_interval = str(round(15 * trading_day_conversion, 4)) + 'm'
             elif selected_timeframe == '1h':
                 time_interval = str(round(60 * trading_day_conversion, 4)) + 'm'
             elif selected_timeframe == '1d':
-                time_interval = selected_timeframe
+                time_interval = '1d'
 
             pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
+
+            window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
+                                 window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
+
+            (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
 
             del df, in_dates, out_dates
 
@@ -116,14 +116,13 @@ def simulation_callback(app, cache):
                     exits = fast_sma.real_crossed_below(slow_sma.real)
                     return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
-                selected_sma_range = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
+                selected_range = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
 
                 for i in range(nwindows):
-                    pf_insample = backtest_windows(in_price[i], selected_sma_range)
-                    pf_outsample = backtest_windows(out_price[i],
-                                                    [pf_insample.total_return().idxmax()[0],
-                                                     pf_insample.total_return().idxmax()[1]])
-                    pf_outsample_optimized = backtest_windows(out_price[i], selected_sma_range)
+                    pf_insample = backtest_windows(in_price[i], selected_range)
+                    pf_outsample = backtest_windows(out_price[i], [pf_insample.total_return().idxmax()[0],
+                                                                   pf_insample.total_return().idxmax()[1]])
+                    pf_outsample_optimized = backtest_windows(out_price[i], selected_range)
 
                     # Saves the optimized values for inputing into the out-of-sample windows plus showing metrics later.
                     average_return_values.append(round(pf_insample.total_return().mean() * 100, 3))
@@ -158,12 +157,13 @@ def simulation_callback(app, cache):
                     max_sharpe_params_h.append(pf_outsample_optimized.sharpe_ratio().idxmax())
                     min_maxdrawdown_params_h.append(pf_outsample_optimized.max_drawdown().idxmin())
 
+                columns_list = ["Slow SMA period", "Fast SMA period"]
+
             # elif selected_strategy == 'EMA Crossover':
             # elif selected_strategy == 'RSI':
             # elif selected_strategy == 'MACD':
 
             del pf_insample, pf_outsample, pf_outsample_optimized
-            columns_list = ["Slow SMA period", "Fast SMA period"]
 
             # Create the first results table before arrays are overwritten.
             averages_table = dbc.Table(
