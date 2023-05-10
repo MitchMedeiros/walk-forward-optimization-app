@@ -105,8 +105,8 @@ def simulation_callback(app, cache):
                 'max_return_params_h', 'max_sharpe_params_h', 'min_maxdrawdown_params_h']
 
             nparameters = 2
-            metrics = {name: np.zeros(nwindows) for name in values_names}
-            metrics.update({name: np.zeros(shape=(nwindows, nparameters)) for name in parameters_names})
+            metrics = {name: np.zeros(nwindows, dtype=np.float64) for name in values_names}
+            metrics.update({name: np.zeros(shape=(nwindows, nparameters), dtype=np.int16) for name in parameters_names})
 
             if selected_strategy == 'SMA Crossover':
                 def backtest_windows(price, periods):
@@ -181,51 +181,21 @@ def simulation_callback(app, cache):
                 bordered=False
             )
 
-            # Converting the lists with important stats into dataframes to be displayed as two tables.
-            metrics['average_return_values'] = pd.DataFrame(metrics['average_return_values'], columns=["In-Sample Average (%)"])
-            metrics['average_sharpe_values'] = pd.DataFrame(metrics['average_sharpe_values'], columns=["In-Sample Average Sharpe Ratio"])
-            metrics['average_maxdrawdown_values'] = pd.DataFrame(metrics['average_maxdrawdown_values'], columns=["In-Sample Average Max Drawdown (%)"])
-
-            metrics['max_return_values'] = pd.DataFrame(metrics['max_return_values'], columns=["In-sample Return (%)"])
-            metrics['max_sharpe_values'] = pd.DataFrame(metrics['max_sharpe_values'], columns=["In-sample Maximized Sharpe Ratio"])
-            metrics['min_maxdrawdown_values'] = pd.DataFrame(metrics['min_maxdrawdown_values'], columns=["In-sample Minimized Max Drawdown (%)"])
+            window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)
 
             metrics['max_return_params'] = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
-            metrics['max_sharpe_params'] = pd.DataFrame(metrics['max_sharpe_params'], columns=columns_list)
-            metrics['min_maxdrawdown_params'] = pd.DataFrame(metrics['min_maxdrawdown_params'], columns=columns_list)
-
-            metrics['realized_returns'] = pd.DataFrame(metrics['realized_returns'], columns=["Return (%)"])
-            metrics['realized_sharpe'] = pd.DataFrame(metrics['realized_sharpe'], columns=["Sharpe Ratio"])
-            metrics['realized_maxdrawdown'] = pd.DataFrame(metrics['realized_maxdrawdown'], columns=["Max Drawdown (%)"])
-
-            metrics['difference_in_returns'] = pd.DataFrame(metrics['difference_in_returns'], columns=["Difference from In-Sample (%)"])
-            metrics['difference_in_sharpe'] = pd.DataFrame(metrics['difference_in_sharpe'], columns=["Difference from In-Sample"])
-            metrics['difference_in_maxdrawdown'] = pd.DataFrame(metrics['difference_in_maxdrawdown'], columns=["Difference from In-Sample (%)"])
-
-            metrics['average_return_values_h'] = pd.DataFrame(metrics['average_return_values_h'], columns=["Out-of-Sample Average (%)"])
-            metrics['average_sharpe_values_h'] = pd.DataFrame(metrics['average_sharpe_values_h'], columns=["Out-of-Sample Average Sharpe Ratio"])
-            metrics['average_maxdrawdown_values_h'] = pd.DataFrame(metrics['average_maxdrawdown_values_h'], columns=["Out-of-Sample Average Max Drawdown (%)"])
-
-            metrics['max_return_values_h'] = pd.DataFrame(metrics['max_return_values_h'], columns=["Out-of-Sample Maximum Return (%)"])
-            metrics['max_sharpe_values_h'] = pd.DataFrame(metrics['max_sharpe_values_h'], columns=["Out-of-Sample Maximum Sharpe Ratio"])
-            metrics['min_maxdrawdown_values_h'] = pd.DataFrame(metrics['min_maxdrawdown_values_h'], columns=["Out-of-sample Minimum Max Drawdown (%)"])
+            insample_arrays = np.stack([metrics['realized_returns'], metrics['realized_sharpe'],
+                                        metrics['realized_maxdrawdown'], metrics['max_return_values']], axis=1)
+            insample_df = pd.DataFrame(insample_arrays, columns=['Return (%)', 'Sharpe Ratio', 'Max Drawdown (%)', 'In-sample Return (%)'])
+            insample_df = pd.concat([window_number, metrics['max_return_params'], insample_df], axis=1)
 
             metrics['max_return_params_h'] = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
-            metrics['max_sharpe_params_h'] = pd.DataFrame(metrics['max_sharpe_params_h'], columns=columns_list)
-            metrics['min_maxdrawdown_params_h'] = pd.DataFrame(metrics['min_maxdrawdown_params_h'], columns=columns_list)
+            outsample_arrays = np.stack([metrics['max_return_values_h'], metrics['average_return_values'],
+                                        metrics['average_return_values_h']], axis=1)
+            outsample_df = pd.DataFrame(outsample_arrays, columns=['Out-of-Sample Maximum Return (%)', 'In-Sample Average (%)', 'Out-of-Sample Average (%)'])
+            outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
 
-            window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=["Window"])
-
-            # Combine the individual dataframes into concatinated dataframes for displaying
-            insample_df = pd.concat([window_number, metrics['max_return_params'], metrics['realized_returns'], metrics['realized_sharpe'],
-                                     metrics['realized_maxdrawdown'], metrics['max_return_values']], axis=1)
-            outsample_df = pd.concat([window_number, metrics['max_return_params_h'], metrics['max_return_values_h'], metrics['average_return_values'],
-                                      metrics['average_return_values_h']], axis=1)
-
-            # insample_columns = []
-            # outsample_columns = []
-
-            return dash_table.DataTable(
+            insample_dash_table = dash_table.DataTable(
                 data=insample_df.to_dict('records'),
                 columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
                 style_as_list_view=True,
@@ -237,7 +207,9 @@ def simulation_callback(app, cache):
                     'backgroundColor': 'rgb(50, 50, 50)',
                     'color': 'white'
                 },
-            ), dash_table.DataTable(
+            )
+
+            outsample_dash_table = dash_table.DataTable(
                 data=outsample_df.to_dict('records'),
                 columns=[{'name': str(i), 'id': str(i)} for i in outsample_df.columns],
                 style_as_list_view=True,
@@ -249,6 +221,31 @@ def simulation_callback(app, cache):
                     'backgroundColor': 'rgb(50, 50, 50)',
                     'color': 'white'
                 },
-            ), averages_table, False
+            )
+
+            return insample_dash_table, outsample_dash_table, averages_table, False
         else:
             return None, None, None, False
+
+
+# Column names:
+'''
+metrics['average_return_values'] : "In-Sample Average (%)"
+metrics['average_sharpe_values'] : "In-Sample Average Sharpe Ratio"
+metrics['average_maxdrawdown_values'] : "In-Sample Average Max Drawdown (%)"
+metrics['max_return_values'] : "In-sample Return (%)"
+metrics['max_sharpe_values'] : "In-sample Maximized Sharpe Ratio"
+metrics['min_maxdrawdown_values'] : "In-sample Minimized Max Drawdown (%)"
+metrics['realized_returns'] : "Return (%)"
+metrics['realized_sharpe'] : "Sharpe Ratio"
+metrics['realized_maxdrawdown'] : "Max Drawdown (%)"
+metrics['difference_in_returns'] : "Difference from In-Sample (%)"
+metrics['difference_in_sharpe'] : "Difference from In-Sample"
+metrics['difference_in_maxdrawdown'] : "Difference from In-Sample (%)"
+metrics['average_return_values_h'] : "Out-of-Sample Average (%)"
+metrics['average_sharpe_values_h'] : "Out-of-Sample Average Sharpe Ratio"
+metrics['average_maxdrawdown_values_h'] : "Out-of-Sample Average Max Drawdown (%)"
+metrics['max_return_values_h'] : "Out-of-Sample Maximum Return (%)"
+metrics['max_sharpe_values_h'] : "Out-of-Sample Maximum Sharpe Ratio"
+metrics['min_maxdrawdown_values_h'] : "Out-of-sample Minimum Max Drawdown (%)"
+'''
