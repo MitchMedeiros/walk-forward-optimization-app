@@ -158,12 +158,6 @@ def simulation_callback(app, cache):
                 metrics['max_sharpe_params_h'][i] = pf_outsample_optimized.sharpe_ratio().idxmax()
                 metrics['min_maxdrawdown_params_h'][i] = pf_outsample_optimized.max_drawdown().idxmin()
 
-            if selected_timeframe == '1d':
-                num_days = len(df)
-            else:
-                date_df = pd.DataFrame(df.index)
-                num_days = len(date_df['Datetime'].dt.date.unique())
-
             # Convert and format the numpy arrays into dataframes for displaying in dash data tables.
             window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)
 
@@ -180,18 +174,21 @@ def simulation_callback(app, cache):
                                          'Out-of-Sample Average (%)': metrics['average_return_values_h']})
             outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
 
+            if selected_timeframe == '1d':
+                num_days = len(df)
+            else:
+                outsample_dates = pd.DataFrame(out_dates[0])
+                num_days = len(outsample_dates['split_0'].dt.date.unique())
+
             # Defining dash components for displaying the formatted data.
             averages_table = dbc.Table(
                 [
                     html.Tbody(
                         [
-                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(sum(metrics['realized_returns']) * (261/(num_days/nwindows)), 3)}%")]),
+                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(mean(metrics['realized_returns']) * (261 / num_days), 3)}%")]),
                             html.Tr([html.Td("Average return per window"), html.Td(f"{round(mean(metrics['realized_returns']), 3)}%")]),
                             html.Tr([html.Td("Average Sharpe ratio"), html.Td(f"{round(mean(metrics['realized_sharpe']), 3)}")]),
                             html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(metrics['realized_maxdrawdown']), 3)}%")]),
-                            # html.Tr([html.Td("Difference in return from in-sample"), html.Td(f"{round(mean(difference_in_returns), 3)}%")]),
-                            # html.Tr([html.Td("Difference in Sharpe ratio from in-sample"), html.Td(f"{round(mean(difference_in_sharpe), 3)}")]),
-                            # html.Tr([html.Td("Difference in max drawdown from in-sample"), html.Td(f"{round(mean(difference_in_maxdrawdown), 3)}%")])
                         ]
                     )
                 ],
@@ -252,3 +249,7 @@ metrics['max_return_values_h'] : "Out-of-Sample Maximum Return (%)"
 metrics['max_sharpe_values_h'] : "Out-of-Sample Maximum Sharpe Ratio"
 metrics['min_maxdrawdown_values_h'] : "Out-of-sample Minimum Max Drawdown (%)"
 '''
+
+# html.Tr([html.Td("Difference in return from in-sample"), html.Td(f"{round(mean(difference_in_returns), 3)}%")]),
+# html.Tr([html.Td("Difference in Sharpe ratio from in-sample"), html.Td(f"{round(mean(difference_in_sharpe), 3)}")]),
+# html.Tr([html.Td("Difference in max drawdown from in-sample"), html.Td(f"{round(mean(difference_in_maxdrawdown), 3)}%")])
