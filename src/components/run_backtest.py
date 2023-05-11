@@ -44,7 +44,7 @@ clientside_callback(
     prevent_initial_call='initial_duplicate'
 )
 
-# Callback for the general results table
+# This callback creates the tables within the tabular results section.
 def simulation_callback(app, cache):
     @app.callback(
         [
@@ -66,22 +66,17 @@ def simulation_callback(app, cache):
     )
     def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe,
                          selected_asset, dates, sma_range, n_clicks):
-        if ctx.triggered_id == 'run_button' or n_clicks == 0:
+        if ctx.triggered_id == 'run_button':
             df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
             close = df['close']
             close = close.astype({'close': 'double'})
 
+            # Split the data into walk-forward windows to be looped through.
             window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
                                  window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
             (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
 
-            if selected_timeframe == '1d':
-                num_days = len(df)
-            else:
-                date_df = pd.DataFrame(df.index)
-                num_days = len(date_df['Datetime'].dt.date.unique())
-
-            # Effectively converts from a 24 hour day to a 6.5 hour trading day for the test duration to be correct.
+            # The portfolio calculations assume a 24 hour trading day. We can effectively correct this by inflating the time interval.
             trading_day_conversion = 24 / 6.5
             if selected_timeframe == '1d':
                 time_interval = '1d'
@@ -89,24 +84,6 @@ def simulation_callback(app, cache):
                 time_interval = "{}{}".format(round(int(selected_timeframe[:-1]) * trading_day_conversion, 4), 'm')
 
             pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
-
-            values_names = [
-                'average_return_values', 'max_return_values',
-                'average_sharpe_values', 'max_sharpe_values',
-                'average_maxdrawdown_values', 'min_maxdrawdown_values',
-                'realized_returns', 'difference_in_returns',
-                'realized_sharpe', 'difference_in_sharpe',
-                'realized_maxdrawdown', 'difference_in_maxdrawdown',
-                'average_return_values_h', 'max_return_values_h',
-                'average_sharpe_values_h', 'max_sharpe_values_h',
-                'average_maxdrawdown_values_h', 'min_maxdrawdown_values_h']
-            parameters_names = [
-                'max_return_params', 'max_sharpe_params', 'min_maxdrawdown_params',
-                'max_return_params_h', 'max_sharpe_params_h', 'min_maxdrawdown_params_h']
-
-            nparameters = 2
-            metrics = {name: np.zeros(nwindows, dtype=np.float64) for name in values_names}
-            metrics.update({name: np.zeros(shape=(nwindows, nparameters), dtype=np.int16) for name in parameters_names})
 
             if selected_strategy == 'SMA Crossover':
                 def backtest_windows(price, periods):
@@ -117,53 +94,93 @@ def simulation_callback(app, cache):
                     return pf
 
                 columns_list = ["Slow SMA period", "Fast SMA period"]
-
                 selected_range = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
-
-                for i in range(nwindows):
-                    pf_insample = backtest_windows(in_price[i], selected_range)
-                    pf_outsample = backtest_windows(out_price[i], [pf_insample.total_return().idxmax()[0],
-                                                                   pf_insample.total_return().idxmax()[1]])
-                    pf_outsample_optimized = backtest_windows(out_price[i], selected_range)
-
-                    # Saving various metrics for viewing in data tables later.
-                    metrics['average_return_values'][i] = round(pf_insample.total_return().mean() * 100, 3)
-                    metrics['average_sharpe_values'][i] = round(pf_insample.sharpe_ratio().mean(), 3)
-                    metrics['average_maxdrawdown_values'][i] = round(pf_insample.max_drawdown().mean() * 100, 3)
-
-                    metrics['max_return_values'][i] = round(pf_insample.total_return().max() * 100, 3)
-                    metrics['max_sharpe_values'][i] = round(pf_insample.sharpe_ratio().max(), 3)
-                    metrics['min_maxdrawdown_values'][i] = round(pf_insample.max_drawdown().min() * 100, 3)
-
-                    metrics['max_return_params'][i] = pf_insample.total_return().idxmax()
-                    metrics['max_sharpe_params'][i] = pf_insample.sharpe_ratio().idxmax()
-                    metrics['min_maxdrawdown_params'][i] = pf_insample.max_drawdown().idxmin()
-
-                    metrics['realized_returns'][i] = round(pf_outsample.total_return() * 100, 3)
-                    metrics['realized_sharpe'][i] = round(pf_outsample.sharpe_ratio(), 3)
-                    metrics['realized_maxdrawdown'][i] = round(pf_outsample.max_drawdown() * 100, 3)
-
-                    metrics['difference_in_returns'][i] = round(metrics['realized_returns'][i] - metrics['max_return_values'][i], 3)
-                    metrics['difference_in_sharpe'][i] = round(metrics['realized_sharpe'][i] - metrics['max_sharpe_values'][i], 3)
-                    metrics['difference_in_maxdrawdown'][i] = round(metrics['realized_maxdrawdown'][i] - metrics['min_maxdrawdown_values'][i], 3)
-
-                    metrics['average_return_values_h'][i] = round(pf_outsample_optimized.total_return().mean() * 100, 3)
-                    metrics['average_sharpe_values_h'][i] = round(pf_outsample_optimized.sharpe_ratio().mean(), 3)
-                    metrics['average_maxdrawdown_values_h'][i] = round(pf_outsample_optimized.max_drawdown().mean() * 100, 3)
-
-                    metrics['max_return_values_h'][i] = round(pf_outsample_optimized.total_return().max() * 100, 3)
-                    metrics['max_sharpe_values_h'][i] = round(pf_outsample_optimized.sharpe_ratio().max(), 3)
-                    metrics['min_maxdrawdown_values_h'][i] = round(pf_outsample_optimized.max_drawdown().min() * 100, 3)
-
-                    metrics['max_return_params_h'][i] = pf_outsample_optimized.total_return().idxmax()
-                    metrics['max_sharpe_params_h'][i] = pf_outsample_optimized.sharpe_ratio().idxmax()
-                    metrics['min_maxdrawdown_params_h'][i] = pf_outsample_optimized.max_drawdown().idxmin()
+                nparameters = 2
 
             # elif selected_strategy == 'EMA Crossover':
             # elif selected_strategy == 'RSI':
             # elif selected_strategy == 'MACD':
 
-            # Create the first results table before arrays are overwritten.
+            # Creating a dictionary of numpy.zeros arrays to overwrite with results during the backtests.
+            metrics_keys = [
+                'average_return_values', 'max_return_values',
+                'average_sharpe_values', 'max_sharpe_values',
+                'average_maxdrawdown_values', 'min_maxdrawdown_values',
+                'realized_returns', 'difference_in_returns',
+                'realized_sharpe', 'difference_in_sharpe',
+                'realized_maxdrawdown', 'difference_in_maxdrawdown',
+                'average_return_values_h', 'max_return_values_h',
+                'average_sharpe_values_h', 'max_sharpe_values_h',
+                'average_maxdrawdown_values_h', 'min_maxdrawdown_values_h']
+            parameters_keys = [
+                'max_return_params', 'max_sharpe_params', 'min_maxdrawdown_params',
+                'max_return_params_h', 'max_sharpe_params_h', 'min_maxdrawdown_params_h']
+            metrics = {key: np.zeros(nwindows, dtype=np.float64) for key in metrics_keys}
+            metrics.update({key: np.zeros((nwindows, nparameters), dtype=np.int16) for key in parameters_keys})
+
+            # Looping through the walk-forward windows, saving important metrics to the arrays each time.
+            for i in range(nwindows):
+                pf_insample = backtest_windows(in_price[i], selected_range)
+                pf_outsample = backtest_windows(out_price[i], [pf_insample.total_return().idxmax()[0],
+                                                               pf_insample.total_return().idxmax()[1]])
+                pf_outsample_optimized = backtest_windows(out_price[i], selected_range)
+
+                # Saving various metrics for viewing in data tables later.
+                metrics['average_return_values'][i] = round(pf_insample.total_return().mean() * 100, 3)
+                metrics['average_sharpe_values'][i] = round(pf_insample.sharpe_ratio().mean(), 3)
+                metrics['average_maxdrawdown_values'][i] = round(pf_insample.max_drawdown().mean() * 100, 3)
+
+                metrics['max_return_values'][i] = round(pf_insample.total_return().max() * 100, 3)
+                metrics['max_sharpe_values'][i] = round(pf_insample.sharpe_ratio().max(), 3)
+                metrics['min_maxdrawdown_values'][i] = round(pf_insample.max_drawdown().min() * 100, 3)
+
+                metrics['max_return_params'][i] = pf_insample.total_return().idxmax()
+                metrics['max_sharpe_params'][i] = pf_insample.sharpe_ratio().idxmax()
+                metrics['min_maxdrawdown_params'][i] = pf_insample.max_drawdown().idxmin()
+
+                metrics['realized_returns'][i] = round(pf_outsample.total_return() * 100, 3)
+                metrics['realized_sharpe'][i] = round(pf_outsample.sharpe_ratio(), 3)
+                metrics['realized_maxdrawdown'][i] = round(pf_outsample.max_drawdown() * 100, 3)
+
+                metrics['difference_in_returns'][i] = round(metrics['realized_returns'][i] - metrics['max_return_values'][i], 3)
+                metrics['difference_in_sharpe'][i] = round(metrics['realized_sharpe'][i] - metrics['max_sharpe_values'][i], 3)
+                metrics['difference_in_maxdrawdown'][i] = round(metrics['realized_maxdrawdown'][i] - metrics['min_maxdrawdown_values'][i], 3)
+
+                metrics['average_return_values_h'][i] = round(pf_outsample_optimized.total_return().mean() * 100, 3)
+                metrics['average_sharpe_values_h'][i] = round(pf_outsample_optimized.sharpe_ratio().mean(), 3)
+                metrics['average_maxdrawdown_values_h'][i] = round(pf_outsample_optimized.max_drawdown().mean() * 100, 3)
+
+                metrics['max_return_values_h'][i] = round(pf_outsample_optimized.total_return().max() * 100, 3)
+                metrics['max_sharpe_values_h'][i] = round(pf_outsample_optimized.sharpe_ratio().max(), 3)
+                metrics['min_maxdrawdown_values_h'][i] = round(pf_outsample_optimized.max_drawdown().min() * 100, 3)
+
+                metrics['max_return_params_h'][i] = pf_outsample_optimized.total_return().idxmax()
+                metrics['max_sharpe_params_h'][i] = pf_outsample_optimized.sharpe_ratio().idxmax()
+                metrics['min_maxdrawdown_params_h'][i] = pf_outsample_optimized.max_drawdown().idxmin()
+
+            if selected_timeframe == '1d':
+                num_days = len(df)
+            else:
+                date_df = pd.DataFrame(df.index)
+                num_days = len(date_df['Datetime'].dt.date.unique())
+
+            # Convert and format the numpy arrays into dataframes for displaying in dash data tables.
+            window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)
+
+            metrics['max_return_params'] = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
+            insample_df = pd.DataFrame({'Return (%)': metrics['realized_returns'],
+                                        'Sharpe Ratio': metrics['realized_sharpe'],
+                                        'Max Drawdown (%)': metrics['realized_maxdrawdown'],
+                                        'In-sample Return (%)': metrics['max_return_values']})
+            insample_df = pd.concat([window_number, metrics['max_return_params'], insample_df], axis=1)
+
+            metrics['max_return_params_h'] = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
+            outsample_df = pd.DataFrame({'Out-of-Sample Maximum Return (%)': metrics['max_return_values_h'],
+                                         'In-Sample Average (%)': metrics['average_return_values'],
+                                         'Out-of-Sample Average (%)': metrics['average_return_values_h']})
+            outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
+
+            # Defining dash components for displaying the formatted data.
             averages_table = dbc.Table(
                 [
                     html.Tbody(
@@ -181,21 +198,7 @@ def simulation_callback(app, cache):
                 bordered=False
             )
 
-            window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)
-
-            metrics['max_return_params'] = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
-            insample_arrays = np.stack([metrics['realized_returns'], metrics['realized_sharpe'],
-                                        metrics['realized_maxdrawdown'], metrics['max_return_values']], axis=1)
-            insample_df = pd.DataFrame(insample_arrays, columns=['Return (%)', 'Sharpe Ratio', 'Max Drawdown (%)', 'In-sample Return (%)'])
-            insample_df = pd.concat([window_number, metrics['max_return_params'], insample_df], axis=1)
-
-            metrics['max_return_params_h'] = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
-            outsample_arrays = np.stack([metrics['max_return_values_h'], metrics['average_return_values'],
-                                        metrics['average_return_values_h']], axis=1)
-            outsample_df = pd.DataFrame(outsample_arrays, columns=['Out-of-Sample Maximum Return (%)', 'In-Sample Average (%)', 'Out-of-Sample Average (%)'])
-            outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
-
-            insample_dash_table = dash_table.DataTable(
+            insample_table = dash_table.DataTable(
                 data=insample_df.to_dict('records'),
                 columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
                 style_as_list_view=True,
@@ -209,7 +212,7 @@ def simulation_callback(app, cache):
                 },
             )
 
-            outsample_dash_table = dash_table.DataTable(
+            outsample_table = dash_table.DataTable(
                 data=outsample_df.to_dict('records'),
                 columns=[{'name': str(i), 'id': str(i)} for i in outsample_df.columns],
                 style_as_list_view=True,
@@ -223,7 +226,7 @@ def simulation_callback(app, cache):
                 },
             )
 
-            return insample_dash_table, outsample_dash_table, averages_table, False
+            return insample_table, outsample_table, averages_table, False
         else:
             return None, None, None, False
 
