@@ -75,7 +75,7 @@ plot_tabs = dbc.Tabs(
                 dcc.Loading(type='graph', style={'margin-top': '110px'}, id='window_div')
             ],
             label="Price History and Windows",
-            active_label_style={'color': '#7FDBFF'}
+            active_label_style={'color': '#537eff'}
         ),
         dbc.Tab(
             [
@@ -109,14 +109,14 @@ plot_tabs = dbc.Tabs(
                 )
             ],
             label="Tabular Backtest Results",
-            active_label_style={'color': '#7FDBFF'}
+            active_label_style={'color': '#537eff'}
         ),
         dbc.Tab(
             [
                 dcc.Loading(type='cube', id='detailed_div')
             ],
             label="Visual Backtest Results",
-            active_label_style={'color': '#7FDBFF'}
+            active_label_style={'color': '#537eff'}
         )
     ],
     style={'margin-top': '2px'}

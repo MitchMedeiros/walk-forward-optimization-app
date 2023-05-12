@@ -1,9 +1,9 @@
 from dash import Dash
-from dash_bootstrap_components.themes import DARKLY
+import dash_bootstrap_components as dbc
 from flask_caching import Cache
 
 import config
-from src.components.layout import create_layout
+from src.components.layout import create_layout, theme_callback
 from src.components.plotting import candle_callback, window_callback
 from src.components.run_backtest import simulation_callback
 from src.components.strategy_inputs import strategy_inputs_callback
@@ -13,7 +13,7 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 # Instantiates the dash app
 app = Dash(
     __name__,
-    external_stylesheets=[DARKLY, dbc_css],
+    external_stylesheets=[dbc.themes.DARKLY, dbc_css],
     title='Backtesting App',
     update_title='Optimizing...',
     serve_locally=config.locally_style,
@@ -39,10 +39,16 @@ cache.init_app(app.server)
 app.layout = create_layout()
 
 # Instantiate the imported callbacks
+theme_callback(app)
 candle_callback(app, cache)
 window_callback(app, cache)
 strategy_inputs_callback(app)
 simulation_callback(app, cache)
+
+print(dbc.themes.DARKLY)
+print(dbc.themes.LUMEN)
+print(dbc.themes.SLATE)
+print(dbc.themes.SOLAR)
 
 # Deploys the app locally if run_locally is True.
 if __name__ == '__main__' and config.run_locally:
