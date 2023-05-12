@@ -123,7 +123,7 @@ plot_tabs = dbc.Tabs(
 )
 
 # Callback for ploting the candlestick chart
-def candle_callback(app, cache):
+def candle_plot_callback(app, cache):
     @app.callback(
         Output('candle_div', 'children'),
         [
@@ -182,7 +182,7 @@ def candle_callback(app, cache):
             return dcc.Graph(figure=fig, id='candle_plot')
 
 # Callback for plotting the walk-forward windows
-def window_callback(app, cache):
+def window_plot_callback(app, cache):
     @app.callback(
         Output('window_div', 'children'),
         [

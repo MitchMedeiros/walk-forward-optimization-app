@@ -64,7 +64,7 @@ def parameters_div(label_text, slider_min, slider_max, slider_step, slider_value
     )
 
 # Callback to create parameter input components based on selected strategy
-def strategy_inputs_callback(app):
+def parameter_inputs_callback(app):
     @app.callback(
         Output('strategy_div', 'children'),
         Input('strategy_drop', 'value')

@@ -202,10 +202,10 @@ def simulation_callback(app, cache):
                                          'Out-of-Sample Average (%)': metrics['average_return_values_h']})
             outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
 
+            # Defining dash components for displaying the formatted data.
             outsample_dates = pd.DataFrame(out_dates[0])
             outsample_num_days = len(outsample_dates['split_0'].dt.date.unique())
 
-            # Defining dash components for displaying the formatted data.
             averages_table = dbc.Table(
                 [
                     html.Tbody(

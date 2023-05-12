@@ -15,7 +15,7 @@ page_header = dbc.Navbar(
                 dbc.Col(
                     [
                         html.Img(src='assets/favicon.ico', height="35px", style={'margin-left': '25px', 'margin-right': '25px'}),
-                        dbc.NavbarBrand("Walk-Forward Optimization", style={'color': 'white', 'font-size': '20px'}, id='page_title')
+                        dbc.NavbarBrand("Walk-Forward Optimization", style={'font-size': '20px', 'color': 'white'}, id='page_title')
                     ]
                 ),
             ],
@@ -28,7 +28,7 @@ page_header = dbc.Navbar(
                         html.A(
                             dmc.Tooltip(
                                 dmc.ThemeIcon(
-                                    children=DashIconify(icon='line-md:github-loop', width=30),
+                                    DashIconify(icon='line-md:github-loop', width=30),
                                     size='xl',
                                     radius='xl',
                                     variant='outline',
@@ -63,14 +63,12 @@ page_header = dbc.Navbar(
     color='#2b2b2b',
     style={'margin-bottom': '7px', 'padding': '10px', 'background-color': '#2b2b2b'},
     id='page_header'
-
 )
 
-
-def sidebar_header(displayed_text, margins={'margin-bottom': '10px', 'margin-left': '25px'}):
+def sidebar_labels(displayed_text, margins={'margin-left': '25px', 'margin-bottom': '10px'}):
     return dbc.Stack(
         [
-            html.H4(displayed_text, style={'color': '#5e94ff', 'margin-left': 'auto'}),
+            html.H4(displayed_text, style={'margin-left': 'auto', 'color': '#5e94ff'}),
             dmc.ActionIcon(
                 DashIconify(icon='ri:question-mark', width=18, height=15),
                 color='gray',
@@ -96,14 +94,14 @@ def create_layout():
                         [
                             dbc.Col(
                                 [
-                                    sidebar_header("Data Selection", {'margin-top': '10px', 'margin-bottom': '10px', 'margin-left': '25px'}),
+                                    sidebar_labels("Data Selection", {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'}),
                                     dbc.Stack([asset_dropdown, timeframe_dropdown], direction='horizontal', style={'margin-bottom': '20px'}),
                                     date_calendar,
                                     html.Hr(),
-                                    sidebar_header("Window Splitting"),
+                                    sidebar_labels("Window Splitting"),
                                     dbc.Stack([nwindows_input, insample_dropdown], direction='horizontal'),
                                     html.Hr(),
-                                    sidebar_header("Strategy Details"),
+                                    sidebar_labels("Strategy Details"),
                                     strategy_dropdown,
                                     strategy_output,
                                     trade_direction_radio,
@@ -127,6 +125,7 @@ def create_layout():
         id='mantine_container'
     )
 
+# Changes the app theme based on the theme switch position. Initially suppress it to prevent flickering.
 clientside_callback(
     """
     function(themeToggle) {
@@ -142,7 +141,8 @@ clientside_callback(
     prevent_initial_call=True
 )
 
-def theme_callback(app):
+# Changes the colors of various app elements to match the theme.
+def theme_change_callback(app):
     @app.callback(
         [
             Output('mantine_container', 'theme'),
@@ -154,6 +154,9 @@ def theme_callback(app):
         prevent_initial_call=True
     )
     def update_theme(checked):
-        return {'colorScheme': 'light' if checked else 'dark'}, '#d5d5d5' if checked else '#2b2b2b', \
-            {'margin-left': '12px', 'background-color': '#d5d5d5'} if checked else {'margin-left': '12px', 'background-color': '#2b2b2b'}, \
-            {'color': '#537eff', 'font-size': '20px'} if checked else {'color': 'white', 'font-size': '20px'}
+        if checked:
+            return {'colorScheme': 'light'}, '#d5d5d5', {'margin-left': '12px', 'background-color': '#d5d5d5'}, \
+                {'font-size': '20px', 'color': '#537eff'}
+        else:
+            return {'colorScheme': 'dark'}, '#2b2b2b', {'margin-left': '12px', 'background-color': '#2b2b2b'}, \
+                {'font-size': '20px', 'color': 'white'}
