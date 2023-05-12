@@ -33,16 +33,16 @@ def parameters_div(label_text, slider_min, slider_max, slider_step, slider_value
     return html.Div(
         [
             dbc.Label(label_text, style={'margin-top': '10px'}),
-            dcc.RangeSlider(
+            dmc.RangeSlider(
                 min=slider_min,
                 max=slider_max,
                 step=slider_step,
                 value=slider_value,
-                pushable=slider_push,
-                allowCross=False,
-                marks=None,
-                tooltip={'placement': 'bottom', 'always_visible': True},
-                id=slider_id
+                size='sm',
+                radius='xl',
+                labelAlwaysOn=True,
+                style={'margin-top': '35px', 'margin-bottom': '10px'},
+                id=slider_id,
             )
         ],
         style={'text-align': 'center', 'cursor': 'pointer'}

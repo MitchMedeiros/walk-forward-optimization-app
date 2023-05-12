@@ -83,6 +83,8 @@ def simulation_callback(app, cache):
             else:
                 time_interval = "{}{}".format(round(int(selected_timeframe[:-1]) * trading_day_conversion, 4), 'm')
 
+            # 'longonly', 'shortonly', 'both'
+            # direction=selected_direction
             pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
 
             if selected_strategy == 'SMA Crossover':
@@ -97,38 +99,34 @@ def simulation_callback(app, cache):
                     pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
                     return pf
 
-            elif selected_strategy == 'EMA Crossover':
-                ema_range = [20, 200]
-                nparameters = 2
-                columns_list = ["Slow EMA period", "Fast EMA period"]
-                parameter_values = closed_arange(ema_range[0], ema_range[1], 10, np.int16)
+            # elif selected_strategy == 'EMA Crossover':
+            #     nparameters = 2
+            #     columns_list = ["Slow EMA period", "Fast EMA period"]
+            #     parameter_values = closed_arange(ema_range[0], ema_range[1], 10, np.int16)
 
-                def backtest_windows(price, ema_periods):
-                    fast_ema, slow_ema = vbt.IndicatorFactory.from_talib('EMA').run_combs(price, ema_periods)
-                    entries = fast_ema.real_crossed_above(slow_ema.real)
-                    exits = fast_ema.real_crossed_below(slow_ema.real)
-                    pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-                    return pf
+            #     def backtest_windows(price, ema_periods):
+            #         fast_ema, slow_ema = vbt.IndicatorFactory.from_talib('EMA').run_combs(price, ema_periods)
+            #         entries = fast_ema.real_crossed_above(slow_ema.real)
+            #         exits = fast_ema.real_crossed_below(slow_ema.real)
+            #         pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+            #         return pf
 
-            elif selected_strategy == 'RSI':
-                rsi_range = [20, 80]
-                nparameters = 2
-                columns_list = ["RSI entry value", "RSI exit value"]
-                raw_parameter_values = closed_arange(rsi_range[0], rsi_range[1], 2, np.int16)
+            # elif selected_strategy == 'RSI':
+            #     nparameters = 2
+            #     columns_list = ["RSI entry value", "RSI exit value"]
+            #     raw_parameter_values = closed_arange(rsi_range[0], rsi_range[1], 2, np.int16)
 
-                # Generates all entry and exit value combinations, with entry value < exit value by default.
-                # The entry and exit values are split into seperate lists to be given to the appropraite functions.
-                parameter_combinations = list(combinations(raw_parameter_values, 2))
-                entry_values = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]
-                exit_values = [parameter_combinations[i][1] for i in range(len(parameter_combinations))]
-                parameter_values = [entry_values, exit_values]
+            #     # Generates all entry and exit combinations, with entry value < exit value by default.
+            #     # The entry and exit values are split from their tuples to be given to the appropraite functions.
+            #     parameter_combinations = list(combinations(raw_parameter_values, 2))
+            #     parameter_values = np.split(parameter_combinations, 2, axis=1)
 
-                def backtest_windows(price, entry_exit_values):
-                    rsi = vbt.IndicatorFactory.from_talib('RSI').run(price, 14)
-                    entries = rsi.real_crossed_below(entry_exit_values[0])
-                    exits = rsi.real_crossed_above(entry_exit_values[1])
-                    pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-                    return pf
+            #     def backtest_windows(price, entry_exit_values):
+            #         rsi = vbt.IndicatorFactory.from_talib('RSI').run(price, 14)
+            #         entries = rsi.real_crossed_below(entry_exit_values[0])
+            #         exits = rsi.real_crossed_above(entry_exit_values[1])
+            #         pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+            #         return pf
 
             # elif selected_strategy == 'MACD':
 
@@ -216,7 +214,7 @@ def simulation_callback(app, cache):
                 [
                     html.Tbody(
                         [
-                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(mean(metrics['realized_returns']) * (261 / num_days), 3)}%")]),
+                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(mean(metrics['realized_returns']) * (252 / num_days), 3)}%")]),
                             html.Tr([html.Td("Average return per window"), html.Td(f"{round(mean(metrics['realized_returns']), 3)}%")]),
                             html.Tr([html.Td("Average Sharpe ratio"), html.Td(f"{round(mean(metrics['realized_sharpe']), 3)}")]),
                             html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(metrics['realized_maxdrawdown']), 3)}%")]),
