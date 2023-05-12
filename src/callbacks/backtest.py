@@ -2,9 +2,8 @@ from itertools import combinations
 from math import atan, pi
 from statistics import mean
 
-from dash import clientside_callback, ctx, dash_table, html, Input, Output
+from dash import ctx, dash_table, html, Input, Output
 import dash_bootstrap_components as dbc
-from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
@@ -20,20 +19,13 @@ def overlap_factor(nwindows):
     else:
         return (13 / (9 * pi)) * atan(nwindows)
 
-# For creating a numpy array with a closed interval instead of half-open.
+# For creating a numpy.arange array with a closed interval instead of half-open.
 def closed_arange(start, stop, step, dtype=None):
     array = np.arange(start, stop, step, dtype=dtype)
     if array[-1] + step <= stop:
         end_value = np.array(stop, ndmin=1, dtype=dtype)
         array = np.concatenate([array, end_value])
     return array
-
-clientside_callback(
-    "function updateLoadingState(n_clicks) {return true}",
-    Output("run_button", "loading", allow_duplicate=True),
-    Input("run_button", "n_clicks"),
-    prevent_initial_call='initial_duplicate'
-)
 
 # This callback creates the tables within the tabular results section.
 def simulation_callback(app, cache):
@@ -68,7 +60,7 @@ def simulation_callback(app, cache):
                                  window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
             (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
 
-            # The portfolio calculations assume a 24 hour trading day. We can effectively correct this by inflating the time interval.
+            # The portfolio calculations use a 24 hour trading day. This can effectively be corrected by inflating the time interval.
             trading_day_conversion = 24 / 6.5
             if selected_timeframe == '1d':
                 time_interval = '1d'

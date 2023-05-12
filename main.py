@@ -3,9 +3,10 @@ from dash_bootstrap_components.themes import DARKLY
 from flask_caching import Cache
 
 import config
-from src.components.layout import create_layout, theme_change_callback
-from src.components.plotting import candle_plot_callback, window_plot_callback
-from src.components.run_backtest import simulation_callback
+from src.callbacks.backtest import simulation_callback
+from src.callbacks.plotting import candle_plot_callback, window_plot_callback
+from src.callbacks.theme import theme_change_callback
+from src.components.layout import create_layout
 from src.components.strategy_inputs import parameter_inputs_callback
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -38,7 +39,7 @@ cache.init_app(app.server)
 # Provide the layout, containing all the dash components to be displayed.
 app.layout = create_layout()
 
-# Instantiate the imported callbacks.
+# Instantiate the imported callbacks. The clientside callbacks are instantiated via module import.
 theme_change_callback(app)
 candle_plot_callback(app, cache)
 window_plot_callback(app, cache)
