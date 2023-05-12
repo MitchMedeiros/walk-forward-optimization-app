@@ -48,9 +48,9 @@ clientside_callback(
 def simulation_callback(app, cache):
     @app.callback(
         [
+            Output('results_div', 'children'),
             Output('insample_div', 'children'),
             Output('outsample_div', 'children'),
-            Output('results_div', 'children'),
             Output('run_button', 'loading')
         ],
         [
@@ -86,19 +86,50 @@ def simulation_callback(app, cache):
             pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
 
             if selected_strategy == 'SMA Crossover':
-                def backtest_windows(price, periods):
-                    fast_sma, slow_sma = vbt.IndicatorFactory.from_talib('SMA').run_combs(price, periods)
+                nparameters = 2
+                columns_list = ["Slow SMA period", "Fast SMA period"]
+                parameter_values = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
+
+                def backtest_windows(price, sma_periods):
+                    fast_sma, slow_sma = vbt.IndicatorFactory.from_talib('SMA').run_combs(price, sma_periods)
                     entries = fast_sma.real_crossed_above(slow_sma.real)
                     exits = fast_sma.real_crossed_below(slow_sma.real)
                     pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
                     return pf
 
-                columns_list = ["Slow SMA period", "Fast SMA period"]
-                selected_range = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
+            elif selected_strategy == 'EMA Crossover':
+                ema_range = [20, 200]
                 nparameters = 2
+                columns_list = ["Slow EMA period", "Fast EMA period"]
+                parameter_values = closed_arange(ema_range[0], ema_range[1], 10, np.int16)
 
-            # elif selected_strategy == 'EMA Crossover':
-            # elif selected_strategy == 'RSI':
+                def backtest_windows(price, ema_periods):
+                    fast_ema, slow_ema = vbt.IndicatorFactory.from_talib('EMA').run_combs(price, ema_periods)
+                    entries = fast_ema.real_crossed_above(slow_ema.real)
+                    exits = fast_ema.real_crossed_below(slow_ema.real)
+                    pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+                    return pf
+
+            elif selected_strategy == 'RSI':
+                rsi_range = [20, 80]
+                nparameters = 2
+                columns_list = ["RSI entry value", "RSI exit value"]
+                raw_parameter_values = closed_arange(rsi_range[0], rsi_range[1], 2, np.int16)
+
+                # Generates all entry and exit value combinations, with entry value < exit value by default.
+                # The entry and exit values are split into seperate lists to be given to the appropraite functions.
+                parameter_combinations = list(combinations(raw_parameter_values, 2))
+                entry_values = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]
+                exit_values = [parameter_combinations[i][1] for i in range(len(parameter_combinations))]
+                parameter_values = [entry_values, exit_values]
+
+                def backtest_windows(price, entry_exit_values):
+                    rsi = vbt.IndicatorFactory.from_talib('RSI').run(price, 14)
+                    entries = rsi.real_crossed_below(entry_exit_values[0])
+                    exits = rsi.real_crossed_above(entry_exit_values[1])
+                    pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+                    return pf
+
             # elif selected_strategy == 'MACD':
 
             # Creating a dictionary of numpy.zeros arrays to overwrite with results during the backtests.
@@ -120,10 +151,10 @@ def simulation_callback(app, cache):
 
             # Looping through the walk-forward windows, saving important metrics to the arrays each time.
             for i in range(nwindows):
-                pf_insample = backtest_windows(in_price[i], selected_range)
+                pf_insample = backtest_windows(in_price[i], parameter_values)
                 pf_outsample = backtest_windows(out_price[i], [pf_insample.total_return().idxmax()[0],
                                                                pf_insample.total_return().idxmax()[1]])
-                pf_outsample_optimized = backtest_windows(out_price[i], selected_range)
+                pf_outsample_optimized = backtest_windows(out_price[i], parameter_values)
 
                 # Saving various metrics for viewing in data tables later.
                 metrics['average_return_values'][i] = round(pf_insample.total_return().mean() * 100, 3)
@@ -223,7 +254,7 @@ def simulation_callback(app, cache):
                 },
             )
 
-            return insample_table, outsample_table, averages_table, False
+            return averages_table, insample_table, outsample_table, False
         else:
             return None, None, None, False
 
