@@ -45,11 +45,6 @@ window_callback(app, cache)
 strategy_inputs_callback(app)
 simulation_callback(app, cache)
 
-print(dbc.themes.DARKLY)
-print(dbc.themes.LUMEN)
-print(dbc.themes.SLATE)
-print(dbc.themes.SOLAR)
-
 # Deploys the app locally if run_locally is True.
 if __name__ == '__main__' and config.run_locally:
     app.run(debug=config.debug_bool, port=config.port_number)

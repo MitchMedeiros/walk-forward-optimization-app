@@ -6,7 +6,7 @@ import dash_mantine_components as dmc
 from . data_inputs import asset_dropdown, date_calendar, timeframe_dropdown
 from . plotting import plot_tabs, insample_dropdown, nwindows_input
 from . run_backtest import run_strategy_button
-from . strategy_inputs import metric_dropdown, strategy_dropdown, strategy_output
+from . strategy_inputs import metric_dropdown, strategy_dropdown, strategy_output, trade_direction_radio
 
 page_header = dbc.Navbar(
     [
@@ -106,6 +106,7 @@ def create_layout():
                                     sidebar_header("Strategy Details"),
                                     strategy_dropdown,
                                     strategy_output,
+                                    trade_direction_radio,
                                     metric_dropdown,
                                     run_strategy_button
                                 ],

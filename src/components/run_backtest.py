@@ -60,12 +60,13 @@ def simulation_callback(app, cache):
             Input('timeframe', 'value'),
             Input('asset', 'value'),
             Input('date_range', 'value'),
+            Input('trade_direction', 'value'),
             Input('sma_range', 'value'),
             Input('run_button', 'n_clicks')
         ]
     )
     def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe,
-                         selected_asset, dates, sma_range, n_clicks):
+                         selected_asset, dates, selected_direction, sma_range, n_clicks):
         if ctx.triggered_id == 'run_button':
             df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
             close = df['close']
@@ -83,9 +84,7 @@ def simulation_callback(app, cache):
             else:
                 time_interval = "{}{}".format(round(int(selected_timeframe[:-1]) * trading_day_conversion, 4), 'm')
 
-            # 'longonly', 'shortonly', 'both'
-            # direction=selected_direction
-            pf_kwargs = dict(freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
+            pf_kwargs = dict(direction=selected_direction, freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
 
             if selected_strategy == 'SMA Crossover':
                 nparameters = 2

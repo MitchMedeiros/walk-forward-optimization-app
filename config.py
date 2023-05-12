@@ -47,7 +47,7 @@ run_locally = True
 debug_bool = True
 
 # Suppress initial callback exceptions if they are intentional.
-callback_suppress = False
+callback_suppress = True
 
 # Used if run_locally is True. The port to access the app.
 port_number = 8050
