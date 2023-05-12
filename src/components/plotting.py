@@ -1,5 +1,4 @@
-from dash import ctx, dcc, html, Input, Output
-import dash_bootstrap_components as dbc
+from dash import ctx, dcc, Input, Output
 from dash.exceptions import PreventUpdate
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
@@ -54,72 +53,6 @@ insample_dropdown = dmc.Select(
     className='mx-auto',
     style={"width": 130, 'text-align': 'center'},
     id='insample'
-)
-
-def title_badge(displayed_text):
-    return dmc.Badge(
-        displayed_text,
-        variant='gradient',
-        gradient={'from': 'blue', 'to': 'violet'},
-        opacity=0.85,
-        size='lg',
-        radius='md',
-        style={'width': '100%'}
-    )
-
-plot_tabs = dbc.Tabs(
-    [
-        dbc.Tab(
-            [
-                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='candle_div'),
-                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='window_div')
-            ],
-            label="Price History and Windows",
-            active_label_style={'color': '#30a5fe'}
-        ),
-        dbc.Tab(
-            [
-                dmc.AccordionMultiple(
-                    [
-                        dmc.AccordionItem(
-                            [
-                                dmc.AccordionControl(title_badge("Averaged Results")),
-                                dmc.AccordionPanel(dcc.Loading(type='dot', id='results_div'))
-                            ],
-                            value='averaged'
-                        ),
-                        dmc.AccordionItem(
-                            [
-                                dmc.AccordionControl(title_badge("Comparison of Results by Window")),
-                                dmc.AccordionPanel(html.Div(id='insample_div'))
-                            ],
-                            value='insample'
-                        ),
-                        dmc.AccordionItem(
-                            [
-                                dmc.AccordionControl(title_badge("Highest Possible Out-of-Sample Results")),
-                                dmc.AccordionPanel(html.Div(id='outsample_div'))
-                            ],
-                            value='outsample'
-                        )
-                    ],
-                    value=['averaged', 'insample', 'outsample'],
-                    chevronPosition='left',
-                    styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
-                )
-            ],
-            label="Tabular Backtest Results",
-            active_label_style={'color': '#30a5fe'}
-        ),
-        dbc.Tab(
-            [
-                dcc.Loading(type='cube', id='detailed_div')
-            ],
-            label="Visual Backtest Results",
-            active_label_style={'color': '#30a5fe'}
-        )
-    ],
-    style={'margin-top': '2px'}
 )
 
 # Callback for ploting the candlestick chart

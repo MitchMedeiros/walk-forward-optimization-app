@@ -1,10 +1,10 @@
-from dash import html, Input, Output, clientside_callback
+from dash import dcc, html, Input, Output, clientside_callback
 import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
 from . data_inputs import asset_dropdown, date_calendar, timeframe_dropdown
-from . plotting import plot_tabs, insample_dropdown, nwindows_input
+from . plotting import insample_dropdown, nwindows_input
 from . strategy_inputs import metric_dropdown, run_strategy_button, strategy_dropdown, strategy_output, trade_direction_radio
 
 page_header = dbc.Navbar(
@@ -83,6 +83,91 @@ def sidebar_labels(displayed_text, margins={'margin-left': '25px', 'margin-botto
         style=margins,
     )
 
+sidebar = html.Div(
+    [
+        sidebar_labels("Data Selection", {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'}),
+        dbc.Stack([asset_dropdown, timeframe_dropdown], direction='horizontal', style={'margin-bottom': '20px'}),
+        date_calendar,
+        html.Hr(),
+        sidebar_labels("Window Splitting"),
+        dbc.Stack([nwindows_input, insample_dropdown], direction='horizontal'),
+        html.Hr(),
+        sidebar_labels("Strategy Details"),
+        strategy_dropdown,
+        strategy_output,
+        trade_direction_radio,
+        metric_dropdown,
+        run_strategy_button
+    ]
+)
+
+def title_badge(displayed_text):
+    return dmc.Badge(
+        displayed_text,
+        variant='gradient',
+        gradient={'from': 'blue', 'to': 'violet'},
+        opacity=0.85,
+        size='lg',
+        radius='md',
+        style={'width': '100%'}
+    )
+
+plot_tabs = dbc.Tabs(
+    [
+        dbc.Tab(
+            [
+                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='candle_div'),
+                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='window_div')
+            ],
+            label="Price History and Windows",
+            active_label_style={'color': '#30a5fe'}
+        ),
+        dbc.Tab(
+            [
+                dmc.AccordionMultiple(
+                    [
+                        dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl(title_badge("Averaged Results")),
+                                dmc.AccordionPanel(dcc.Loading(type='dot', id='results_div'))
+                            ],
+                            value='averaged'
+                        ),
+                        dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl(title_badge("Comparison of Results by Window")),
+                                dmc.AccordionPanel(html.Div(id='insample_div'))
+                            ],
+                            value='insample'
+                        ),
+                        dmc.AccordionItem(
+                            [
+                                dmc.AccordionControl(title_badge("Highest Possible Out-of-Sample Results")),
+                                dmc.AccordionPanel(html.Div(id='outsample_div'))
+                            ],
+                            value='outsample'
+                        )
+                    ],
+                    value=['averaged', 'insample', 'outsample'],
+                    chevronPosition='left',
+                    styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
+                )
+            ],
+            label="Tabular Backtest Results",
+            active_label_style={'color': '#30a5fe'}
+        ),
+        dbc.Tab(
+            [
+                dcc.Loading(type='cube', id='detailed_div')
+            ],
+            label="Visual Backtest Results",
+            active_label_style={'color': '#30a5fe'}
+        )
+    ],
+    style={'margin-top': '2px'}
+)
+
+
 def create_layout():
     return dmc.MantineProvider(
         [
@@ -91,30 +176,11 @@ def create_layout():
                     page_header,
                     dbc.Row(
                         [
-                            dbc.Col(
-                                [
-                                    sidebar_labels("Data Selection", {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'}),
-                                    dbc.Stack([asset_dropdown, timeframe_dropdown], direction='horizontal', style={'margin-bottom': '20px'}),
-                                    date_calendar,
-                                    html.Hr(),
-                                    sidebar_labels("Window Splitting"),
-                                    dbc.Stack([nwindows_input, insample_dropdown], direction='horizontal'),
-                                    html.Hr(),
-                                    sidebar_labels("Strategy Details"),
-                                    strategy_dropdown,
-                                    strategy_output,
-                                    trade_direction_radio,
-                                    metric_dropdown,
-                                    run_strategy_button
-                                ],
-                                xs=12, lg=3,
-                                style={'margin-left': '12px', 'background-color': '#2b2b2b'},
-                                id='sidebar'
-                            ),
-                            dbc.Col(plot_tabs, xs=12, lg='auto'),
-                            html.Div(id='dummy_output'),
+                            dbc.Col(sidebar, xs=12, lg=3, style={'margin-left': '12px', 'background-color': '#2b2b2b'}, id='sidebar'),
+                            dbc.Col(plot_tabs, xs=12, lg='auto')
                         ]
-                    )
+                    ),
+                    html.Div(id='dummy_output')
                 ],
                 fluid=True,
                 className='dbc'
