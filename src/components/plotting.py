@@ -146,6 +146,7 @@ def candle_callback(app, cache):
                 withCloseButton=True,
                 id='db_alert',
             ),
+
         elif config.data_type == 'yfinance' and df.empty:
             return dmc.Alert(
                 "You have requested data too far in the past for your selected timeframe. "
@@ -156,12 +157,15 @@ def candle_callback(app, cache):
                 withCloseButton=True,
                 id='yfinance_alert',
             ),
+
         else:
             if selected_timeframe == '1d':
                 breaks = dict(bounds=['sat', 'mon'])
             else:
                 breaks = dict(bounds=[16, 9.5], pattern='hour')
-            fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'], low=df['low'], close=df['close'])])
+
+            fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'],
+                                                 low=df['low'], close=df['close'])])
             fig.update_layout(
                 xaxis=dict(rangeslider=dict(visible=False)),
                 plot_bgcolor='rgba(0,50,90,100)',
@@ -195,9 +199,9 @@ def window_callback(app, cache):
         else:
             df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
+            # Splits the data into walk-forward windows that are plotted.
             window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
                                  window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
-
             fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
             fig.update_layout(
                 plot_bgcolor='rgba(0,50,90,100)',

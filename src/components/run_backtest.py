@@ -202,18 +202,15 @@ def simulation_callback(app, cache):
                                          'Out-of-Sample Average (%)': metrics['average_return_values_h']})
             outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
 
-            if selected_timeframe == '1d':
-                num_days = len(df)
-            else:
-                outsample_dates = pd.DataFrame(out_dates[0])
-                num_days = len(outsample_dates['split_0'].dt.date.unique())
+            outsample_dates = pd.DataFrame(out_dates[0])
+            outsample_num_days = len(outsample_dates['split_0'].dt.date.unique())
 
             # Defining dash components for displaying the formatted data.
             averages_table = dbc.Table(
                 [
                     html.Tbody(
                         [
-                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(mean(metrics['realized_returns']) * (252 / num_days), 3)}%")]),
+                            html.Tr([html.Td("Annualized return"), html.Td(f"{round(mean(metrics['realized_returns']) * (252 / outsample_num_days), 3)}%")]),
                             html.Tr([html.Td("Average return per window"), html.Td(f"{round(mean(metrics['realized_returns']), 3)}%")]),
                             html.Tr([html.Td("Average Sharpe ratio"), html.Td(f"{round(mean(metrics['realized_sharpe']), 3)}")]),
                             html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(metrics['realized_maxdrawdown']), 3)}%")]),
