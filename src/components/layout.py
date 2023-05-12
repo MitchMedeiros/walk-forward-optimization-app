@@ -138,6 +138,7 @@ clientside_callback(
     """,
     Output('dummy_output', 'children'),
     Input('theme_switch', 'checked'),
+    prevent_initial_call=True
 )
 
 def theme_callback(app):
