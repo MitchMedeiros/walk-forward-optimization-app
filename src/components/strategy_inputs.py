@@ -27,19 +27,29 @@ metric_dropdown = dmc.Select(
     id='metric_drop'
 )
 
-radio_data = [
-    ["Long", 'longonly', 'green'],
-    ["Short", 'shortonly', 'red'],
-    ["Both", 'both', 'orange']
-]
-
+radio_data = [["Long", 'longonly', 'green'], ["Short", 'shortonly', 'red'], ["Both", 'both', 'orange']]
 trade_direction_radio = dmc.RadioGroup(
-    [dmc.Radio(label, value=value, color=color, style={'margin-left': 'auto', 'margin-right': 'auto'}) for label, value, color in radio_data],
+    [
+        dmc.Radio(
+            label,
+            value=value,
+            color=color,
+            style={'margin-left': 'auto', 'margin-right': 'auto'}
+        ) for label, value, color in radio_data
+    ],
     label="Trade direction",
     value='longonly',
-    spacing='xs',
     style={'text-align': 'center', 'margin-top': '20px', 'margin-bottom': '20px'},
     id='trade_direction'
+)
+
+run_strategy_button = dmc.Button(
+    "Run Backtest",
+    leftIcon=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
+    variant="gradient",
+    n_clicks=0,
+    style={'width': '100%', 'margin-top': '15px'},
+    id='run_button'
 )
 
 strategy_output = html.Div(id='strategy_div')
