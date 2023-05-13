@@ -92,6 +92,8 @@ def simulation_callback(app, cache):
             #         pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
             #         return pf
 
+            # elif selected_strategy == 'MACD':
+
             # elif selected_strategy == 'RSI':
             #     nparameters = 2
             #     columns_list = ["RSI entry value", "RSI exit value"]
@@ -108,8 +110,6 @@ def simulation_callback(app, cache):
             #         exits = rsi.real_crossed_above(entry_exit_values[1])
             #         pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
             #         return pf
-
-            # elif selected_strategy == 'MACD':
 
             # Creating a dictionary of numpy.zeros arrays to overwrite with results during the backtests.
             metrics_keys = [

@@ -38,4 +38,4 @@ def parameter_inputs_callback(app):
             return parameters_div("Range of RSI entry and exit values", 10, 100, 2, [20, 80], 6, 'rsi_range')
 
         elif selected_strategy == 'MACD':
-            return parameters_div("MACD values", 0, 30, 5, [10, 20], 2, 'macd_range')
+            return parameters_div("Range of EMA periods for MACD line", 6, 50, 2, [8, 30], 2, 'macd_range')
