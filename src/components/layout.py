@@ -120,8 +120,14 @@ plot_tabs = dbc.Tabs(
     [
         dbc.Tab(
             [
-                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='candle_div'),
-                dcc.Loading(type='graph', style={'margin-top': '110px'}, id='window_div')
+                dmc.LoadingOverlay(
+                    [
+                        html.Div(id='candle_div'),
+                        html.Div(id='window_div')
+                    ],
+                    loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
+                    radius='lg'
+                )
             ],
             label="Price History and Windows",
             active_label_style={'color': '#30a5fe'}
