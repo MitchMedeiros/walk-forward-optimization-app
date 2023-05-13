@@ -7,8 +7,9 @@ from src.callbacks.backtest import simulation_callback
 from src.callbacks.children import parameter_inputs_callback
 from src.callbacks.loading import dummy_function
 from src.callbacks.plotting import candle_plot_callback, window_plot_callback
+from src.callbacks.popups import modal_callbacks
 from src.callbacks.theme import color_change_callback
-from src.components.layout import create_layout, data_modal_callback, window_modal_callback, strategy_modal_callback
+from src.components.layout import create_layout
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
@@ -42,13 +43,11 @@ app.layout = create_layout()
 
 # Instantiate the imported callbacks. The clientside callbacks are instantiated via module import.
 color_change_callback(app)
+modal_callbacks(app)
 candle_plot_callback(app, cache)
 window_plot_callback(app, cache)
 parameter_inputs_callback(app)
 simulation_callback(app, cache)
-data_modal_callback(app)
-window_modal_callback(app)
-strategy_modal_callback(app)
 
 # Deploys the app locally if run_locally is True.
 if __name__ == '__main__' and config.run_locally:
