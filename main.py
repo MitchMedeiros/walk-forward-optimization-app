@@ -4,10 +4,11 @@ from flask_caching import Cache
 
 import config
 from src.callbacks.backtest import simulation_callback
+from src.callbacks.children import parameter_inputs_callback
+from src.callbacks.loading import dummy_function
 from src.callbacks.plotting import candle_plot_callback, window_plot_callback
-from src.callbacks.theme import theme_change_callback
+from src.callbacks.theme import color_change_callback
 from src.components.layout import create_layout
-from src.components.strategy_inputs import parameter_inputs_callback
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
@@ -40,7 +41,7 @@ cache.init_app(app.server)
 app.layout = create_layout()
 
 # Instantiate the imported callbacks. The clientside callbacks are instantiated via module import.
-theme_change_callback(app)
+color_change_callback(app)
 candle_plot_callback(app, cache)
 window_plot_callback(app, cache)
 parameter_inputs_callback(app)

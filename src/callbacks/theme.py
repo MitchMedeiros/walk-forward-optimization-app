@@ -1,13 +1,5 @@
 from dash import clientside_callback, Input, Output
 
-# Changes the run backtest button state to loading when clicked
-clientside_callback(
-    "function updateLoadingState(n_clicks) {return true}",
-    Output("run_button", "loading", allow_duplicate=True),
-    Input("run_button", "n_clicks"),
-    prevent_initial_call='initial_duplicate'
-)
-
 # Changes the app theme based on the theme switch position. Initially suppress it to prevent flickering.
 clientside_callback(
     """
@@ -24,8 +16,8 @@ clientside_callback(
     prevent_initial_call=True
 )
 
-# Changes the colors of various app elements to match the theme.
-def theme_change_callback(app):
+# Changes the color scheme of components and the color of static app elements to match the theme.
+def color_change_callback(app):
     @app.callback(
         [
             Output('mantine_container', 'theme'),
@@ -36,10 +28,10 @@ def theme_change_callback(app):
         Input('theme_switch', 'checked'),
         prevent_initial_call=True
     )
-    def update_theme(checked):
+    def update_colors(checked):
         if checked:
             return {'colorScheme': 'light'}, '#d5d5d5', {'margin-left': '12px', 'background-color': '#d5d5d5'}, \
-                {'font-size': '20px', 'color': '#537eff'}
+                   {'font-size': '20px', 'color': '#537eff'}
         else:
             return {'colorScheme': 'dark'}, '#2b2b2b', {'margin-left': '12px', 'background-color': '#2b2b2b'}, \
-                {'font-size': '20px', 'color': 'white'}
+                   {'font-size': '20px', 'color': 'white'}
