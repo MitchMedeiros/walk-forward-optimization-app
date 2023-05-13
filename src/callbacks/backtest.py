@@ -198,7 +198,8 @@ def simulation_callback(app, cache):
                             html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(metrics['realized_maxdrawdown']), 3)}%")]),
                         ]
                     )
-                ]
+                ],
+                highlightOnHover=True
             )
 
             def create_table(df):
