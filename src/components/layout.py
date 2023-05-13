@@ -16,7 +16,7 @@ page_header = dbc.Navbar(
                         html.Img(src='assets/favicon.ico', height="35px", style={'margin-left': '25px', 'margin-right': '25px'}),
                         dbc.NavbarBrand("Walk-Forward Optimization", style={'font-size': '20px', 'color': 'white'}, id='page_title')
                     ]
-                ),
+                )
             ],
             justify='start'
         ),
@@ -25,17 +25,21 @@ page_header = dbc.Navbar(
                 dbc.Col(
                     [
                         html.A(
-                            dmc.Tooltip(
-                                dmc.ThemeIcon(
-                                    DashIconify(icon='line-md:github-loop', width=30),
-                                    size='xl',
-                                    radius='xl',
-                                    variant='outline',
-                                    color='indigo'
-                                ),
-                                label="GitHub Repository",
-                                position="bottom"
-                            ),
+                            [
+                                dmc.Tooltip(
+                                    [
+                                        dmc.ThemeIcon(
+                                            DashIconify(icon='line-md:github-loop', width=30),
+                                            size='xl',
+                                            radius='xl',
+                                            variant='outline',
+                                            color='indigo'
+                                        )
+                                    ],
+                                    label="GitHub Repository",
+                                    position="bottom"
+                                )
+                            ],
                             href="https://github.com/MitchMedeiros/dashapp",
                             target="_blank"
                         )
@@ -124,33 +128,39 @@ plot_tabs = dbc.Tabs(
         ),
         dbc.Tab(
             [
-                dmc.AccordionMultiple(
+                dmc.LoadingOverlay(
                     [
-                        dmc.AccordionItem(
+                        dmc.AccordionMultiple(
                             [
-                                dmc.AccordionControl(title_badge("Averaged Results")),
-                                dmc.AccordionPanel(dcc.Loading(type='dot', id='results_div'))
+                                dmc.AccordionItem(
+                                    [
+                                        dmc.AccordionControl(title_badge("Averaged Results")),
+                                        dmc.AccordionPanel(html.Div(id='results_div'))
+                                    ],
+                                    value='averaged'
+                                ),
+                                dmc.AccordionItem(
+                                    [
+                                        dmc.AccordionControl(title_badge("Comparison of Results by Window")),
+                                        dmc.AccordionPanel(html.Div(id='insample_div'))
+                                    ],
+                                    value='insample'
+                                ),
+                                dmc.AccordionItem(
+                                    [
+                                        dmc.AccordionControl(title_badge("Highest Possible Out-of-Sample Results")),
+                                        dmc.AccordionPanel(html.Div(id='outsample_div'))
+                                    ],
+                                    value='outsample'
+                                )
                             ],
-                            value='averaged'
+                            value=['averaged', 'insample', 'outsample'],
+                            chevronPosition='left',
+                            styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
                         ),
-                        dmc.AccordionItem(
-                            [
-                                dmc.AccordionControl(title_badge("Comparison of Results by Window")),
-                                dmc.AccordionPanel(html.Div(id='insample_div'))
-                            ],
-                            value='insample'
-                        ),
-                        dmc.AccordionItem(
-                            [
-                                dmc.AccordionControl(title_badge("Highest Possible Out-of-Sample Results")),
-                                dmc.AccordionPanel(html.Div(id='outsample_div'))
-                            ],
-                            value='outsample'
-                        )
                     ],
-                    value=['averaged', 'insample', 'outsample'],
-                    chevronPosition='left',
-                    styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
+                    loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
+                    radius='lg'
                 )
             ],
             label="Tabular Backtest Results",

@@ -8,5 +8,6 @@ clientside_callback(
     prevent_initial_call='initial_duplicate'
 )
 
+# To avoid instantiating the above callback, remove the import for this function in main.py.
 def dummy_function():
     pass
