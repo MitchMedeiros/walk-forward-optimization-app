@@ -2,8 +2,7 @@ from itertools import combinations
 from math import atan, pi
 from statistics import mean
 
-from dash import ctx, dash_table, html, Input, Output
-import dash_bootstrap_components as dbc
+from dash import ctx, html, Input, Output
 import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
@@ -189,7 +188,7 @@ def simulation_callback(app, cache):
             outsample_dates = pd.DataFrame(out_dates[0])
             outsample_num_days = len(outsample_dates['split_0'].dt.date.unique())
 
-            averages_table = dbc.Table(
+            averages_table = dmc.Table(
                 [
                     html.Tbody(
                         [
@@ -199,37 +198,18 @@ def simulation_callback(app, cache):
                             html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(mean(metrics['realized_maxdrawdown']), 3)}%")]),
                         ]
                     )
-                ],
-                bordered=False
+                ]
             )
 
-            insample_table = dash_table.DataTable(
-                data=insample_df.to_dict('records'),
-                columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
-                style_as_list_view=True,
-                style_header={
-                    'backgroundColor': 'rgb(30, 30, 30)',
-                    'color': 'white'
-                },
-                style_data={
-                    'backgroundColor': 'rgb(50, 50, 50)',
-                    'color': 'white'
-                },
-            )
+            def create_table(df):
+                columns, values = df.columns, df.values
+                header = [html.Tr([html.Th(col) for col in columns])]
+                rows = [html.Tr([html.Td(cell) for cell in row]) for row in values]
+                table = [html.Thead(header), html.Tbody(rows)]
+                return table
 
-            outsample_table = dash_table.DataTable(
-                data=outsample_df.to_dict('records'),
-                columns=[{'name': str(i), 'id': str(i)} for i in outsample_df.columns],
-                style_as_list_view=True,
-                style_header={
-                    'backgroundColor': 'rgb(30, 30, 30)',
-                    'color': 'white'
-                },
-                style_data={
-                    'backgroundColor': 'rgb(50, 50, 50)',
-                    'color': 'white'
-                },
-            )
+            insample_table = dmc.Table(create_table(insample_df), highlightOnHover=True, withColumnBorders=True)
+            outsample_table = dmc.Table(create_table(outsample_df), highlightOnHover=True, withColumnBorders=True)
 
             return averages_table, insample_table, outsample_table, False
         else:
@@ -261,3 +241,31 @@ metrics['min_maxdrawdown_values_h'] : "Out-of-sample Minimum Max Drawdown (%)"
 # html.Tr([html.Td("Difference in return from in-sample"), html.Td(f"{round(mean(difference_in_returns), 3)}%")]),
 # html.Tr([html.Td("Difference in Sharpe ratio from in-sample"), html.Td(f"{round(mean(difference_in_sharpe), 3)}")]),
 # html.Tr([html.Td("Difference in max drawdown from in-sample"), html.Td(f"{round(mean(difference_in_maxdrawdown), 3)}%")])
+
+# insample_table = dash_table.DataTable(
+#     data=insample_df.to_dict('records'),
+#     columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
+#     style_as_list_view=True,
+#     style_header={
+#         'backgroundColor': 'rgb(30, 30, 30)',
+#         'color': 'white'
+#     },
+#     style_data={
+#         'backgroundColor': 'rgb(50, 50, 50)',
+#         'color': 'white'
+#     },
+# )
+
+# outsample_table = dash_table.DataTable(
+#     data=outsample_df.to_dict('records'),
+#     columns=[{'name': str(i), 'id': str(i)} for i in outsample_df.columns],
+#     style_as_list_view=True,
+#     style_header={
+#         'backgroundColor': 'rgb(30, 30, 30)',
+#         'color': 'white'
+#     },
+#     style_data={
+#         'backgroundColor': 'rgb(50, 50, 50)',
+#         'color': 'white'
+#     },
+# )

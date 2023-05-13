@@ -26,7 +26,7 @@ metric_dropdown = dmc.Select(
     id='metric_drop'
 )
 
-radio_data = [["Long", 'longonly', 'green'], ["Short", 'shortonly', 'red'], ["Both", 'both', 'orange']]
+radio_data = [["Long", 'longonly', 'green'], ["Short", 'shortonly', 'red'], ["Both", 'both', 'yellow']]
 trade_direction_radio = dmc.RadioGroup(
     [
         dmc.Radio(
