@@ -54,17 +54,17 @@ def candle_plot_callback(app, cache):
                                                  low=df['low'], close=df['close'])])
             fig.update_layout(
                 xaxis=dict(rangeslider=dict(visible=False)),
-                plot_bgcolor='rgba(0,50,90,100)',
-                paper_bgcolor='rgba(0,50,90,100)',
+                plot_bgcolor='#2b2b2b',
+                paper_bgcolor='#2b2b2b',
                 font_color='white',
-                margin=dict(l=40, r=8, t=12, b=8),
+                margin=dict(l=40, r=8, t=12, b=12),
                 # xaxis_range=["2023-02-01", "2023-02-22"]
             )
             fig.update_xaxes(
                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
-                gridcolor='rgba(20,20,90,100)',
+                gridcolor='#191919'
             )
-            fig.update_yaxes(gridcolor='rgba(20,20,90,100)')
+            fig.update_yaxes(gridcolor='#191919')
             return dcc.Graph(figure=fig, id='candle_plot')
 
 # Callback for plotting the walk-forward windows
@@ -90,17 +90,17 @@ def window_plot_callback(app, cache):
                                  window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
             fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
             fig.update_layout(
-                plot_bgcolor='rgba(0,50,90,100)',
-                paper_bgcolor='rgba(0,50,90,100)',
+                plot_bgcolor='#2b2b2b',
+                paper_bgcolor='#2b2b2b',
                 font_color='white',
                 margin=dict(l=40, r=12, t=0, b=20),
-                legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='rgba(0,50,90,0)'),
+                legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
                 width=980,
                 height=185
             )
             fig.update_xaxes(
                 rangebreaks=[dict(bounds=['sat', 'mon'])],
-                showgrid=False,
+                gridcolor='#191919',
                 showticklabels=False
             )
             fig.update_yaxes(showgrid=False)

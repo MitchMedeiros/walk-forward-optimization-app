@@ -1,4 +1,4 @@
-from dash import clientside_callback, Input, Output
+from dash import clientside_callback, Input, Output, State
 
 # Changes the app theme based on the theme switch position. Initially suppress it to prevent flickering.
 clientside_callback(
@@ -14,6 +14,41 @@ clientside_callback(
     Output('dummy_output', 'children'),
     Input('theme_switch', 'checked'),
     prevent_initial_call=True
+)
+
+# Changes the colors of the candlestick and window plots to match the theme.
+clientside_callback(
+    """
+    function (checked, candle_plot, window_plot) {
+        var new_candle_plot = Object.assign({}, candle_plot);
+        var new_window_plot = Object.assign({}, window_plot);
+
+        var bgColor = checked ? '#d5d5d5' : '#2b2b2b';
+        var gridColor = checked ? '#b7b7b7' : '#191919';
+        var fontColor = checked ? '#191919' : '#b7b7b7';
+
+        new_candle_plot.layout.plot_bgcolor = bgColor;
+        new_candle_plot.layout.paper_bgcolor = bgColor;
+        new_candle_plot.layout.xaxis.gridcolor = gridColor;
+        new_candle_plot.layout.yaxis.gridcolor = gridColor;
+        new_candle_plot.layout.font.color = fontColor;
+
+        new_window_plot.layout.plot_bgcolor = bgColor;
+        new_window_plot.layout.paper_bgcolor = bgColor;
+        new_window_plot.layout.legend.bgcolor = bgColor;
+        new_window_plot.layout.xaxis.gridcolor = gridColor;
+        new_window_plot.layout.yaxis.gridcolor = gridColor;
+        new_window_plot.layout.font.color = fontColor;
+
+        return [new_candle_plot, new_window_plot];
+    }
+    """,
+    Output('candle_plot', 'figure'),
+    Output('window_plot', 'figure'),
+    Input('theme_switch', 'checked'),
+    State('candle_plot', 'figure'),
+    State('window_plot', 'figure'),
+    prevenet_initial_call=True
 )
 
 # Changes the color scheme of components and the color of static app elements to match the theme.
