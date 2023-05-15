@@ -1,4 +1,4 @@
-from dash import ctx, dcc, Input, Output
+from dash import ctx, dcc, Input, Output, State, clientside_callback
 from dash.exceptions import PreventUpdate
 import dash_mantine_components as dmc
 import plotly.graph_objects as go
@@ -101,18 +101,36 @@ def window_plot_callback(app, cache):
             fig.update_xaxes(
                 rangebreaks=[dict(bounds=['sat', 'mon'])],
                 gridcolor='#191919',
-                showticklabels=False
+                showticklabels=False,
+                range=[df.index[0], df.index[-1]]
             )
             fig.update_yaxes(showgrid=False)
             return dcc.Graph(figure=fig, id='window_plot')
 
-# # Add to window_callback to align window plot with candlestick chart
-# # Need to work out how to input relayoutdata correctly
-# @app.callback(
-# Output('window_plot', 'figure'),
-# Input('candle_plot', 'relayoutData'),
+# clientside_callback(
+#     """
+#     function(relayout, window_plot) {
+#         var window_plot = Object.assign({}, window_plot);
+#         const x_range = [relayout['xaxis.range[0]'], relayout['xaxis.range[1]']];
+#         window_plot.layout.xaxis.range = x_range;
+#         return window_plot;
+#     }
+#     """,
+#     Output('window_plot', 'figure', allow_duplicate=True),
+#     Input('candle_plot', 'relayoutData'),
+#     State('window_plot', 'figure'),
+#     prevent_initial_call=True
 # )
-# def get_layout(relayout_data: dict):
-#     if relayout_data:
-#         return json.dumps(relayout_data)
-#     raise exceptions.PreventUpdate
+
+# def xaxis_range_callback(app):
+#     @app.callback(
+#         Output('window_plot', 'figure', allow_duplicate=True),
+#         Input('candle_plot', 'relayoutData'),
+#         State('window_plot', 'figure'),
+#         prevent_initial_call=True
+#     )
+#     def update_range(relayout, window_plot):
+#         x_range = [relayout['xaxis.range[0]'], relayout['xaxis.range[1]']]
+
+#         window_plot['layout']['xaxis']['range'] = x_range
+#         return window_plot

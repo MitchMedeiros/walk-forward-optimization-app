@@ -3,11 +3,11 @@ from dash import clientside_callback, Input, Output, State
 # Changes the app theme based on the theme switch position. Initially suppress it to prevent flickering.
 clientside_callback(
     """
-    function(themeToggle) {
+    function(checked) {
         const theme1 = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
         const theme2 = "https://cdn.jsdelivr.net/npm/bootswatch@5.1.0/dist/darkly/bootstrap.min.css"
         const stylesheet = document.querySelector('link[rel=stylesheet][href^="https://cdn.jsdelivr"]')
-        var themeLink = themeToggle ? theme1 : theme2;
+        var themeLink = checked ? theme1 : theme2;
         stylesheet.href = themeLink
     }
     """,
@@ -19,7 +19,7 @@ clientside_callback(
 # Changes the colors of the candlestick and window plots to match the theme.
 clientside_callback(
     """
-    function (checked, candle_plot, window_plot) {
+    function(checked, candle_plot, window_plot) {
         var new_candle_plot = Object.assign({}, candle_plot);
         var new_window_plot = Object.assign({}, window_plot);
 
