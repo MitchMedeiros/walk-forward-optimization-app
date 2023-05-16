@@ -3,6 +3,7 @@ from math import atan, pi
 from statistics import mean
 
 from dash import ctx, html, Input, Output
+from dash.exceptions import PreventUpdate
 import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
@@ -44,11 +45,12 @@ def simulation_callback(app, cache):
             Input('date_range', 'value'),
             Input('trade_direction', 'value'),
             Input('sma_range', 'value'),
+            Input('metric_drop', 'value'),
             Input('run_button', 'n_clicks')
         ]
     )
     def perform_backtest(selected_strategy, nwindows, insample, selected_timeframe,
-                         selected_asset, dates, selected_direction, sma_range, n_clicks):
+                         selected_asset, dates, selected_direction, sma_range, selected_metric, n_clicks):
         if ctx.triggered_id == 'run_button':
             df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
             close = df['close']
@@ -131,8 +133,8 @@ def simulation_callback(app, cache):
             # Looping through the walk-forward windows, saving important metrics to the arrays each time.
             for i in range(nwindows):
                 pf_insample = backtest_windows(in_price[i], parameter_values)
-                pf_outsample = backtest_windows(out_price[i], [pf_insample.total_return().idxmax()[0],
-                                                               pf_insample.total_return().idxmax()[1]])
+                pf_outsample = backtest_windows(out_price[i], [pf_insample.deep_getattr(selected_metric).idxmax()[0],
+                                                               pf_insample.deep_getattr(selected_metric).idxmax()[1]])
                 pf_outsample_optimized = backtest_windows(out_price[i], parameter_values)
 
                 # Saving various metrics for viewing in data tables later.
@@ -171,18 +173,30 @@ def simulation_callback(app, cache):
             # Convert and format the numpy arrays into dataframes for displaying in dash data tables.
             window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)
 
-            metrics['max_return_params'] = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
+            if selected_metric == 'total_return':
+                insample_parameters = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
+                outsample_parameters = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
+            elif selected_metric == 'sharpe_ratio':
+                insample_parameters = pd.DataFrame(metrics['max_sharpe_params'], columns=columns_list)
+                outsample_parameters = pd.DataFrame(metrics['max_sharpe_params_h'], columns=columns_list)
+            elif selected_metric == 'max_drawdown':
+                insample_parameters = pd.DataFrame(metrics['min_maxdrawdown_params'], columns=columns_list)
+                outsample_parameters = pd.DataFrame(metrics['min_maxdrawdown_params_h'], columns=columns_list)
+
+            # metrics['max_return_params'] = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
+
             insample_df = pd.DataFrame({'Return (%)': metrics['realized_returns'],
                                         'Sharpe Ratio': metrics['realized_sharpe'],
                                         'Max Drawdown (%)': metrics['realized_maxdrawdown'],
                                         'In-sample Return (%)': metrics['max_return_values']})
-            insample_df = pd.concat([window_number, metrics['max_return_params'], insample_df], axis=1)
+            insample_df = pd.concat([window_number, insample_parameters, insample_df], axis=1)
 
-            metrics['max_return_params_h'] = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
+            # metrics['max_return_params_h'] = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
+
             outsample_df = pd.DataFrame({'Out-of-Sample Maximum Return (%)': metrics['max_return_values_h'],
                                          'In-Sample Average (%)': metrics['average_return_values'],
                                          'Out-of-Sample Average (%)': metrics['average_return_values_h']})
-            outsample_df = pd.concat([window_number, metrics['max_return_params_h'], outsample_df], axis=1)
+            outsample_df = pd.concat([window_number, outsample_parameters, outsample_df], axis=1)
 
             # Defining dash components for displaying the formatted data.
             outsample_dates = pd.DataFrame(out_dates[0])
@@ -214,7 +228,7 @@ def simulation_callback(app, cache):
 
             return averages_table, insample_table, outsample_table, False
         else:
-            return None, None, None, False
+            raise PreventUpdate
 
 
 # Column names:

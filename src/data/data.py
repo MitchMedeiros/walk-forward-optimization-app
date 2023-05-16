@@ -34,8 +34,8 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                 end=end_date,
                 interval=selected_timeframe
             )
-            # df.drop(columns = ['Adj Close'], inplace = True)
             df.columns = ['open', 'high', 'low', 'close', 'volume', 'adj_close']
+            # df.drop(columns=['adj_close'], inplace=True)
             df = df.astype({'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
             return df
 

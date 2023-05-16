@@ -15,8 +15,12 @@ strategy_dropdown = dmc.Select(
 )
 
 metric_dropdown = dmc.Select(
-    data=['maximize return', 'maximize Sharpe ratio', 'minimize max drawdown'],
-    value='maximize return',
+    data=[
+        {'label': 'maximize return', 'value': 'total_return'},
+        {'label': 'maximize Sharpe ratio', 'value': 'sharpe_ratio'},
+        {'label': 'minimize max drawdown', 'value': 'max_drawdown'}
+    ],
+    value='total_return',
     label="Metric to optimize",
     icon=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
