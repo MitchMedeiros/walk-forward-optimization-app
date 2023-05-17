@@ -16,7 +16,7 @@ clientside_callback(
     prevent_initial_call=True
 )
 
-# Changes the colors of the candlestick and window plots to match the theme.
+# Changes the colors of the candlestick and walk-forward window figures to match the theme.
 clientside_callback(
     """
     function(checked, candle_plot, window_plot) {
@@ -51,7 +51,7 @@ clientside_callback(
     prevenet_initial_call=True
 )
 
-# Changes the color scheme of components and the color of static app elements to match the theme.
+# Changes the color scheme of dmc components and the color of static layout elements to match the theme.
 def color_change_callback(app):
     @app.callback(
         [

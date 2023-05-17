@@ -5,7 +5,7 @@ from flask_caching import Cache
 import config
 from src.callbacks.backtest import simulation_callback
 from src.callbacks.children import parameter_inputs_callback
-from src.callbacks.loading import dummy_function
+import src.callbacks.loading
 from src.callbacks.plotting import candle_plot_callback, window_plot_callback
 from src.callbacks.popups import modal_callbacks
 from src.callbacks.theme import color_change_callback
@@ -14,14 +14,8 @@ from src.components.layout import create_layout
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 # Instantiate the dash app.
-app = Dash(
-    __name__,
-    external_stylesheets=[DARKLY, dbc_css],
-    serve_locally=config.locally_style,
-    suppress_callback_exceptions=config.callback_suppress,
-    title='Backtesting App',
-    update_title='Optimizing...'
-)
+app = Dash(__name__, external_stylesheets=[DARKLY, dbc_css], serve_locally=config.locally_style,
+           suppress_callback_exceptions=config.callback_suppress, title='Backtesting App', update_title='Optimizing...')
 
 # Name the webserver object. This is passed to the wsgi and flask-cache.
 server = app.server

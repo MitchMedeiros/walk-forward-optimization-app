@@ -1,5 +1,4 @@
-from dash import ctx, dcc, Input, Output, State, clientside_callback
-from dash.exceptions import PreventUpdate
+from dash import dcc, Input, Output, State
 import dash_mantine_components as dmc
 import plotly.graph_objects as go
 import vectorbt as vbt
@@ -58,7 +57,6 @@ def candle_plot_callback(app, cache):
                 paper_bgcolor='#2b2b2b',
                 font_color='white',
                 margin=dict(l=40, r=8, t=12, b=12),
-                # xaxis_range=["2023-02-01", "2023-02-22"]
             )
             fig.update_xaxes(
                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
@@ -74,38 +72,36 @@ def window_plot_callback(app, cache):
         [
             Input('nwindows', 'value'),
             Input('insample', 'value'),
-            Input('timeframe', 'value'),
-            Input('asset', 'value'),
-            Input('date_range', 'value')
+            Input('date_range', 'value'),
+            State('timeframe', 'value'),
+            State('asset', 'value')
         ]
     )
-    def plot_windows(nwindows, insample, selected_timeframe, selected_asset, dates):
-        if ctx.triggered_id == 'timeframe' or ctx.triggered_id == 'asset':
-            raise PreventUpdate
-        else:
-            df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
+    def plot_windows(nwindows, insample, dates, selected_timeframe, selected_asset):
+        df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
-            # Splits the data into walk-forward windows that are plotted.
-            window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
-                                 window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
-            fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
-            fig.update_layout(
-                plot_bgcolor='#2b2b2b',
-                paper_bgcolor='#2b2b2b',
-                font_color='white',
-                margin=dict(l=40, r=12, t=0, b=20),
-                legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
-                width=980,
-                height=185
-            )
-            fig.update_xaxes(
-                rangebreaks=[dict(bounds=['sat', 'mon'])],
-                gridcolor='#191919',
-                showticklabels=False,
-                range=[df.index[0], df.index[-1]]
-            )
-            fig.update_yaxes(showgrid=False)
-            return dcc.Graph(figure=fig, id='window_plot')
+        # Splits the data into walk-forward windows that are plotted.
+        window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
+                             window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
+        fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
+        fig.update_layout(
+            plot_bgcolor='#2b2b2b',
+            paper_bgcolor='#2b2b2b',
+            font_color='white',
+            margin=dict(l=40, r=12, t=0, b=20),
+            legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
+            width=980,
+            height=185
+        )
+        fig.update_xaxes(
+            rangebreaks=[dict(bounds=['sat', 'mon'])],
+            gridcolor='#191919',
+            showticklabels=False,
+            range=[df.index[0], df.index[-1]]
+        )
+        fig.update_yaxes(showgrid=False)
+        return dcc.Graph(figure=fig, id='window_plot')
+
 
 # clientside_callback(
 #     """

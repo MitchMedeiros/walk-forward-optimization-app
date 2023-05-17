@@ -11,7 +11,3 @@ clientside_callback(
     Input("run_button", "n_clicks"),
     prevent_initial_call=True
 )
-
-# To avoid instantiating the above callback, simply remove the import for this function in main.py.
-def dummy_function():
-    pass
