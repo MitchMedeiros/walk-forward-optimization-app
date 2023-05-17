@@ -3,9 +3,9 @@ import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
-from . data_inputs import asset_dropdown, date_calendar, timeframe_dropdown
-from . plotting_inputs import insample_dropdown, nwindows_input
-from . strategy_inputs import metric_dropdown, run_strategy_button, strategy_dropdown, strategy_output, trade_direction_radio
+import src.components.data_inputs as data_inputs
+import src.components.window_inputs as window_inputs
+import src.components.strategy_inputs as strategy_inputs
 
 page_header = dbc.Navbar(
     [
@@ -176,6 +176,10 @@ def sidebar_label(label_text, modal_text, modal_id, icon_id, margins={'margin-le
         style=margins,
     )
 
+data_label = sidebar_label("Data Selection", data_modal_text, 'modal_1', 'icon_1',
+                           {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'})
+window_label = sidebar_label("Window Splitting", window_modal_text, 'modal_2', 'icon_2')
+
 strategy_label = dbc.Stack(
     [
         html.H4("Strategy Details", style={'margin-left': 'auto', 'color': '#5e94ff'}),
@@ -225,25 +229,21 @@ strategy_label = dbc.Stack(
     style={'margin-left': '25px', 'margin-bottom': '10px'},
 )
 
-data_label = sidebar_label("Data Selection", data_modal_text, 'modal_1', 'icon_1',
-                           {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'})
-window_label = sidebar_label("Window Splitting", window_modal_text, 'modal_2', 'icon_2')
-
 sidebar = html.Div(
     [
         data_label,
-        dbc.Stack([asset_dropdown, timeframe_dropdown], direction='horizontal', style={'margin-bottom': '20px'}),
-        date_calendar,
+        dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], direction='horizontal', style={'margin-bottom': '20px'}),
+        data_inputs.date_calendar,
         html.Hr(),
         window_label,
-        dbc.Stack([nwindows_input, insample_dropdown], direction='horizontal'),
+        dbc.Stack([window_inputs.nwindows_input, window_inputs.insample_dropdown], direction='horizontal'),
         html.Hr(),
         strategy_label,
-        strategy_dropdown,
-        strategy_output,
-        trade_direction_radio,
-        metric_dropdown,
-        run_strategy_button
+        strategy_inputs.strategy_dropdown,
+        strategy_inputs.parameter_inputs,
+        strategy_inputs.trade_direction_radio,
+        strategy_inputs.metric_dropdown,
+        strategy_inputs.run_backtest_button
     ]
 )
 

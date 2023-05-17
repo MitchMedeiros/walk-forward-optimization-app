@@ -46,7 +46,7 @@ trade_direction_radio = dmc.RadioGroup(
     id='trade_direction'
 )
 
-run_strategy_button = dmc.Button(
+run_backtest_button = dmc.Button(
     "Run Backtest",
     leftIcon=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
     variant="gradient",
@@ -55,4 +55,4 @@ run_strategy_button = dmc.Button(
     id='run_button'
 )
 
-strategy_output = html.Div(id='strategy_div')
+parameter_inputs = html.Div(id='parameter_inputs')

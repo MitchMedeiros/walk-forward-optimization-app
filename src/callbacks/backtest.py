@@ -50,8 +50,6 @@ def simulation_callback(app, cache):
     )
     def perform_backtest(n_clicks, selected_strategy, nwindows, insample, selected_timeframe,
                          selected_asset, dates, selected_direction, sma_range, selected_metric):
-        # if n_clicks == 0:
-        #     sma_range = [20, 200]
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
         close = df['close']
         close = close.astype({'close': 'double'})

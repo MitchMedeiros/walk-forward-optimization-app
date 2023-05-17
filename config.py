@@ -56,5 +56,5 @@ port_number = 8050
 locally_style = False
 
 # Adjust the dates the calendar component starts and ends on by default when the app is loaded.
-calendar_start = (date.today() - timedelta(days=580))
+calendar_start = (date.today() - timedelta(days=540))
 calendar_end = (date.today() - timedelta(days=20))

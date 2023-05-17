@@ -34,10 +34,12 @@ def candle_plot_callback(app, cache):
 
         elif config.data_type == 'yfinance' and df.empty:
             return dmc.Alert(
-                "You have requested data too far in the past for your selected timeframe. "
-                "For Yahoo Finance 15m data is only available within the last 60 days. "
-                "1h data is only available within the last 730 days. ",
-                title="Invalid Date and Timeframe Selection",
+                "You have likely requested data too far in the past for your selected timeframe. "
+                "For the yfinance API, 15m data is only available within the last 60 days. "
+                "1h data is only available within the last 730 days. "
+                "Alternatively, the yfinance API may be experiencing issues with its API keys currently. "
+                "In this case, you should try again later.",
+                title="Error Retrieving Financial Data",
                 color='red',
                 withCloseButton=True,
                 id='yfinance_alert',
