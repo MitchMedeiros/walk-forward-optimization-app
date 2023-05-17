@@ -3,13 +3,13 @@ from dash_bootstrap_components.themes import DARKLY
 from flask_caching import Cache
 
 import config
-from src.callbacks.backtest import simulation_callback
-from src.callbacks.children import parameter_inputs_callback
-import src.callbacks.loading
-from src.callbacks.plotting import candle_plot_callback, window_plot_callback
-from src.callbacks.popups import modal_callbacks
-from src.callbacks.theme import color_change_callback
-from src.components.layout import create_layout
+import src.callbacks.backtest as backtest
+import src.callbacks.children as children
+import src.callbacks.button_loading
+import src.callbacks.plotting as plotting
+import src.callbacks.modals as modals
+import src.callbacks.theme_toggle
+import src.components.layout as layout
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
@@ -33,15 +33,14 @@ elif config.cache_type == 'files':
 cache.init_app(app.server)
 
 # Provide the layout, containing all the dash components to be displayed.
-app.layout = create_layout()
+app.layout = layout.create_layout()
 
 # Instantiate the imported callbacks. The clientside callbacks are instantiated via module import.
-color_change_callback(app)
-modal_callbacks(app)
-candle_plot_callback(app, cache)
-window_plot_callback(app, cache)
-parameter_inputs_callback(app)
-simulation_callback(app, cache)
+modals.modal_callbacks(app)
+plotting.candle_plot_callback(app, cache)
+plotting.window_plot_callback(app, cache)
+children.parameter_inputs_callback(app)
+backtest.simulation_callback(app, cache)
 
 # Deploys the app locally if run_locally is True.
 if __name__ == '__main__' and config.run_locally:

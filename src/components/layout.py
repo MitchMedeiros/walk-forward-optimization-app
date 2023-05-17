@@ -335,7 +335,7 @@ def create_layout():
                     dbc.Row(
                         [
                             dbc.Col(sidebar, xs=12, lg=3, style={'margin-left': '12px', 'background-color': '#2b2b2b'}, id='sidebar'),
-                            dbc.Col(data_display_tabs, xs=12, lg='auto')
+                            dbc.Col(data_display_tabs, xs=12, lg=8)
                         ]
                     ),
                     html.Div(id='dummy_output')
