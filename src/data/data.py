@@ -16,7 +16,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
             if (connection):
                 cursor.execute(select_query)
                 df = pd.DataFrame(cursor.fetchall(), columns=['date', 'open', 'high', 'low', 'close', 'volume'])
-                df = df.astype({'date': 'datetime', 'open': 'float16', 'high': 'float16', 'low': 'float16', 'close': 'float16', 'volume': 'int32'})
+                df = df.astype({'date': 'datetime', 'open': 'float32', 'high': 'float32', 'low': 'float32', 'close': 'float32', 'volume': 'int32'})
                 df = df.set_index('date')
                 cursor.close()
                 connection.close()
@@ -35,12 +35,12 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                 interval=selected_timeframe,
                 repair=True
             )
-            df = df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low', 'Close': 'close', 'Adj Close': 'adj_close', 'Volume': 'volume'})
-            df.index.rename('date', inplace=True)
             try:
-                df = df.drop(columns=['adj_close'])
+                df = df.drop(columns=['Adj Close'])
             except KeyError:
                 pass
+            df = df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low', 'Close': 'close', 'Volume': 'volume'})
+            df.index.rename('date', inplace=True)
             df = df.astype({'open': 'float32', 'high': 'float32', 'low': 'float32', 'close': 'float32', 'volume': 'int32'})
             return df
 

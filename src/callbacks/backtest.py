@@ -44,12 +44,12 @@ def simulation_callback(app, cache):
             State('asset', 'value'),
             State('date_range', 'value'),
             State('trade_direction', 'value'),
-            State('sma_range', 'value'),
-            State('metric_drop', 'value')
+            State({'type': 'slider'}, 'value'),
+            State('metric_drop', 'value'),
         ]
     )
     def perform_backtest(n_clicks, selected_strategy, nwindows, insample, selected_timeframe,
-                         selected_asset, dates, selected_direction, sma_range, selected_metric):
+                         selected_asset, dates, selected_direction, selected_range, selected_metric):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
         close = df['close']
         close = close.astype({'close': 'double'})
@@ -71,7 +71,7 @@ def simulation_callback(app, cache):
         if selected_strategy == 'SMA Crossover':
             nparameters = 2
             columns_list = ["Slow SMA period", "Fast SMA period"]
-            parameter_values = closed_arange(sma_range[0], sma_range[1], 10, np.int16)
+            parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
 
             def backtest_windows(price, sma_periods):
                 fast_sma, slow_sma = vbt.IndicatorFactory.from_talib('SMA').run_combs(price, sma_periods)
@@ -80,36 +80,39 @@ def simulation_callback(app, cache):
                 pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
                 return pf
 
-        # elif selected_strategy == 'EMA Crossover':
-        #     nparameters = 2
-        #     columns_list = ["Slow EMA period", "Fast EMA period"]
-        #     parameter_values = closed_arange(ema_range[0], ema_range[1], 10, np.int16)
+        elif selected_strategy == 'EMA Crossover':
+            nparameters = 2
+            columns_list = ["Slow EMA period", "Fast EMA period"]
+            parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
 
-        #     def backtest_windows(price, ema_periods):
-        #         fast_ema, slow_ema = vbt.IndicatorFactory.from_talib('EMA').run_combs(price, ema_periods)
-        #         entries = fast_ema.real_crossed_above(slow_ema.real)
-        #         exits = fast_ema.real_crossed_below(slow_ema.real)
-        #         pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-        #         return pf
+            def backtest_windows(price, ema_periods):
+                fast_ema, slow_ema = vbt.IndicatorFactory.from_talib('EMA').run_combs(price, ema_periods)
+                entries = fast_ema.real_crossed_above(slow_ema.real)
+                exits = fast_ema.real_crossed_below(slow_ema.real)
+                pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+                return pf
 
         # elif selected_strategy == 'MACD':
 
-        # elif selected_strategy == 'RSI':
-        #     nparameters = 2
-        #     columns_list = ["RSI entry value", "RSI exit value"]
-        #     raw_parameter_values = closed_arange(rsi_range[0], rsi_range[1], 2, np.int16)
+        elif selected_strategy == 'RSI':
+            nparameters = 2
+            columns_list = ["RSI entry value", "RSI exit value"]
+            raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
 
-        #     # Generating all entry and exit combinations, with entry value < exit value by default, and splitting them.
-        #     # For the periods in the crossover strategies this was already being done for us by the .run_combs function.
-        #     parameter_combinations = list(combinations(raw_parameter_values, 2))
-        #     parameter_values = np.split(parameter_combinations, 2, axis=1)
+            # Generate all entry and exit combinations, with entry value < exit value by default, and splitting them into seperate lists.
+            # Unfortunately, the input lists/arrays for the crossed functions need to be 1d, so np.split and its variants aren't useful.
+            # Note that for the crossover strategies this was already done for us by the .run_combs function for the period parameters.
+            parameter_combinations = list(combinations(raw_parameter_values, 2))
+            parameter_values_entries = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]
+            parameter_values_exits = [parameter_combinations[i][1] for i in range(len(parameter_combinations))]
+            parameter_values = [parameter_values_entries, parameter_values_exits]
 
-        #     def backtest_windows(price, entry_exit_values):
-        #         rsi = vbt.IndicatorFactory.from_talib('RSI').run(price, 14)
-        #         entries = rsi.real_crossed_below(entry_exit_values[0])
-        #         exits = rsi.real_crossed_above(entry_exit_values[1])
-        #         pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-        #         return pf
+            def backtest_windows(price, entry_exit_values):
+                rsi = vbt.IndicatorFactory.from_talib('RSI').run(price, 14)
+                entries = rsi.real_crossed_below(entry_exit_values[0])
+                exits = rsi.real_crossed_above(entry_exit_values[1])
+                pf = vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+                return pf
 
         # Creating a dictionary of numpy.zeros arrays to overwrite with results during the backtests.
         metrics_keys = [
