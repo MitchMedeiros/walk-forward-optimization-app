@@ -60,8 +60,7 @@ def candle_plot_callback(app, cache):
                 plot_bgcolor='#2b2b2b',
                 paper_bgcolor='#2b2b2b',
                 font_color='white',
-                margin=dict(l=40, r=8, t=12, b=12),
-                width=1000
+                margin=dict(l=40, r=8, t=12, b=12)
             )
             fig.update_xaxes(
                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
@@ -95,13 +94,13 @@ def window_plot_callback(app, cache):
             font_color='white',
             margin=dict(l=40, r=12, t=0, b=20),
             legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
-            width=1000
+            width=None
         )
         fig.update_xaxes(
             rangebreaks=[dict(bounds=['sat', 'mon'])],
             gridcolor='#191919',
             showticklabels=False,
-            range=[df.index[0], df.index[-1]]
+            # range=[df.index[0], df.index[-1]]  # only relevant if using the clientside_callback below.
         )
         fig.update_yaxes(showgrid=False)
 
