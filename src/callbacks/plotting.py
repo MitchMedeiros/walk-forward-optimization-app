@@ -7,6 +7,8 @@ import config
 import src.data.data as data
 from . backtest import overlap_factor
 
+# vbt.settings['plotting']['layout']['width'] = 800
+
 # Callback for ploting the candlestick chart
 def candle_plot_callback(app, cache):
     @app.callback(
@@ -59,6 +61,7 @@ def candle_plot_callback(app, cache):
                 paper_bgcolor='#2b2b2b',
                 font_color='white',
                 margin=dict(l=40, r=8, t=12, b=12),
+                width=1000
             )
             fig.update_xaxes(
                 rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
@@ -92,8 +95,7 @@ def window_plot_callback(app, cache):
             font_color='white',
             margin=dict(l=40, r=12, t=0, b=20),
             legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
-            width=980,
-            height=185
+            width=1000
         )
         fig.update_xaxes(
             rangebreaks=[dict(bounds=['sat', 'mon'])],
@@ -102,6 +104,10 @@ def window_plot_callback(app, cache):
             range=[df.index[0], df.index[-1]]
         )
         fig.update_yaxes(showgrid=False)
+
+        fig['data'][0]['colorscale'] = [[0.0, '#8d30ff'], [1.0, '#30a8f9']]
+        fig['data'][1]['colorscale'] = [[0.0, '#8a2cd2'], [1.0, '#be32ff']]
+
         return dcc.Graph(figure=fig, id='window_plot')
 
 

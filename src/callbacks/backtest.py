@@ -185,15 +185,11 @@ def simulation_callback(app, cache):
             insample_parameters = pd.DataFrame(metrics['min_maxdrawdown_params'], columns=columns_list)
             outsample_parameters = pd.DataFrame(metrics['min_maxdrawdown_params_h'], columns=columns_list)
 
-        # metrics['max_return_params'] = pd.DataFrame(metrics['max_return_params'], columns=columns_list)
-
         insample_df = pd.DataFrame({'Return (%)': metrics['realized_returns'],
                                     'Sharpe Ratio': metrics['realized_sharpe'],
                                     'Max Drawdown (%)': metrics['realized_maxdrawdown'],
                                     'In-sample Return (%)': metrics['max_return_values']})
         insample_df = pd.concat([window_number, insample_parameters, insample_df], axis=1)
-
-        # metrics['max_return_params_h'] = pd.DataFrame(metrics['max_return_params_h'], columns=columns_list)
 
         outsample_df = pd.DataFrame({'Out-of-Sample Maximum Return (%)': metrics['max_return_values_h'],
                                      'In-Sample Average (%)': metrics['average_return_values'],
