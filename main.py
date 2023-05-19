@@ -2,14 +2,18 @@ from dash import Dash
 from dash_bootstrap_components.themes import DARKLY
 from flask_caching import Cache
 
-import config
 import src.callbacks.backtest as backtest
-import src.callbacks.children as children
 import src.callbacks.button_loading
-import src.callbacks.plotting as plotting
+import src.callbacks.children as children
 import src.callbacks.modals as modals
+import src.callbacks.plotting as plotting
 import src.callbacks.theme_toggle
 import src.components.layout as layout
+
+try:
+    import my_config as config
+except ImportError:
+    import config
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 

@@ -3,11 +3,14 @@ from datetime import date, timedelta
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
-import config
+try:
+    import my_config as config
+except ImportError:
+    import config
 
 asset_dropdown = dmc.Select(
-    data=['SPY', 'QQQ', 'VIXY'],
-    value='SPY',
+    data=[{'label': 'SPY', 'value': 'spy'}, {'label': 'QQQ', 'value': 'qqq'}, {'label': 'VIXY', 'value': 'vixy'}],
+    value='spy',
     label="Asset",
     icon=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
@@ -30,8 +33,8 @@ timeframe_dropdown = dmc.Select(
 )
 
 date_calendar = dmc.DateRangePicker(
-    minDate=date(1990, 1, 1),
-    maxDate=(date.today() - timedelta(days=1)),
+    minDate=config.minimum_selectable_date,
+    maxDate=config.maximum_selectable_date,
     value=[config.calendar_start, config.calendar_end],
     amountOfMonths=2,
     allowSingleDateInRange=True,

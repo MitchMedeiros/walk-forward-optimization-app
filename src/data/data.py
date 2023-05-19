@@ -1,6 +1,9 @@
 import pandas as pd
 
-import config
+try:
+    import my_config as config
+except ImportError:
+    import config
 
 # Queries the data from the database or yfinance and caches it via flask-cache for use in multiple callbacks
 def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
@@ -15,14 +18,14 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
 
             if (connection):
                 cursor.execute(select_query)
-                df = pd.DataFrame(cursor.fetchall(), columns=['date', 'open', 'high', 'low', 'close', 'volume'])
-                df = df.astype({'date': 'datetime', 'open': 'float32', 'high': 'float32', 'low': 'float32', 'close': 'float32', 'volume': 'int32'})
+                df = pd.DataFrame(cursor.fetchall(), columns=['date', 'open', 'high', 'low', 'close', 'volume', 'symbol'])
+                df = df.astype({'open': 'float32', 'high': 'float32', 'low': 'float32', 'close': 'float32', 'volume': 'int32'})
                 df = df.set_index('date')
                 cursor.close()
                 connection.close()
                 return df
             else:
-                error_frame = pd.DataFrame(columns=['first'])  # To signal to dcc.Graph where the postgres data retrieval failed
+                error_frame = pd.DataFrame(columns=['empty'])  # To signal to dcc.Graph where the postgres data retrieval failed
                 return error_frame
 
         elif config.data_type == 'yfinance':

@@ -7,8 +7,6 @@ import config
 import src.data.data as data
 from . backtest import overlap_factor
 
-# vbt.settings['plotting']['layout']['width'] = 800
-
 # Callback for ploting the candlestick chart
 def candle_plot_callback(app, cache):
     @app.callback(
@@ -87,6 +85,7 @@ def window_plot_callback(app, cache):
         # Splits the data into walk-forward windows that are plotted.
         window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
                              window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
+
         fig = df.vbt.rolling_split(**window_kwargs, plot=True, trace_names=['in-sample', 'out-of-sample'])
         fig.update_layout(
             plot_bgcolor='#2b2b2b',
@@ -103,10 +102,8 @@ def window_plot_callback(app, cache):
             # range=[df.index[0], df.index[-1]]  # only relevant if using the clientside_callback below.
         )
         fig.update_yaxes(showgrid=False)
-
         fig['data'][0]['colorscale'] = [[0.0, '#8d30ff'], [1.0, '#30a8f9']]
         fig['data'][1]['colorscale'] = [[0.0, '#8a2cd2'], [1.0, '#be32ff']]
-
         return dcc.Graph(figure=fig, id='window_plot')
 
 
