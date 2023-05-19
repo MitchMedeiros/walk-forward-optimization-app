@@ -55,4 +55,4 @@ run_backtest_button = dmc.Button(
     id='run_button'
 )
 
-parameter_inputs = html.Div(id='parameter_inputs')
+parameter_inputs = html.Div(dmc.RangeSlider(value=[20, 200], style={'display': 'none'}, id={'type': 'slider'}), id='parameter_inputs')
