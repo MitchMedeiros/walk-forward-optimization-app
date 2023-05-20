@@ -4,12 +4,11 @@ dash-core-components
 dash-html-components
 dash-iconify
 dash_mantine_components
-dash_table
 datetime
 flask
 flask_caching
 mod-wsgi
-psycopg2
+polars[connectorx, pandas]
 redis
 vectorbt
 yfinance

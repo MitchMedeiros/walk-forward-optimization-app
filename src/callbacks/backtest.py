@@ -6,9 +6,14 @@ from dash import html, Input, Output, State
 import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
+import polars as pl
 import vectorbt as vbt
 
 import src.data.data as data
+try:
+    import my_config as config
+except ImportError:
+    import config
 
 # Adjusts window length based on the number of windows, providing a 75% overlap. Also used in plotting.py.
 def overlap_factor(nwindows):
@@ -51,8 +56,13 @@ def simulation_callback(app, cache):
     def perform_backtest(n_clicks, selected_strategy, nwindows, insample, selected_timeframe,
                          selected_asset, dates, selected_direction, selected_range, selected_metric):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
-        close = df['close']
-        close = close.astype({'close': 'double'})
+
+        if config.data_type == 'postgres':
+            close = df.select(pl.col(['date', 'close'])).to_pandas()
+            close = close.set_index('date')
+        elif config.data_type == 'yfinance':
+            close = df['close']
+            close = close.astype({'close': 'double'})
 
         # Split the data into walk-forward windows to be looped through.
         window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),

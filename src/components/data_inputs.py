@@ -22,7 +22,7 @@ asset_dropdown = dmc.Select(
 
 timeframe_dropdown = dmc.Select(
     data=['15m', {'label': '1h', 'value': '60m'}, '1d'],
-    value='1d',
+    value='60m',
     label="Timeframe",
     icon=DashIconify(icon='mdi-light:clock'),
     searchable=True,

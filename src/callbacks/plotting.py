@@ -1,11 +1,16 @@
 from dash import dcc, Input, Output, State
 import dash_mantine_components as dmc
+import pandas as pd
+import polars as pl
 import plotly.graph_objects as go
 import vectorbt as vbt
 
-import config
 import src.data.data as data
 from . backtest import overlap_factor
+try:
+    import my_config as config
+except ImportError:
+    import config
 
 # Callback for ploting the candlestick chart
 def candle_plot_callback(app, cache):
@@ -20,7 +25,7 @@ def candle_plot_callback(app, cache):
     def plot_candles(selected_timeframe, selected_asset, dates):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
-        if config.data_type == 'postgres' and df.empty:
+        if config.data_type == 'postgres' and len(df) == 0:
             return dmc.Alert(
                 "A connection could not be established to the database or the select query failed. "
                 "Make sure your database crediental are corrently entered in config.py. "
@@ -29,10 +34,10 @@ def candle_plot_callback(app, cache):
                 title="Error Querying Database",
                 color='red',
                 withCloseButton=True,
-                id='db_alert',
-            ),
+                id='db_alert'
+            )
 
-        elif config.data_type == 'yfinance' and df.empty:
+        elif config.data_type == 'yfinance' and len(df) == 0:
             return dmc.Alert(
                 "You have likely requested data too far in the past for your selected timeframe. "
                 "For the yfinance API, 15m data is only available within the last 60 days. "
@@ -42,17 +47,21 @@ def candle_plot_callback(app, cache):
                 title="Error Retrieving Financial Data",
                 color='red',
                 withCloseButton=True,
-                id='yfinance_alert',
-            ),
+                id='yfinance_alert'
+            )
 
         else:
+            # Removes gaps within the barchart. This won't be flawless if the data isn't adjusted for daylight savings time.
             if selected_timeframe == '1d':
                 breaks = dict(bounds=['sat', 'mon'])
             else:
-                breaks = dict(bounds=[16, 9.5], pattern='hour')
+                breaks = dict(bounds=[21, 14.5], pattern='hour')
 
-            fig = go.Figure(data=[go.Candlestick(x=df.index, open=df['open'], high=df['high'],
-                                                 low=df['low'], close=df['close'])])
+            if config.data_type == 'yfinance':
+                df.reset_index(inplace=True)
+
+            fig = go.Figure(data=[go.Ohlc(x=df['date'], open=df['open'], high=df['high'],
+                                  low=df['low'], close=df['close'])])
             fig.update_layout(
                 xaxis=dict(rangeslider=dict(visible=False)),
                 plot_bgcolor='#2b2b2b',
@@ -81,6 +90,9 @@ def window_plot_callback(app, cache):
     )
     def plot_windows(nwindows, insample, dates, selected_timeframe, selected_asset):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
+        if config.data_type == 'postgres':
+            df = df.select(pl.col(['date', 'close'])).to_pandas()
+            df = df.set_index('date')
 
         # Splits the data into walk-forward windows that are plotted.
         window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
