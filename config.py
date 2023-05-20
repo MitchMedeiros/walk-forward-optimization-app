@@ -20,6 +20,7 @@ db_port = ''
 db_name = ''
 db_user = ''
 db_password = ''
+db_credentials = dict(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
 
 # Only used if data_type='postgres'. Choose weather to aggregate data to larger time intervals with 'pandas' or 'timescaledb'.
 # Set to 'pandas' if you are not using the timescaledb extension or have not converted your tables to hypertables.
