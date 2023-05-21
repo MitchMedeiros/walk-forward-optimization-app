@@ -1,7 +1,8 @@
 .vscode
 my_config.py
 testbook.ipynb
-main_graph_testing.py
+plotbook.ipynb
+xrange_testing.py
 newas_book.ipynb
 __pycache__
 src/__pycache__

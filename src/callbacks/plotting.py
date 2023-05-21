@@ -51,11 +51,11 @@ def candle_plot_callback(app, cache):
             )
 
         else:
-            # Removes gaps within the barchart. This won't be flawless if the data isn't adjusted for daylight savings time.
+            # Removes gaps outside of trading hours in the barchart. This doesn't adjust for daylights savings time.
             if selected_timeframe == '1d':
                 breaks = dict(bounds=['sat', 'mon'])
             else:
-                breaks = dict(bounds=[21, 14.5], pattern='hour')
+                breaks = dict(bounds=[21, 13.5], pattern='hour')
 
             if config.data_type == 'yfinance':
                 df.reset_index(inplace=True)
@@ -63,17 +63,14 @@ def candle_plot_callback(app, cache):
             fig = go.Figure(data=[go.Ohlc(x=df['date'], open=df['open'], high=df['high'],
                                   low=df['low'], close=df['close'])])
             fig.update_layout(
-                xaxis=dict(rangeslider=dict(visible=False)),
                 plot_bgcolor='#2b2b2b',
                 paper_bgcolor='#2b2b2b',
                 font_color='white',
-                margin=dict(l=40, r=8, t=12, b=12)
+                margin=dict(l=40, r=8, t=12, b=12),
+                xaxis=dict(rangeslider=dict(visible=False), rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
+                           gridcolor='#191919'),
+                yaxis=dict(gridcolor='#191919')
             )
-            fig.update_xaxes(
-                rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
-                gridcolor='#191919'
-            )
-            fig.update_yaxes(gridcolor='#191919')
             return dcc.Graph(figure=fig, id='candle_plot')
 
 # Callback for plotting the walk-forward windows
@@ -104,24 +101,20 @@ def window_plot_callback(app, cache):
             paper_bgcolor='#2b2b2b',
             font_color='white',
             margin=dict(l=40, r=12, t=0, b=20),
+            width=None,  # Reset the width defined by .rolling_split so that Dash can properly scale the graph.
             legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
-            width=None
+            xaxis=dict(showticklabels=False, rangebreaks=[dict(bounds=['sat', 'mon'])],
+                       gridcolor='#191919'),
+            yaxis=dict(showgrid=False)
         )
-        fig.update_xaxes(
-            rangebreaks=[dict(bounds=['sat', 'mon'])],
-            gridcolor='#191919',
-            showticklabels=False,
-            # range=[df.index[0], df.index[-1]]  # only relevant if using the clientside_callback below.
-        )
-        fig.update_yaxes(showgrid=False)
-        fig['data'][0]['colorscale'] = [[0.0, '#8d30ff'], [1.0, '#30a8f9']]
+        fig['data'][0]['colorscale'] = [[0.0, '#8d30ff'], [1.0, '#30a8f9']]  # Changing the heatmap colors.
         fig['data'][1]['colorscale'] = [[0.0, '#8a2cd2'], [1.0, '#be32ff']]
+        # fig.update_xaxes(range=[df.index[0], df.index[-1]])  # only relevant if using one of the callbacks below.
         return dcc.Graph(figure=fig, id='window_plot')
-
 
 # clientside_callback(
 #     """
-#     function(relayout, window_plot) {
+#     function update_range(relayout, window_plot) {
 #         var window_plot = Object.assign({}, window_plot);
 #         const x_range = [relayout['xaxis.range[0]'], relayout['xaxis.range[1]']];
 #         window_plot.layout.xaxis.range = x_range;
