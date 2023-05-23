@@ -88,7 +88,14 @@ def window_plot_callback(app, cache):
     def plot_windows(nwindows, insample, dates, selected_timeframe, selected_asset):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
         if config.data_type == 'postgres':
-            df = df.select(pl.col(['date', 'close'])).to_pandas()
+            df = df.select(pl.col(['date', 'close']))
+
+            # Aggregate larger datasets with low timeframes to speed up the window plotting.
+            if selected_timeframe == '15m' and len(df) > 150:
+                df = df.groupby_dynamic('date', every='1h').agg([pl.first("close")])
+
+            # Convert to pandas for vectorbt
+            df = df.to_pandas()
             df = df.set_index('date')
 
         # Splits the data into walk-forward windows that are plotted.

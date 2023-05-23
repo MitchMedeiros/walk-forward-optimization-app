@@ -1,4 +1,5 @@
 from itertools import combinations
+import json
 from math import atan, pi
 from statistics import mean
 
@@ -14,6 +15,13 @@ try:
     import my_config as config
 except ImportError:
     import config
+
+# def cached_portfolios(cache, selected_strategy, nwindows, insample, selected_timeframe, selected_asset,
+#                        dates, selected_direction, selected_range, selected_metric):
+#     @cache.memoize()
+#     def pickle_portfolios(selected_strategy, nwindows, insample, selected_timeframe, selected_asset,
+#                           dates, selected_direction, selected_range, selected_metric):
+#         return dummy
 
 # Adjusts window length based on the number of windows, providing a 75% overlap. Also used in plotting.py.
 def overlap_factor(nwindows):
@@ -141,6 +149,8 @@ def simulation_callback(app, cache):
         metrics = {key: np.zeros(nwindows, dtype=np.float64) for key in metrics_keys}
         metrics.update({key: np.zeros((nwindows, nparameters), dtype=np.int16) for key in parameters_keys})
 
+        outsample_portfolios = []
+
         # Looping through the walk-forward windows, saving metrics to the arrays for each window.
         # The deep.getattr function is used to access the portfolio metric to optimize on in a variable fashion.
         for i in range(nwindows):
@@ -149,7 +159,7 @@ def simulation_callback(app, cache):
                                                            pf_insample.deep_getattr(selected_metric).idxmax()[1]])
             pf_outsample_optimized = backtest_windows(out_price[i], parameter_values)
 
-            # Saving various metrics for viewing in data tables later.
+            # Saving various metrics for inputting into tables.
             metrics['average_return_values'][i] = round(pf_insample.total_return().mean() * 100, 3)
             metrics['average_sharpe_values'][i] = round(pf_insample.sharpe_ratio().mean(), 3)
             metrics['average_maxdrawdown_values'][i] = round(pf_insample.max_drawdown().mean() * 100, 3)
@@ -181,6 +191,17 @@ def simulation_callback(app, cache):
             metrics['max_return_params_h'][i] = pf_outsample_optimized.total_return().idxmax()
             metrics['max_sharpe_params_h'][i] = pf_outsample_optimized.sharpe_ratio().idxmax()
             metrics['min_maxdrawdown_params_h'][i] = pf_outsample_optimized.max_drawdown().idxmin()
+
+            outsample_portfolios.append(pf_outsample.dumps())
+
+            # Saving the pickled portfolios for plotting.
+            # @cache.memoize
+            # def pickle_portfolios(selected_strategy, nwindows, insample, selected_timeframe,
+            #                       selected_asset, dates, selected_direction, selected_range, selected_metric, window_number):
+            #     print('Caching portfolios...')
+            #     return vbt.Portfolio.loads(outsample_portfolios[window_number])
+
+        cache.set('portfolios', outsample_portfolios)
 
         # Convert and format the numpy arrays into dataframes for displaying in dash data tables.
         window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)

@@ -258,6 +258,7 @@ def accordion_header(displayed_text):
         style={'width': '100%'}
     )
 
+# Three tabs: the first contains data plots, the second has an accordion for tables, the third contains portfolio based plots
 data_display_tabs = dbc.Tabs(
     [
         dbc.Tab(
@@ -316,8 +317,8 @@ data_display_tabs = dbc.Tabs(
         ),
         dbc.Tab(
             [
-                dcc.Loading(type='cube', id='detailed_div'),
-                dmc.Text("Still working on this section of the app.", size='lg'),
+                dmc.Button("Visual Results", id='stats_button'),
+                dcc.Loading(type='cube', id='detailed_div')
             ],
             label="Visual Backtest Results",
             active_label_style={'color': '#30a5fe'}

@@ -1,6 +1,3 @@
-import pandas as pd
-import polars as pl
-
 try:
     import my_config as config
 except ImportError:
@@ -11,6 +8,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
         if config.data_type == 'postgres':
+            import polars as pl
 
             # Query the data from the database. Polars' cast method is much faster than using CAST within the query.
             query = f'''
@@ -29,11 +27,12 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
             df = df.with_columns([pl.col(['open', 'high', 'low', 'close']).cast(pl.Decimal(8, 3))]).set_sorted('date')
 
             # Aggregate the data to the selected timeframe
-            df = df.groupby_dynamic("date", every=selected_timeframe).agg(
-                [pl.first("open"), pl.max("high"), pl.min("low"), pl.last("close")])
+            df = df.groupby_dynamic('date', every=selected_timeframe).agg(
+                [pl.first('open'), pl.max('high'), pl.min('low'), pl.last('close')])
             return df
 
         elif config.data_type == 'yfinance':
+            import pandas as pd
             import yfinance
 
             df = yfinance.download(
