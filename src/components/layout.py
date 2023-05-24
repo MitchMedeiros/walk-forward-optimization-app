@@ -1,3 +1,5 @@
+import uuid
+
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
@@ -290,14 +292,14 @@ data_display_tabs = dbc.Tabs(
                                 ),
                                 dmc.AccordionItem(
                                     [
-                                        dmc.AccordionControl(accordion_header("Comparison of Results by Window")),
+                                        dmc.AccordionControl(accordion_header("Results by Window")),
                                         dmc.AccordionPanel(html.Div(id='insample_div'))
                                     ],
                                     value='insample'
                                 ),
                                 dmc.AccordionItem(
                                     [
-                                        dmc.AccordionControl(accordion_header("Highest Possible Out-of-Sample Results")),
+                                        dmc.AccordionControl(accordion_header("Highest Possible Results for the Strategy")),
                                         dmc.AccordionPanel(html.Div(id='outsample_div'))
                                     ],
                                     value='outsample'
@@ -317,7 +319,18 @@ data_display_tabs = dbc.Tabs(
         ),
         dbc.Tab(
             [
-                dmc.Button("Visual Results", id='stats_button'),
+                dmc.SegmentedControl(
+                    [
+                        {'value': 0, 'label': "Window 1"},
+                        {'value': 1, 'label': "Window 2"},
+                        {'value': 2, 'label': "Window 3"},
+                        {'value': 3, 'label': "Window 4"},
+                    ],
+                    value='0',
+                    fullWidth=True,
+                    size='s',
+                    id='window_selector'
+                ),
                 dcc.Loading(type='cube', id='detailed_div')
             ],
             label="Visual Backtest Results",
@@ -328,6 +341,8 @@ data_display_tabs = dbc.Tabs(
 )
 
 def create_layout():
+    unique_session = str(uuid.uuid4())
+
     return dmc.MantineProvider(
         [
             dbc.Container(
@@ -339,7 +354,8 @@ def create_layout():
                             dbc.Col(data_display_tabs, xs=12, lg=8)
                         ]
                     ),
-                    html.Div(id='dummy_output')
+                    html.Div(id='dummy_output'),
+                    dcc.Store(data=unique_session, id='session-id'),
                 ],
                 fluid=True,
                 className='dbc'

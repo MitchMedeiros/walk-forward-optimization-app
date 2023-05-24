@@ -7,10 +7,9 @@ import src.callbacks.button_loading
 import src.callbacks.children as children
 import src.callbacks.modals as modals
 import src.callbacks.plotting as plotting
+import src.callbacks.stats_plotting as stats_plotting
 import src.callbacks.theme_toggle
 import src.components.layout as layout
-
-import src.callbacks.stats_plotting as stats_plotting
 
 try:
     import my_config as config
@@ -43,11 +42,10 @@ app.layout = layout.create_layout()
 
 # Instantiate the imported callbacks. The clientside callbacks are instantiated via module import.
 modals.modal_callbacks(app)
+children.parameter_inputs_callback(app)
 plotting.candle_plot_callback(app, cache)
 plotting.window_plot_callback(app, cache)
-children.parameter_inputs_callback(app)
 backtest.simulation_callback(app, cache)
-
 stats_plotting.backtest_plotting_callback(app, cache)
 
 # Deploys the app locally if run_locally is True.

@@ -1,5 +1,4 @@
 from itertools import combinations
-import json
 from math import atan, pi
 from statistics import mean
 
@@ -11,17 +10,11 @@ import polars as pl
 import vectorbt as vbt
 
 import src.data.data as data
+
 try:
     import my_config as config
 except ImportError:
     import config
-
-# def cached_portfolios(cache, selected_strategy, nwindows, insample, selected_timeframe, selected_asset,
-#                        dates, selected_direction, selected_range, selected_metric):
-#     @cache.memoize()
-#     def pickle_portfolios(selected_strategy, nwindows, insample, selected_timeframe, selected_asset,
-#                           dates, selected_direction, selected_range, selected_metric):
-#         return dummy
 
 # Adjusts window length based on the number of windows, providing a 75% overlap. Also used in plotting.py.
 def overlap_factor(nwindows):
@@ -50,6 +43,7 @@ def simulation_callback(app, cache):
         ],
         [
             Input('run_button', 'n_clicks'),
+            Input('session-id', 'data'),
             State('strategy_drop', 'value'),
             State('nwindows', 'value'),
             State('insample', 'value'),
@@ -61,7 +55,7 @@ def simulation_callback(app, cache):
             State('metric_drop', 'value'),
         ]
     )
-    def perform_backtest(n_clicks, selected_strategy, nwindows, insample, selected_timeframe,
+    def perform_backtest(n_clicks, session_id, selected_strategy, nwindows, insample, selected_timeframe,
                          selected_asset, dates, selected_direction, selected_range, selected_metric):
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
@@ -194,14 +188,9 @@ def simulation_callback(app, cache):
 
             outsample_portfolios.append(pf_outsample.dumps())
 
-            # Saving the pickled portfolios for plotting.
-            # @cache.memoize
-            # def pickle_portfolios(selected_strategy, nwindows, insample, selected_timeframe,
-            #                       selected_asset, dates, selected_direction, selected_range, selected_metric, window_number):
-            #     print('Caching portfolios...')
-            #     return vbt.Portfolio.loads(outsample_portfolios[window_number])
-
-        cache.set('portfolios', outsample_portfolios)
+        # Caching the calculated portfolios for use in backtest_plotting_callback, using the uuid4 as the label.
+        cache.set(session_id, outsample_portfolios)
+        print(f'stored session id: {session_id}')
 
         # Convert and format the numpy arrays into dataframes for displaying in dash data tables.
         window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=['Window'], dtype=np.int8)
@@ -286,20 +275,6 @@ metrics['min_maxdrawdown_values_h'] : "Out-of-sample Minimum Max Drawdown (%)"
 # insample_table = dash_table.DataTable(
 #     data=insample_df.to_dict('records'),
 #     columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
-#     style_as_list_view=True,
-#     style_header={
-#         'backgroundColor': 'rgb(30, 30, 30)',
-#         'color': 'white'
-#     },
-#     style_data={
-#         'backgroundColor': 'rgb(50, 50, 50)',
-#         'color': 'white'
-#     },
-# )
-
-# outsample_table = dash_table.DataTable(
-#     data=outsample_df.to_dict('records'),
-#     columns=[{'name': str(i), 'id': str(i)} for i in outsample_df.columns],
 #     style_as_list_view=True,
 #     style_header={
 #         'backgroundColor': 'rgb(30, 30, 30)',

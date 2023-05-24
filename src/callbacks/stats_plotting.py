@@ -1,92 +1,39 @@
-from dash import dcc, Input, Output, State
+from dash import dcc, Input, Output
 
 import talib
 import vectorbt as vbt
 
-import src.callbacks.backtest as backtest
-
-# def backtest_plotting_callback(app, cache):
-#     @app.callback(
-#         Output('detailed_div', 'children'),
-#         [
-#             Input('stats_button', 'n_clicks'),
-#             State('strategy_drop', 'value'),
-#             State('nwindows', 'value'),
-#             State('insample', 'value'),
-#             State('timeframe', 'value'),
-#             State('asset', 'value'),
-#             State('date_range', 'value'),
-#             State('trade_direction', 'value'),
-#             State({'type': 'slider'}, 'value'),
-#             State('metric_drop', 'value'),
-#         ]
-#     )
-#     def plot_portfolio(n_clicks, selected_strategy, nwindows, insample, selected_timeframe, selected_asset,
-#                        dates, selected_direction, selected_range, selected_metric):
-#         backtest.cached_portfolios
-#         outsample_portfolios = backtest.pickle_portfolios(selected_strategy, nwindows, insample, selected_timeframe,
-#                                                           selected_asset, dates, selected_direction, selected_range,
-#                                                           selected_metric)
-#         pf_two = vbt.Portfolio.loads(outsample_portfolios[1])
-#         dashboard = pf_two.plots(
-#             subplots=['trades', 'net_exposure', 'cum_returns', 'drawdowns'],
-#             subplot_settings=dict(
-#                 trades=dict(
-#                     yaxis_kwargs=dict(
-#                         title="Asset Price"
-#                     )
-#                 ),
-#                 cum_returns=dict(
-#                     title="Strategy Return vs S&P 500",
-#                     yaxis_kwargs=dict(
-#                         title="Return (%)"
-#                     )
-#                 ),
-#                 drawdowns=dict(
-#                     top_n=2,
-#                     yaxis_kwargs=dict(
-#                         title="Portfolio Value"
-#                     )
-#                 ),
-#                 net_exposure=dict(
-#                     title="RSI",
-#                     yaxis_kwargs=dict(
-#                         title="RSI Value"
-#                     ),
-#                     trace_kwargs=dict(
-#                         opacity=0
-#                     )
-#                 )
-#             )
-#         )
-#         dashboard.update_layout(plot_bgcolor='#2b2b2b', paper_bgcolor='#2b2b2b', height=1200, width=None,
-#                                 xaxis=dict(gridcolor='#191919'), yaxis=dict(gridcolor='#191919'))
-
-#         return dashboard
-
-#       rsi = talib.RSI(out_price[i], 14)
-#       rsi_plot = rsi.vbt.plot(trace_kwargs=dict(name="RSI", line=dict(color='#8332c6')),
-#                               add_trace_kwargs=dict(row=2, col=1), fig=dashboard)
-
+vbt.settings.set_theme('dark')
 
 def backtest_plotting_callback(app, cache):
     @app.callback(
         Output('detailed_div', 'children'),
-        Input('stats_button', 'n_clicks'),
+        Input('window_selector', 'value'),
+        Input('session-id', 'data'),
         prevent_initial_call=True
     )
-    def plot_portfolio(n_clicks):
-        outsample_portfolios = cache.get('portfolios')
-        pf_two = vbt.Portfolio.loads(outsample_portfolios[1])
+    def plot_portfolio(value, session_id):
+        outsample_portfolios = cache.get(session_id)
+        pf = vbt.Portfolio.loads(outsample_portfolios[value])
+        print(f'retrieved session id: {session_id}')
 
-        dashboard = pf_two.plots(
-            subplots=['trades', 'net_exposure', 'cum_returns', 'drawdowns'],
+        dashboard = pf.plots(
+            subplots=['trades', 'cum_returns', 'drawdowns'],
             subplot_settings=dict(
                 trades=dict(
                     yaxis_kwargs=dict(
                         title="Asset Price"
                     )
                 ),
+                # net_exposure=dict(
+                #     title="RSI",
+                #     yaxis_kwargs=dict(
+                #         title="RSI Value"
+                #     ),
+                #     trace_kwargs=dict(
+                #         opacity=0
+                #     )
+                # ),
                 cum_returns=dict(
                     title="Strategy Return vs S&P 500",
                     yaxis_kwargs=dict(
@@ -98,21 +45,16 @@ def backtest_plotting_callback(app, cache):
                     yaxis_kwargs=dict(
                         title="Portfolio Value"
                     )
-                ),
-                net_exposure=dict(
-                    title="RSI",
-                    yaxis_kwargs=dict(
-                        title="RSI Value"
-                    ),
-                    trace_kwargs=dict(
-                        opacity=0
-                    )
                 )
             )
         )
-        dashboard.update_layout(height=1200, width=None)
 
-        # dashboard.update_layout(plot_bgcolor='#2b2b2b', paper_bgcolor='#2b2b2b', height=1200, width=None,
-        #                         xaxis=dict(gridcolor='#191919'), yaxis=dict(gridcolor='#191919'))
+#       rsi = talib.RSI(out_price[i], 14)
+#       rsi_plot = rsi.vbt.plot(trace_kwargs=dict(name="RSI", line=dict(color='#8332c6')),
+#                               add_trace_kwargs=dict(row=2, col=1), fig=dashboard)
+
+        dashboard.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_color='#2b99ff', height=1200, width=None)
+        dashboard.update_xaxes(linecolor='rgba(0, 0, 0, 0.25)', gridcolor='rgba(0, 0, 0, 0.25)')
+        dashboard.update_yaxes(linecolor='rgba(0, 0, 0, 0.25)', gridcolor='rgba(0, 0, 0, 0.25)')
 
         return dcc.Graph(figure=dashboard, id='dashboard_plot')
