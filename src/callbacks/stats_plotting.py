@@ -13,11 +13,11 @@ def backtest_plotting_callback(app, cache):
         prevent_initial_call=True
     )
     def plot_portfolio(value, session_id):
-        outsample_portfolios = cache.get(session_id)
-        pf = vbt.Portfolio.loads(outsample_portfolios[value])
+        pickled_portfolio = cache.get(session_id)
+        pf_outsample = vbt.Portfolio.loads(pickled_portfolio)
         print(f'retrieved session id: {session_id}')
 
-        dashboard = pf.plots(
+        dashboard = pf_outsample.plots(
             subplots=['trades', 'cum_returns', 'drawdowns'],
             subplot_settings=dict(
                 trades=dict(
