@@ -9,15 +9,10 @@ import polars as pl
 import vectorbt as vbt
 
 import src.data.data as data
-
 try:
     import my_config as config
 except ImportError:
     import config
-
-vbt.settings.stats_builder['metrics'] = ['sharpe_ratio', 'total_return', 'open_trade_pnl', 'total_trades', 'total_open_trades',
-                                         'win_rate', 'avg_winning_trade', 'avg_losing_trade', 'expectancy', 'max_gross_exposure']
-# 'avg_winning_trade_duration', 'avg_losing_trade_duration', 'sortino_ratio', 'calmar_ratio', 'omega_ratio', 'profit_factor'
 
 # Adjusts window length based on the number of windows, providing a 75% overlap. Also used in plotting.py.
 def overlap_factor(nwindows):
@@ -160,51 +155,50 @@ def simulation_callback(app, cache):
         cache.set(session_id, pickled_portfolio, timeout=7200)
         print(f'stored session id: {session_id}')
 
-        # Creating the dataframes for the viewing the backtest results.
-        outsample_df = pf_outsample.stats(agg_func=None)
-        outsample_df = outsample_df.reset_index(drop=True)
-        outsample_df = outsample_df.rename(columns={"Total Return [%]": "Return [%]", "Total Open Trades": "Open Trades",
-                                                    "Expectancy": "Expectancy [%]", "Max Gross Exposure [%]": "Exposure [%]"})
-
+        # Creating DataFrames using portfolio.stats() to show the backtest results and formatting them using Pandas methods.
+        # The stats DataFrames can also be created with the desired format directly by passing dictionaries to portfolio.stats().
         window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=["Window"], dtype=np.int16)
-        params_df = pd.DataFrame(outsample_parameters.transpose(), columns=columns_list, dtype=np.int16)
-        outsample_maxdrawdowns = pd.Series(pf_outsample.max_drawdown().values * 100, name='Max Drawdown [%]')
-        outsample_df = pd.concat([window_number, params_df, outsample_maxdrawdowns, outsample_df], axis=1).round(2)
 
-        optimal_params_df = pd.DataFrame(optimal_parameters.transpose(), columns=columns_list, dtype=np.int16)
-        optimal_returns = pf_outsample_optimized.stats('total_return', agg_func=None).groupby("split_idx").max().reset_index(drop=True)
-        optimal_sharpe_ratio = pf_outsample_optimized.stats('sharpe_ratio', agg_func=None).groupby("split_idx").max().reset_index(drop=True)
-        # min_maxdrawdowns = pf_outsample_optimized.max_drawdown().groupby('split_idx').mean()
-        comparison_df = pd.concat([window_number, optimal_params_df, optimal_returns, optimal_sharpe_ratio], axis=1).round(2)
-        comparison_df = comparison_df.rename(columns={"Total Return [%]": "Return [%]"})
+        outsample_parameters_df = pd.DataFrame(outsample_parameters.transpose(), columns=columns_list, dtype=np.int16)
+        outsample_metrics = ['total_return', 'sharpe_ratio', 'max_dd', 'benchmark_return', 'open_trade_pnl', 'total_trades',
+                             'total_open_trades', 'win_rate', 'avg_winning_trade', 'avg_losing_trade', 'expectancy', 'max_gross_exposure']
+        outsample_df = pf_outsample.stats(metrics=outsample_metrics, agg_func=None).reset_index(drop=True)
+        outsample_df = pd.concat([window_number, outsample_parameters_df, outsample_df], axis=1).round(2)
+        outsample_df = outsample_df.rename(columns={"Total Return [%]": "Return (%)", "Total Open Trades": "Open Trades",
+                                                    "Expectancy": "Expectancy (%)", "Max Gross Exposure [%]": "Exposure (%)",
+                                                    "Win Rate [%]": "Win Rate (%)", "Avg Winning Trade [%]": "Avg Winning Trade (%)",
+                                                    "Avg Losing Trade [%]": "Avg Losing Trade (%)", "Benchmark Return [%]": "Benchmark Return (%)",
+                                                    "Max Drawdown [%]": "Max Drawdown (%)"})
 
-        # average_returns = pf_outsample_optimized.stats('total_return', agg_func=None).groupby("split_idx").mean().reset_index(drop=True)
-        # benchmark_returns = pf_outsample_optimized.stats('benchmark_return', agg_func=None).groupby('split_idx').mean().reset_index(drop=True)
+        optimal_parameters_df = pd.DataFrame(optimal_parameters.transpose(), columns=columns_list, dtype=np.int16)
+        optimal_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").max().rename("Return (%)")
+        optimal_sharpe_ratio = (pf_outsample_optimized.sharpe_ratio() * 100).groupby("split_idx").max().rename("Sharpe Ratio")
+        optimal_maxdrawdowns = (pf_outsample_optimized.max_drawdown() * -100).groupby("split_idx").min().rename("Max Drawdown (%)")
+        average_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").mean().rename("Average Returns (%)")
+        optimal_df = pd.concat([window_number, optimal_parameters_df, optimal_returns, optimal_sharpe_ratio, optimal_maxdrawdowns, average_returns], axis=1).round(2)
 
         # Defining dash components for displaying the formatted data.
-        outsample_dates = pd.DataFrame(out_dates[0])
-        outsample_num_days = len(outsample_dates['split_0'].dt.date.unique())
-
+        annualization_factor = 252 / len(np.unique(out_dates[0].date))
         averages_table = dmc.Table(
             [
                 html.Tbody(
                     [
-                        html.Tr([html.Td("Annualized return"), html.Td(f"{round(pf_outsample.total_return().mean() * 100 * (252 / outsample_num_days), 3)}%")]),
-                        html.Tr([html.Td("Average return per window"), html.Td(f"{round(pf_outsample.total_return().mean()*100,2)}%")]),
-                        html.Tr([html.Td("Average Sharpe ratio"), html.Td(f"{round(pf_outsample.sharpe_ratio().mean()*100,2)}")]),
-                        html.Tr([html.Td("Average max drawdown"), html.Td(f"{round(pf_outsample.max_drawdown().mean()*100,2)}%")]),
+                        html.Tr([html.Td("Annualized Return"), html.Td(f"{round(pf_outsample.total_return().mean() * 100 * annualization_factor, 2)}%")]),
+                        html.Tr([html.Td("Average Return per Window"), html.Td(f"{round(pf_outsample.total_return().mean() * 100, 2)}%")]),
+                        html.Tr([html.Td("Average Sharpe Ratio"), html.Td(f"{round(pf_outsample.sharpe_ratio().mean(), 2)}")]),
+                        html.Tr([html.Td("Average Max Drawdown"), html.Td(f"{round(pf_outsample.max_drawdown().mean() * 100, 2)}%")]),
                     ]
                 )
             ],
             highlightOnHover=True
         )
 
-        def create_dash_table(df, tooltips):
+        def create_dash_table(df, width_bool, tooltips):
             return dash_table.DataTable(
                 data=df.to_dict('records'),
                 columns=[{'name': str(i), 'id': str(i)} for i in df.columns],
                 cell_selectable=False,
-                fill_width=True,
+                fill_width=width_bool,
                 style_as_list_view=True,
                 style_header={
                     'backgroundColor': 'rgba(0, 0, 0, 0)',
@@ -229,10 +223,10 @@ def simulation_callback(app, cache):
                 # fixed_columns={'headers': True, 'data': 1},
             )
 
-        insample_table = create_dash_table(outsample_df, {'Expectancy [%]': {'value': 'testing'}})
-        outsample_table = create_dash_table(comparison_df, {'Optimal Return [%]': {'value': 'testing'}})
+        outsample_table = create_dash_table(outsample_df, True, {'Expectancy [%]': {'value': 'testing'}})
+        optimal_table = create_dash_table(optimal_df, False, {'Return (%)': {'value': 'testing'}})
 
-        return averages_table, insample_table, outsample_table, False
+        return averages_table, outsample_table, optimal_table, False
 
 
         # columns = [{'name': str(i), 'id': str(i)} for i in outsample_df.columns]
@@ -241,6 +235,7 @@ def simulation_callback(app, cache):
         # columns[column_to_format]['format'] = dash_table.FormatTemplate.percentage(2)
 
 
+# For using dmc.table instead of dash_table.DataTable:
 # def create_table(df):
 #     columns, values = df.columns, df.values
 #     header = [html.Tr([html.Th(col) for col in columns])]
