@@ -292,7 +292,7 @@ data_display_tabs = dbc.Tabs(
                                 ),
                                 dmc.AccordionItem(
                                     [
-                                        dmc.AccordionControl(accordion_header("Results by Window")),
+                                        dmc.AccordionControl(accordion_header("Results For Each Window")),
                                         dmc.AccordionPanel(html.Div(id='insample_div'))
                                     ],
                                     value='insample'

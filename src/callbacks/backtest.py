@@ -16,8 +16,8 @@ except ImportError:
     import config
 
 vbt.settings.stats_builder['metrics'] = ['sharpe_ratio', 'total_return', 'open_trade_pnl', 'total_trades', 'total_open_trades',
-                                         'win_rate', 'avg_winning_trade', 'avg_losing_trade', 'expectancy',
-                                         'avg_winning_trade_duration', 'avg_losing_trade_duration', 'max_gross_exposure']
+                                         'win_rate', 'avg_winning_trade', 'avg_losing_trade', 'expectancy', 'max_gross_exposure']
+# 'avg_winning_trade_duration', 'avg_losing_trade_duration', 'sortino_ratio', 'calmar_ratio', 'omega_ratio', 'profit_factor'
 
 # Adjusts window length based on the number of windows, providing a 75% overlap. Also used in plotting.py.
 def overlap_factor(nwindows):
@@ -85,8 +85,6 @@ def simulation_callback(app, cache):
 
         if selected_strategy == 'SMA Crossover':
             columns_list = ["Fast SMA Period", "Slow SMA Period"]
-            optimal_columns_list = ["Window", "Optimal Fast SMA Period", "Optimal Slow SMA Period",
-                                    "Optimal Return [%]", "Return [%]", "Average Return [%]", "Benchmark Return [%]"]
 
             parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
 
@@ -102,8 +100,6 @@ def simulation_callback(app, cache):
 
         elif selected_strategy == 'EMA Crossover':
             columns_list = ["Fast EMA Period", "Slow EMA Period"]
-            optimal_columns_list = ["Window", "Optimal Fast EMA Period", "Optimal Slow EMA Period",
-                                    "Optimal Return [%]", "Return [%]", "Average Return [%]", "Benchmark Return [%]"]
 
             parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
 
@@ -121,8 +117,6 @@ def simulation_callback(app, cache):
 
         elif selected_strategy == 'RSI':
             columns_list = ["RSI Entry Value", "RSI Exit Value"]
-            optimal_columns_list = ["Window", "Optimal RSI Entry Value", "Optimal RSI Exit Value",
-                                    "Optimal Return [%]", "Return [%]", "Average Return [%]", "Benchmark Return [%]"]
 
             raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
             # Generate all entry and exit combinations, with entry value < exit value by default, and splitting them into seperate lists.
@@ -177,13 +171,15 @@ def simulation_callback(app, cache):
         outsample_maxdrawdowns = pd.Series(pf_outsample.max_drawdown().values * 100, name='Max Drawdown [%]')
         outsample_df = pd.concat([window_number, params_df, outsample_maxdrawdowns, outsample_df], axis=1).round(2)
 
-        optimal_params_df = pd.DataFrame(optimal_parameters.transpose(), dtype=np.int16)
-        outsample_returns = pd.Series(pf_outsample.total_return().values * 100)
+        optimal_params_df = pd.DataFrame(optimal_parameters.transpose(), columns=columns_list, dtype=np.int16)
         optimal_returns = pf_outsample_optimized.stats('total_return', agg_func=None).groupby("split_idx").max().reset_index(drop=True)
-        average_returns = pf_outsample_optimized.stats('total_return', agg_func=None).groupby("split_idx").mean().reset_index(drop=True)
-        benchmark_returns = pf_outsample_optimized.stats('benchmark_return', agg_func=None).groupby('split_idx').mean().reset_index(drop=True)
-        comparison_df = pd.concat([window_number, optimal_params_df, optimal_returns, outsample_returns, average_returns, benchmark_returns], axis=1).round(2)
-        comparison_df.columns = optimal_columns_list
+        optimal_sharpe_ratio = pf_outsample_optimized.stats('sharpe_ratio', agg_func=None).groupby("split_idx").max().reset_index(drop=True)
+        # min_maxdrawdowns = pf_outsample_optimized.max_drawdown().groupby('split_idx').mean()
+        comparison_df = pd.concat([window_number, optimal_params_df, optimal_returns, optimal_sharpe_ratio], axis=1).round(2)
+        comparison_df = comparison_df.rename(columns={"Total Return [%]": "Return [%]"})
+
+        # average_returns = pf_outsample_optimized.stats('total_return', agg_func=None).groupby("split_idx").mean().reset_index(drop=True)
+        # benchmark_returns = pf_outsample_optimized.stats('benchmark_return', agg_func=None).groupby('split_idx').mean().reset_index(drop=True)
 
         # Defining dash components for displaying the formatted data.
         outsample_dates = pd.DataFrame(out_dates[0])
@@ -203,84 +199,54 @@ def simulation_callback(app, cache):
             highlightOnHover=True
         )
 
-        def create_table(df):
-            columns, values = df.columns, df.values
-            header = [html.Tr([html.Th(col) for col in columns])]
-            rows = [html.Tr([html.Td(cell) for cell in row]) for row in values]
-            table = [html.Thead(header), html.Tbody(rows)]
-            return table
+        def create_dash_table(df, tooltips):
+            return dash_table.DataTable(
+                data=df.to_dict('records'),
+                columns=[{'name': str(i), 'id': str(i)} for i in df.columns],
+                cell_selectable=False,
+                fill_width=True,
+                style_as_list_view=True,
+                style_header={
+                    'backgroundColor': 'rgba(0, 0, 0, 0)',
+                    'color': 'rgba(220, 220, 220, 0.95)',
+                    'padding_left': '10px',
+                    'padding_right': '10px',
+                    'padding_top': '7px',
+                    'padding_bottom': '7px',
+                    'fontWeight': 'bold'
+                },
+                style_data={
+                    'backgroundColor': 'rgba(0, 0, 0, 00)',
+                    'color': 'rgba(220, 220, 220, 0.85)'
+                },
+                style_table={'overflowX': 'scroll'},
+                style_cell_conditional=[{'textAlign': 'center'}],
+                tooltip_header=tooltips,
+                # style_cell={'padding_left': '10px', 'padding_right': '10px'},
+                # css=[{"selector": ".dash-spreadsheet", "rule": 'font-family: "monospace"'}],
+                # {'name':'Avg Winning Trade Duration', 'type': 'datetime'},
+                # columns=['Avg Winning Trade Duration': {'type': 'datetime'}],
+                # fixed_columns={'headers': True, 'data': 1},
+            )
 
-        # insample_table = dmc.Table(create_table(outsample_df), highlightOnHover=True, withColumnBorders=True)
-        outsample_table = dmc.Table(create_table(comparison_df), highlightOnHover=True, withColumnBorders=True)
-
-        insample_table = dash_table.DataTable(
-            data=outsample_df.to_dict('records'),
-            columns=[{'name': str(i), 'id': str(i)} for i in outsample_df.columns],
-            # style_as_list_view=True,
-            style_header={
-                'backgroundColor': 'rgba(30, 30, 30, 00)',
-                'color': 'white',
-                'fontWeight': 'bold'
-            },
-            style_data={
-                'backgroundColor': 'rgba(50, 50, 50, 00)',
-                'color': 'white'
-            },
-            style_table={
-                'overflowX': 'scroll'
-            },
-            # fixed_columns={'headers': True, 'data': 1},
-            cell_selectable=False,
-            tooltip_header={'Expectancy [%]': {'value': 'testing'}},
-            fill_width=True,
-            # css=[{"selector": ".dash-spreadsheet", "rule": 'font-family: "monospace"'}],
-            # columns=['Avg Winning Trade Duration': {'type': 'datetime'}]
-            style_cell={'padding': '5px'},
-            # style_header={
-            #     'backgroundColor': 'white',
-            #     'fontWeight': 'bold'
-            # },
-            style_cell_conditional=[{'textAlign': 'left'}],
-        )
+        insample_table = create_dash_table(outsample_df, {'Expectancy [%]': {'value': 'testing'}})
+        outsample_table = create_dash_table(comparison_df, {'Optimal Return [%]': {'value': 'testing'}})
 
         return averages_table, insample_table, outsample_table, False
 
-# Column names:
-'''
-metrics['average_return_values'] : "In-Sample Average (%)"
-metrics['average_sharpe_values'] : "In-Sample Average Sharpe Ratio"
-metrics['average_maxdrawdown_values'] : "In-Sample Average Max Drawdown (%)"
-metrics['max_return_values'] : "In-sample Return (%)"
-metrics['max_sharpe_values'] : "In-sample Maximized Sharpe Ratio"
-metrics['min_maxdrawdown_values'] : "In-sample Minimized Max Drawdown (%)"
-metrics['realized_returns'] : "Return (%)"
-metrics['realized_sharpe'] : "Sharpe Ratio"
-metrics['realized_maxdrawdown'] : "Max Drawdown (%)"
-metrics['difference_in_returns'] : "Difference from In-Sample (%)"
-metrics['difference_in_sharpe'] : "Difference from In-Sample"
-metrics['difference_in_maxdrawdown'] : "Difference from In-Sample (%)"
-metrics['average_return_values_h'] : "Out-of-Sample Average (%)"
-metrics['average_sharpe_values_h'] : "Out-of-Sample Average Sharpe Ratio"
-metrics['average_maxdrawdown_values_h'] : "Out-of-Sample Average Max Drawdown (%)"
-metrics['max_return_values_h'] : "Out-of-Sample Maximum Return (%)"
-metrics['max_sharpe_values_h'] : "Out-of-Sample Maximum Sharpe Ratio"
-metrics['min_maxdrawdown_values_h'] : "Out-of-sample Minimum Max Drawdown (%)"
-'''
 
-# html.Tr([html.Td("Difference in return from in-sample"), html.Td(f"{round(mean(difference_in_returns), 3)}%")]),
-# html.Tr([html.Td("Difference in Sharpe ratio from in-sample"), html.Td(f"{round(mean(difference_in_sharpe), 3)}")]),
-# html.Tr([html.Td("Difference in max drawdown from in-sample"), html.Td(f"{round(mean(difference_in_maxdrawdown), 3)}%")])
+        # columns = [{'name': str(i), 'id': str(i)} for i in outsample_df.columns]
+        # column_to_format = 13
+        # columns[column_to_format]['type'] = 'datetime'
+        # columns[column_to_format]['format'] = dash_table.FormatTemplate.percentage(2)
 
-# insample_table = dash_table.DataTable(
-#     data=insample_df.to_dict('records'),
-#     columns=[{'name': str(i), 'id': str(i)} for i in insample_df.columns],
-#     style_as_list_view=True,
-#     style_header={
-#         'backgroundColor': 'rgb(30, 30, 30)',
-#         'color': 'white'
-#     },
-#     style_data={
-#         'backgroundColor': 'rgb(50, 50, 50)',
-#         'color': 'white'
-#     },
-# )
+
+# def create_table(df):
+#     columns, values = df.columns, df.values
+#     header = [html.Tr([html.Th(col) for col in columns])]
+#     rows = [html.Tr([html.Td(cell) for cell in row]) for row in values]
+#     table = [html.Thead(header), html.Tbody(rows)]
+#     return table
+
+# insample_table = dmc.Table(create_table(outsample_df), highlightOnHover=True, withColumnBorders=True)
+# outsample_table = dmc.Table(create_table(comparison_df), highlightOnHover=True, withColumnBorders=True)
