@@ -194,10 +194,10 @@ def simulation_callback(app, cache):
 
         def create_dash_table(df, percentage_columns, tooltips):
             def format_as_percentage(value):
-                if value == 0 or np.isnan(value):
-                    return "0%"
-                else:
+                if np.isnan(value) is False:
                     return f"{value}%"
+                else:
+                    return "0.0%"
 
             for column in percentage_columns:
                 column_name = df.columns[column]

@@ -344,7 +344,7 @@ def create_layout():
                         ]
                     ),
                     html.Div(id='dummy_output'),
-                    dcc.Store(data=unique_session, id='session_id'),
+                    dcc.Store(data=unique_session, id='session_id')
                 ],
                 fluid=True,
                 className='dbc'
