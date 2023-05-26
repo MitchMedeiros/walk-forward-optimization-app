@@ -37,11 +37,12 @@ def simulation_callback(app, cache):
             Output('results_div', 'children'),
             Output('insample_div', 'children'),
             Output('outsample_div', 'children'),
-            Output('run_button', 'loading')
+            Output('run_button', 'loading'),
+            Output('segment_div', 'children'),
         ],
         [
             Input('run_button', 'n_clicks'),
-            Input('session-id', 'data'),
+            Input('session_id', 'data'),
             State('strategy_drop', 'value'),
             State('nwindows', 'value'),
             State('insample', 'value'),
@@ -153,7 +154,6 @@ def simulation_callback(app, cache):
         # Caching the calculated portfolios for use in backtest_plotting_callback, using the uuid4 as the label.
         pickled_portfolio = pf_outsample.dumps()
         cache.set(session_id, pickled_portfolio, timeout=7200)
-        print(f'stored session id: {session_id}')
 
         # Creating DataFrames using portfolio.stats() to show the backtest results and formatting them using Pandas methods.
         # The stats DataFrames can also be created with the desired format directly by passing dictionaries to portfolio.stats().
@@ -226,4 +226,16 @@ def simulation_callback(app, cache):
         outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Expectancy (%)': {'value': 'testing'}})
         optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'testing'}})
 
-        return averages_table, outsample_table, optimal_table, False
+        # Creating the segmented control for selecting the window to display plots for.
+        selections = []
+        for i in range(nwindows):
+            selections.append({'value': i, 'label': f"Window {i+1}"})
+        window_selector = dmc.SegmentedControl(
+            data=selections,
+            value=None,
+            fullWidth=True,
+            size='s',
+            id='window_selector'
+        ),
+
+        return averages_table, outsample_table, optimal_table, False, window_selector

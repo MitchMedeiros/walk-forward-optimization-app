@@ -319,18 +319,7 @@ data_display_tabs = dbc.Tabs(
         ),
         dbc.Tab(
             [
-                dmc.SegmentedControl(
-                    [
-                        {'value': 0, 'label': "Window 1"},
-                        {'value': 1, 'label': "Window 2"},
-                        {'value': 2, 'label': "Window 3"},
-                        {'value': 3, 'label': "Window 4"},
-                    ],
-                    value='0',
-                    fullWidth=True,
-                    size='s',
-                    id='window_selector'
-                ),
+                html.Div(id='segment_div'),
                 dcc.Loading(type='cube', id='detailed_div')
             ],
             label="Visual Backtest Results",
@@ -355,7 +344,7 @@ def create_layout():
                         ]
                     ),
                     html.Div(id='dummy_output'),
-                    dcc.Store(data=unique_session, id='session-id'),
+                    dcc.Store(data=unique_session, id='session_id'),
                 ],
                 fluid=True,
                 className='dbc'
