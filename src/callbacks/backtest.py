@@ -164,17 +164,16 @@ def simulation_callback(app, cache):
                              'total_open_trades', 'win_rate', 'avg_winning_trade', 'avg_losing_trade', 'expectancy', 'max_gross_exposure']
         outsample_df = pf_outsample.stats(metrics=outsample_metrics, agg_func=None).reset_index(drop=True)
         outsample_df = pd.concat([window_number, outsample_parameters_df, outsample_df], axis=1).round(2)
-        outsample_df = outsample_df.rename(columns={"Total Return [%]": "Return (%)", "Total Open Trades": "Open Trades",
-                                                    "Expectancy": "Expectancy (%)", "Max Gross Exposure [%]": "Exposure (%)",
-                                                    "Win Rate [%]": "Win Rate (%)", "Avg Winning Trade [%]": "Avg Winning Trade (%)",
-                                                    "Avg Losing Trade [%]": "Avg Losing Trade (%)", "Benchmark Return [%]": "Benchmark Return (%)",
-                                                    "Max Drawdown [%]": "Max Drawdown (%)"})
+        outsample_df = outsample_df.rename(columns={"Total Return [%]": "Return", "Total Open Trades": "Open Trades",
+                                                    "Max Gross Exposure [%]": "Exposure", "Max Drawdown [%]": "Max Drawdown",
+                                                    "Win Rate [%]": "Win Rate", "Avg Winning Trade [%]": "Avg Winning Trade",
+                                                    "Avg Losing Trade [%]": "Avg Losing Trade", "Benchmark Return [%]": "Benchmark Return"})
 
         optimal_parameters_df = pd.DataFrame(optimal_parameters.transpose(), columns=columns_list, dtype=np.int16)
-        optimal_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").max().rename("Return (%)")
-        optimal_sharpe_ratio = (pf_outsample_optimized.sharpe_ratio() * 100).groupby("split_idx").max().rename("Sharpe Ratio")
-        optimal_maxdrawdowns = (pf_outsample_optimized.max_drawdown() * -100).groupby("split_idx").min().rename("Max Drawdown (%)")
-        average_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").mean().rename("Average Returns (%)")
+        optimal_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").max().rename("Return")
+        optimal_sharpe_ratio = (pf_outsample_optimized.sharpe_ratio()).groupby("split_idx").max().rename("Sharpe Ratio")
+        optimal_maxdrawdowns = (pf_outsample_optimized.max_drawdown() * -100).groupby("split_idx").min().rename("Max Drawdown")
+        average_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").mean().rename("Average Returns")
         optimal_df = pd.concat([window_number, optimal_parameters_df, optimal_returns, optimal_sharpe_ratio, optimal_maxdrawdowns, average_returns], axis=1).round(2)
 
         # Defining dash components for displaying the formatted data.
@@ -193,55 +192,38 @@ def simulation_callback(app, cache):
             highlightOnHover=True
         )
 
-        def create_dash_table(df, width_bool, tooltips):
+        def create_dash_table(df, percentage_columns, tooltips):
+            def format_as_percentage(value):
+                if value == 0 or np.isnan(value):
+                    return "0%"
+                else:
+                    return f"{value}%"
+
+            for column in percentage_columns:
+                column_name = df.columns[column]
+                df[column_name] = df[column_name].apply(lambda x: format_as_percentage(x))
+            table_columns = [{'name': str(i), 'id': str(i)} for i in df.columns]
+
             return dash_table.DataTable(
                 data=df.to_dict('records'),
-                columns=[{'name': str(i), 'id': str(i)} for i in df.columns],
+                columns=table_columns,
+                fill_width=False,
                 cell_selectable=False,
-                fill_width=width_bool,
                 style_as_list_view=True,
                 style_header={
-                    'backgroundColor': 'rgba(0, 0, 0, 0)',
                     'color': 'rgba(220, 220, 220, 0.95)',
-                    'padding_left': '10px',
-                    'padding_right': '10px',
-                    'padding_top': '7px',
-                    'padding_bottom': '7px',
+                    'padding': '10px',
                     'fontWeight': 'bold'
                 },
                 style_data={
-                    'backgroundColor': 'rgba(0, 0, 0, 00)',
                     'color': 'rgba(220, 220, 220, 0.85)'
                 },
                 style_table={'overflowX': 'scroll'},
                 style_cell_conditional=[{'textAlign': 'center'}],
-                tooltip_header=tooltips,
-                # style_cell={'padding_left': '10px', 'padding_right': '10px'},
-                # css=[{"selector": ".dash-spreadsheet", "rule": 'font-family: "monospace"'}],
-                # {'name':'Avg Winning Trade Duration', 'type': 'datetime'},
-                # columns=['Avg Winning Trade Duration': {'type': 'datetime'}],
-                # fixed_columns={'headers': True, 'data': 1},
+                tooltip_header=tooltips
             )
 
-        outsample_table = create_dash_table(outsample_df, True, {'Expectancy [%]': {'value': 'testing'}})
-        optimal_table = create_dash_table(optimal_df, False, {'Return (%)': {'value': 'testing'}})
+        outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Expectancy (%)': {'value': 'testing'}})
+        optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'testing'}})
 
         return averages_table, outsample_table, optimal_table, False
-
-
-        # columns = [{'name': str(i), 'id': str(i)} for i in outsample_df.columns]
-        # column_to_format = 13
-        # columns[column_to_format]['type'] = 'datetime'
-        # columns[column_to_format]['format'] = dash_table.FormatTemplate.percentage(2)
-
-
-# For using dmc.table instead of dash_table.DataTable:
-# def create_table(df):
-#     columns, values = df.columns, df.values
-#     header = [html.Tr([html.Th(col) for col in columns])]
-#     rows = [html.Tr([html.Td(cell) for cell in row]) for row in values]
-#     table = [html.Thead(header), html.Tbody(rows)]
-#     return table
-
-# insample_table = dmc.Table(create_table(outsample_df), highlightOnHover=True, withColumnBorders=True)
-# outsample_table = dmc.Table(create_table(comparison_df), highlightOnHover=True, withColumnBorders=True)
