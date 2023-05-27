@@ -157,7 +157,7 @@ def sidebar_label(label_text, modal_text, modal_id, icon_id, margins={'margin-le
                         centered=True,
                         zIndex=100,
                         size='xl',
-                        id=modal_id,
+                        id=modal_id
                     ),
                     dmc.ActionIcon(
                         DashIconify(icon='ri:question-mark', width=18, height=15),
@@ -167,7 +167,7 @@ def sidebar_label(label_text, modal_text, modal_id, icon_id, margins={'margin-le
                         variant='filled',
                         opacity=0.7,
                         style={'margin-bottom': '20px'},
-                        id=icon_id,
+                        id=icon_id
                     )
                 ],
                 style={'margin-right': 'auto'}
@@ -175,7 +175,7 @@ def sidebar_label(label_text, modal_text, modal_id, icon_id, margins={'margin-le
         ],
         direction='horizontal',
         gap=2,
-        style=margins,
+        style=margins
     )
 
 data_label = sidebar_label("Data Selection", data_modal_text, 'modal_1', 'icon_1',
@@ -190,27 +190,33 @@ strategy_label = dbc.Stack(
                 dmc.Modal(
                     [
                         dcc.Markdown(strategy_modal_text1, mathjax=True),
-                        dmc.Center([dmc.Image(
-                            src='assets/sma.jpeg',
-                            caption="An SMA crossover producing a buy signal. Source: Investopedia.com",
-                            alt="SMA Crossover",
-                            width='95%',
-                            opacity=0.9
-                        )], style={'margin-left': '5%'}),
+                        dmc.Center([
+                            dmc.Image(
+                                src='assets/sma.jpeg',
+                                caption="An SMA crossover producing a buy signal. Source: Investopedia.com",
+                                alt="SMA Crossover",
+                                width='95%',
+                                opacity=0.9
+                            )],
+                            style={'margin-left': '5%'}
+                        ),
                         dcc.Markdown(strategy_modal_text2, mathjax=True),
-                        dmc.Center([dmc.Image(
-                            src='assets/macd.jpeg',
-                            caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). Source: Investopedia.com",
-                            alt="MACD",
-                            width='95%',
-                            opacity=0.9
-                        )], style={'margin-left': '5%'}),
+                        dmc.Center([
+                            dmc.Image(
+                                src='assets/macd.jpeg',
+                                caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). Source: Investopedia.com",
+                                alt="MACD",
+                                width='95%',
+                                opacity=0.9
+                            )],
+                            style={'margin-left': '5%'}
+                        ),
                         dcc.Markdown(strategy_modal_text3, mathjax=True)
                     ],
                     centered=True,
                     zIndex=100,
                     size='xl',
-                    id='modal_3',
+                    id='modal_3'
                 ),
                 dmc.ActionIcon(
                     DashIconify(icon='ri:question-mark', width=18, height=15),
@@ -220,7 +226,7 @@ strategy_label = dbc.Stack(
                     variant='filled',
                     opacity=0.7,
                     style={'margin-bottom': '20px'},
-                    id='icon_3',
+                    id='icon_3'
                 )
             ],
             style={'margin-right': 'auto'}
@@ -228,7 +234,7 @@ strategy_label = dbc.Stack(
     ],
     direction='horizontal',
     gap=2,
-    style={'margin-left': '25px', 'margin-bottom': '10px'},
+    style={'margin-left': '25px', 'margin-bottom': '10px'}
 )
 
 sidebar = html.Div(
@@ -260,10 +266,13 @@ def accordion_header(displayed_text):
         style={'width': '100%'}
     )
 
-# Three tabs: the first contains data plots, the second has an accordion for tables, the third contains portfolio based plots
-data_display_tabs = dbc.Tabs(
+tab_style = {'padding': '4px', 'padding-top': '9px'}
+tab_selected_style = {'padding': '4px', 'padding-top': '7px'}
+
+# Three tabs: the first contains data plots, the second has an accordion with tables, and the third contains portfolio based plots
+data_display_tabs = dcc.Tabs(
     [
-        dbc.Tab(
+        dcc.Tab(
             [
                 dmc.LoadingOverlay(
                     [
@@ -274,10 +283,11 @@ data_display_tabs = dbc.Tabs(
                     radius='lg'
                 )
             ],
-            label="Price History and Windows",
-            active_label_style={'color': '#30a5fe'}
+            label='Price History and Windows',
+            style=tab_style,
+            selected_style=tab_selected_style,
         ),
-        dbc.Tab(
+        dcc.Tab(
             [
                 dmc.LoadingOverlay(
                     [
@@ -286,21 +296,21 @@ data_display_tabs = dbc.Tabs(
                                 dmc.AccordionItem(
                                     [
                                         dmc.AccordionControl(accordion_header("Averaged Results")),
-                                        dmc.AccordionPanel(html.Div(id='results_div'))
+                                        dmc.AccordionPanel(id='results_div')
                                     ],
                                     value='averaged'
                                 ),
                                 dmc.AccordionItem(
                                     [
                                         dmc.AccordionControl(accordion_header("Results For Each Window")),
-                                        dmc.AccordionPanel(html.Div(id='insample_div'))
+                                        dmc.AccordionPanel(id='insample_div', style={'overflowX': 'auto'})
                                     ],
                                     value='insample'
                                 ),
                                 dmc.AccordionItem(
                                     [
                                         dmc.AccordionControl(accordion_header("Highest Possible Results for the Strategy")),
-                                        dmc.AccordionPanel(html.Div(id='outsample_div'))
+                                        dmc.AccordionPanel(id='outsample_div', style={'overflowX': 'auto'})
                                     ],
                                     value='outsample'
                                 )
@@ -308,25 +318,28 @@ data_display_tabs = dbc.Tabs(
                             value=['averaged', 'insample', 'outsample'],
                             chevronPosition='left',
                             styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
-                        ),
+                        )
                     ],
                     loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
-                    radius='lg'
+                    radius='sm'
                 )
             ],
-            label="Tabular Backtest Results",
-            active_label_style={'color': '#30a5fe'}
+            label='Tabular Backtest Results',
+            style=tab_style,
+            selected_style=tab_selected_style,
         ),
-        dbc.Tab(
+        dcc.Tab(
             [
                 html.Div(id='segment_div'),
                 dcc.Loading(type='cube', id='detailed_div')
             ],
-            label="Visual Backtest Results",
-            active_label_style={'color': '#30a5fe'}
-        )
+            label='Visual Backtest Results',
+            style=tab_style,
+            selected_style=tab_selected_style,
+        ),
     ],
-    style={'margin-top': '2px'}
+    style={'height': '44px'},
+    id='tabs'
 )
 
 def create_layout():
@@ -339,8 +352,8 @@ def create_layout():
                     page_header,
                     dbc.Row(
                         [
-                            dbc.Col(sidebar, xs=12, lg=3, style={'margin-left': '12px', 'background-color': '#2b2b2b'}, id='sidebar'),
-                            dbc.Col(data_display_tabs, xs=12, lg=8)
+                            dbc.Col([sidebar], xs=12, lg=3, style={'margin-left': '12px', 'background-color': '#2b2b2b'}, id='sidebar'),
+                            dbc.Col([data_display_tabs], xs=12, lg=8)
                         ]
                     ),
                     html.Div(id='dummy_output'),
@@ -353,3 +366,89 @@ def create_layout():
         theme={'colorScheme': 'dark'},
         id='mantine_container'
     )
+
+
+# data_display_tabs = dmc.Tabs(
+#     [
+#         dmc.TabsList(
+#             [
+#                 dmc.Tab("Price History and Windows", value="1"),
+#                 dmc.Tab("Tabular Backtest Results", value="2"),
+#                 dmc.Tab("Visual Backtest Results", value="3"),
+#             ],
+#             grow=True
+#         ),
+#         dmc.TabsPanel(
+#             [
+#                 html.Div(id='candle_div'),
+#                 html.Div(id='window_div')
+#             ],
+#             value="1"
+#         ),
+#         dmc.TabsPanel(
+#             [
+#                 accordion_header("Averaged Results"),
+#                 html.Div(id='results_div', style={'margin-bottom': '10px'}),
+#                 accordion_header("Results For Each Window"),
+#                 html.Div(id='insample_div', style={'overflowX': 'auto', 'margin-bottom': '10px'}),
+#                 accordion_header("Highest Possible Results for the Strategy"),
+#                 html.Div(id='outsample_div', style={'overflowX': 'auto'})
+#             ],
+#             value="2"
+#         ),
+#         dmc.TabsPanel(
+#             [
+#                 html.Div(id='segment_div'),
+#                 dcc.Loading(type='cube', id='detailed_div')
+#             ],
+#             value="3"
+#         ),
+#     ],
+#     value="1",
+# )
+
+# data_display_tabs = dbc.Tabs(
+#     [
+#         dbc.Tab(
+#             [
+#                 dmc.LoadingOverlay(
+#                     [
+#                         html.Div(id='candle_div'),
+#                         html.Div(id='window_div')
+#                     ],
+#                     loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
+#                     radius='lg'
+#                 )
+#             ],
+#             label="Price History and Windows",
+#             active_label_style={'color': '#30a5fe'}
+#         ),
+#         dbc.Tab(
+#             [
+#                 dmc.LoadingOverlay(
+#                     [
+#                         accordion_header("Averaged Results"),
+#                         html.Div(id='results_div', style={'margin-bottom': '10px'}),
+#                         accordion_header("Results For Each Window"),
+#                         html.Div(id='insample_div', style={'overflowX': 'auto', 'margin-bottom': '10px'}),
+#                         accordion_header("Highest Possible Results for the Strategy"),
+#                         html.Div(id='outsample_div', style={'overflowX': 'auto'})
+#                     ],
+#                     loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
+#                     radius='sm'
+#                 )
+#             ],
+#             label="Tabular Backtest Results",
+#             active_label_style={'color': '#30a5fe'}
+#         ),
+#         dbc.Tab(
+#             [
+#                 html.Div(id='segment_div'),
+#                 dcc.Loading(type='cube', id='detailed_div')
+#             ],
+#             label="Visual Backtest Results",
+#             active_label_style={'color': '#30a5fe'}
+#         )
+#     ],
+#     style={'margin-top': '2px'}
+# )

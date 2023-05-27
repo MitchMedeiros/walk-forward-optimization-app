@@ -192,9 +192,9 @@ def simulation_callback(app, cache):
             highlightOnHover=True
         )
 
-        def create_dash_table(df, percentage_columns, tooltips):
+        def create_dash_table(df, percentage_columns, tooltips=None):
             def format_as_percentage(value):
-                if np.isnan(value) is False:
+                if -1000000 < value < 1000000 and value != 0:
                     return f"{value}%"
                 else:
                     return "0.0%"
@@ -218,7 +218,6 @@ def simulation_callback(app, cache):
                 style_data={
                     'color': 'rgba(220, 220, 220, 0.85)'
                 },
-                style_table={'overflowX': 'scroll'},
                 style_cell_conditional=[{'textAlign': 'center'}],
                 tooltip_header=tooltips
             )
@@ -232,10 +231,36 @@ def simulation_callback(app, cache):
             selections.append({'value': i, 'label': f"Window {i+1}"})
         window_selector = dmc.SegmentedControl(
             data=selections,
-            value=None,
+            value=0,
             fullWidth=True,
             size='s',
             id='window_selector'
-        ),
+        )
 
         return averages_table, outsample_table, optimal_table, False, window_selector
+
+
+# def create_dmc_table(df, percentage_columns):
+#     def format_as_percentage(value):
+#         if -1000000 < value < 1000000 and value != 0:
+#             return f"{value}%"
+#         else:
+#             return "0.0%"
+#     for column in percentage_columns:
+#         column_name = df.columns[column]
+#         df[column_name] = df[column_name].apply(lambda x: format_as_percentage(x))
+
+#     def create_html_table(df):
+#         columns, values = df.columns, df.values
+#         header = [html.Tr([html.Th(col, style={'width': '140px'}) for col in columns])]
+#         rows = [html.Tr([html.Td(cell) for cell in row]) for row in values]
+#         table = [html.Thead(header), html.Tbody(rows)]
+#         return table
+#     return dmc.Table(
+#         create_html_table(df),
+#         highlightOnHover=True,
+#         style={'table-layout': 'fixed'}
+#     )
+
+# outsample_table = create_dmc_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14])
+# optimal_table = create_dmc_table(optimal_df, [3, 5, 6])

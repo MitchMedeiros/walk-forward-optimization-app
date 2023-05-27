@@ -1,4 +1,4 @@
-from dash import dcc, Input, Output, State
+from dash import dcc, Input, Output, State, clientside_callback
 import dash_mantine_components as dmc
 import pandas as pd
 import polars as pl
@@ -108,6 +108,7 @@ def window_plot_callback(app, cache):
             paper_bgcolor='#2b2b2b',
             font_color='white',
             margin=dict(l=40, r=12, t=0, b=20),
+            height=280,
             width=None,  # Reset the width defined by .rolling_split so that Dash can properly scale the graph.
             legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
             xaxis=dict(showticklabels=False, rangebreaks=[dict(bounds=['sat', 'mon'])],
@@ -117,7 +118,7 @@ def window_plot_callback(app, cache):
         fig['data'][0]['colorscale'] = [[0.0, '#8d30ff'], [1.0, '#30a8f9']]  # Changing the heatmap colors.
         fig['data'][1]['colorscale'] = [[0.0, '#8a2cd2'], [1.0, '#be32ff']]
         # fig.update_xaxes(range=[df.index[0], df.index[-1]])  # only relevant if using one of the callbacks below.
-        return dcc.Graph(figure=fig, id='window_plot')
+        return dcc.Graph(figure=fig, id='window_plot', style={'width': '100%', 'height': '280px'})
 
 # clientside_callback(
 #     """
