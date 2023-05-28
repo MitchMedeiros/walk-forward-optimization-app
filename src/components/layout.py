@@ -70,90 +70,15 @@ page_header = dbc.Navbar(
     id='page_header'
 )
 
-data_modal_text = '''
-### About Financial Data:
-More information to come.
-'''
-window_modal_text = '''
-### About Walk-Forward Window Splitting:
-More information to come.
-'''
-
-strategy_modal_text1 = '''
-### Price-Based Indicator Strategies:
-#### SMA Crossover
-The SMA crossover has become the prototypical indicator strategy.
-
-A **Simple Moving Average** (SMA) with period $n$ is an equal-weighted average taken over the previous $n$ price values:
-$$
-SMA_n(x) = \\frac{1}{n} \\sum^{i=n} x_i \\: .
-$$
-Traditionally, closing prices are used within the context of finance. However, any set of real values will produce a real analytic function.
-As price points are progressively input into the function, across a selected date range,
-the value is updated by dropping the oldest price and adding the newest.
-Before $n$ price points have been input, the function is considered undefined.
-
-For an **SMA crossover strategy**, two SMAs with different periods are used.
-When the SMA with the shorter period or "fast SMA" crosses above the other "slow SMA", a buy/short-cover trade is placed
-and when it crosses below, a sell/short-sell trade is placed.
-The strategy generally seeks to capture the beginning of a longer trend and exit as it's ending.
-'''
-
-strategy_modal_text2 = '''
-Things to Note:
-* The magnitude of the difference in the periods of the two SMAs will determine how sensitive the strategy is to price oscillations.
-* While untraditional, if the strategy is a losing one then the trade directions of the strategy can be inverted, and in theory, the returns.
-* For additional information, you can read the following [article on Investopedia.](https://www.investopedia.com/terms/g/goldencross.asp)
-
-#### EMA Crossover
-The EMA crossover applies the same trading rules for entering and exiting a position as the SMA crossover but with **Exponential Moving Averages** (EMAs) instead.
-An $n$ period EMA evaluated at the $i^{th}$ data point is calculated recursively as:
-$$
-EMA_n(x_i) = \\frac{2}{n+1} * x_i + (1-\\frac{2}{n+1}) * EMA_n(x_{i-1}) \\:,
-$$
-where $x_i$ is generally the closing price at point i. Since the period $n \\geq 1$, the weighting factor $0 < \\frac{2}{n+1} \\leq 1$.
-Thus, the most recent price value is always weighted more heavily than the previous EMA value.
-Since the function is calculated recursively, the contributions from older EMA values fall off in a compounding fashion.
-The initial value of the EMA is generally defined to be the initial price: $EMA_n(x_0)=x_0$.
-
-Things to Note:
-* The EMA crossover is by design more sensitive to price oscillations than the SMA crossover.
-* Two EMAs will typically have more crossovers than two SMAs with the same periods.
-* Large and sudden price changes will be reflected more quickly in the EMA than in the SMA.
-
-#### MACD Crossover
-The **Moving Average Convergence Divergence** (MACD) is a classic indicator that can be used as part of a more complicated crossover strategy.
-It traditionally utilizes EMAs with periods 9, 12, and 26 to derive two new functions: the **MACD line** and the **signal line**.
-The MACD line is the difference between the 12-period and 26-period EMAs:
-$$
-MACD_{12,26}(x_i) = EMA_{12}(x_i) - EMA_{26}(x_i) \\:.
-$$
-The signal line, denoted as $S(x)$, is the 9-period EMA of the MACD line:
-$$
-S(x_i) = EMA_{9}(MACD_{12,26}(x_i)) \\:.
-$$
-In other words, the MACD line is the total difference between two EMAs and the signal line is an exponentially weighted average of the recent differences between them.
-When the current difference between the EMAs is greater than the exponentially averaged recent differences, the MACD line will be above the signal line and vice versa.
-Although there are multiple common trade entry and exit principles based upon the MACD indicator, the most common is with crossovers.
-When the MACD line crosses above the signal line a buy/short-cover trade is placed and when it crosses below a sell/short-sell trade is placed.
-'''
-
-strategy_modal_text3 = '''
-Things to Note:
-* Since the MACD indicator uses EMAs and they have relatively short periods,
-the strategy can target a much shorter timeframe using the same price data than an SMA crossover can, for example.
-* A sharp change in price-direction can create a crossover relatively quickly.
-* For additional information, you can read the following [article on Investopedia.](https://www.investopedia.com/terms/m/macd.asp)
-'''
-
-def sidebar_label(label_text, modal_text, modal_id, icon_id, margins={'margin-left': '25px', 'margin-bottom': '10px'}):
+def sidebar_label(label_text, modal_children, modal_id, icon_id,
+                  styling={'margin-left': '25px', 'margin-bottom': '10px'}):
     return dbc.Stack(
         [
             html.H4(label_text, style={'margin-left': 'auto', 'color': '#5e94ff'}),
             html.Div(
                 [
                     dmc.Modal(
-                        children=[dcc.Markdown(modal_text, mathjax=True)],
+                        children=modal_children,
                         centered=True,
                         zIndex=100,
                         size='xl',
@@ -175,67 +100,149 @@ def sidebar_label(label_text, modal_text, modal_id, icon_id, margins={'margin-le
         ],
         direction='horizontal',
         gap=2,
-        style=margins
+        style=styling
     )
 
-data_label = sidebar_label("Data Selection", data_modal_text, 'modal_1', 'icon_1',
-                           {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'})
-window_label = sidebar_label("Window Splitting", window_modal_text, 'modal_2', 'icon_2')
+data_modal_children = [
+    dcc.Markdown(
+        '''
+        ### Information About Asset Data:
+        #### Chosing an Asset
+        The assets available are the Spyder S&P 500 ETF (SPY), the Invesco QQQ Trust (QQQ), and the iShares Russell 2000 ETF (IWM).
+        These ETFs track the S&P 500, Nasdaq 100, and Russell 2000 indices, respectively. Their price represents a fraction of the index
+        such as 1/10 of the S&P 500 Index in the case of SPY. However, the price data is unadjusted for dividend payouts, causing it to deviate slightly
+        from this ratio.
 
-strategy_label = dbc.Stack(
-    [
-        html.H4("Strategy Details", style={'margin-left': 'auto', 'color': '#5e94ff'}),
-        html.Div(
-            [
-                dmc.Modal(
-                    [
-                        dcc.Markdown(strategy_modal_text1, mathjax=True),
-                        dmc.Center([
-                            dmc.Image(
-                                src='assets/sma.jpeg',
-                                caption="An SMA crossover producing a buy signal. Source: Investopedia.com",
-                                alt="SMA Crossover",
-                                width='95%',
-                                opacity=0.9
-                            )],
-                            style={'margin-left': '5%'}
-                        ),
-                        dcc.Markdown(strategy_modal_text2, mathjax=True),
-                        dmc.Center([
-                            dmc.Image(
-                                src='assets/macd.jpeg',
-                                caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). Source: Investopedia.com",
-                                alt="MACD",
-                                width='95%',
-                                opacity=0.9
-                            )],
-                            style={'margin-left': '5%'}
-                        ),
-                        dcc.Markdown(strategy_modal_text3, mathjax=True)
-                    ],
-                    centered=True,
-                    zIndex=100,
-                    size='xl',
-                    id='modal_3'
-                ),
-                dmc.ActionIcon(
-                    DashIconify(icon='ri:question-mark', width=18, height=15),
-                    color='gray',
-                    size='xs',
-                    radius='xl',
-                    variant='filled',
-                    opacity=0.7,
-                    style={'margin-bottom': '20px'},
-                    id='icon_3'
-                )
-            ],
-            style={'margin-right': 'auto'}
-        )
-    ],
-    direction='horizontal',
-    gap=2,
-    style={'margin-left': '25px', 'margin-bottom': '10px'}
-)
+        #### Chosing a Timeframe
+        Unless using tick data, where every single trade is saved, asset price data is always aggregated with a certain period or "timeframe".
+        Open, High, Low, Close (OHLC) is the standard way to aggregate price data and 1 day timeframe (1d) is by far the most common.
+        In this case, the open price will be the first trade of the day, the close price will be the last recorded trade of the day,
+        and the high and low prices will be the single highest and lowest trades recorded throughout the day.
+        With the timeframe dropdown, you can choose from data aggregted every 15 minutes, 1 hour, or 1 day.
+
+        As an aside, all the strategies provided in this app using the closing price for their inputs, as is standard.
+        This is likely because on the daily timeframe the close of the trading day see very large spikes in trading volume.
+        Therefore, this prices carries more overall signifance to investors who entered and exited positions that day.
+
+        OHLC data has multiple popular represenations on a chart. The most universally accepted is the candlestick chart.
+        This app displays price data with a bar chart since it has a cleaner appearence when a large number of data points are shown.
+        It does have the disadvantage that it's more challenging to spot the open and close prices, however. Additionally, the majority of chart
+        pattern strategies use a candlestick chart.
+        '''
+    )
+]
+
+window_modal_children = [
+    dcc.Markdown(
+        '''
+        ### About Walk-Forward Window Splitting:
+        More information to come.
+        '''
+    )
+]
+
+strategy_modal_children = [
+    dcc.Markdown(
+        '''
+        ### Price-Based Indicator Strategies:
+        #### SMA Crossover
+        The SMA crossover has become the prototypical indicator strategy.
+
+        A **Simple Moving Average** (SMA) with period $n$ is an equal-weighted average taken over the previous $n$ price values:
+        $$
+        SMA_n(x) = \\frac{1}{n} \\sum^{i=n} x_i \\: .
+        $$
+        Traditionally, closing prices are used within the context of finance. However, any set of real values will produce a real analytic function.
+        As price points are progressively input into the function, across a selected date range,
+        the value is updated by dropping the oldest price and adding the newest.
+        Before $n$ price points have been input, the function is considered undefined.
+
+        For an **SMA crossover strategy**, two SMAs with different periods are used.
+        When the SMA with the shorter period or "fast SMA" crosses above the other "slow SMA", a buy/short-cover trade is placed
+        and when it crosses below, a sell/short-sell trade is placed.
+        The strategy generally seeks to capture the beginning of a longer trend and exit as it's ending.
+        ''',
+        mathjax=True
+    ),
+    dmc.Center([
+        dmc.Image(
+            src='assets/sma.jpeg',
+            caption="An SMA crossover producing a buy signal. Source: Investopedia.com",
+            alt="SMA Crossover",
+            width='95%',
+            opacity=0.9
+        )],
+        style={'margin-left': '5%'}
+    ),
+    dcc.Markdown(
+        '''
+        Things to Note:
+        * The magnitude of the difference in the periods of the two SMAs will determine how sensitive the strategy is to price oscillations.
+        * While untraditional, if the strategy is a losing one then the trade directions of the strategy can be inverted, and in theory, the returns.
+        * For additional information, you can read the following [article on Investopedia.](https://www.investopedia.com/terms/g/goldencross.asp)
+
+        #### EMA Crossover
+        The EMA crossover applies the same trading rules for entering and exiting a position as the SMA crossover but with **Exponential Moving Averages** (EMAs) instead.
+        An $n$ period EMA evaluated at the $i^{th}$ data point is calculated recursively as:
+        $$
+        EMA_n(x_i) = \\frac{2}{n+1} * x_i + (1-\\frac{2}{n+1}) * EMA_n(x_{i-1}) \\:,
+        $$
+        where $x_i$ is generally the closing price at point i. Since the period $n \\geq 1$, the weighting factor $0 < \\frac{2}{n+1} \\leq 1$.
+        Thus, the most recent price value is always weighted more heavily than the previous EMA value.
+        Since the function is calculated recursively, the contributions from older EMA values fall off in a compounding fashion.
+        The initial value of the EMA is generally defined to be the initial price: $EMA_n(x_0)=x_0$.
+
+        Things to Note:
+        * The EMA crossover is by design more sensitive to price oscillations than the SMA crossover.
+        * Two EMAs will typically have more crossovers than two SMAs with the same periods.
+        * Large and sudden price changes will be reflected more quickly in the EMA than in the SMA.
+
+        #### MACD Crossover
+        The **Moving Average Convergence Divergence** (MACD) is a classic indicator that can be used as part of a more complicated crossover strategy.
+        It traditionally utilizes EMAs with periods 9, 12, and 26 to derive two new functions: the **MACD line** and the **signal line**.
+        The MACD line is the difference between the 12-period and 26-period EMAs:
+        $$
+        MACD_{12,26}(x_i) = EMA_{12}(x_i) - EMA_{26}(x_i) \\:.
+        $$
+        The signal line, denoted as $S(x)$, is the 9-period EMA of the MACD line:
+        $$
+        S(x_i) = EMA_{9}(MACD_{12,26}(x_i)) \\:.
+        $$
+        In other words, the MACD line is the total difference between two EMAs and the signal line is an exponentially weighted average of the recent differences between them.
+        When the current difference between the EMAs is greater than the exponentially averaged recent differences, the MACD line will be above the signal line and vice versa.
+        Although there are multiple common trade entry and exit principles based upon the MACD indicator, the most common is with crossovers.
+        When the MACD line crosses above the signal line a buy/short-cover trade is placed and when it crosses below a sell/short-sell trade is placed.
+        ''',
+        mathjax=True
+    ),
+    dmc.Center([
+        dmc.Image(
+            src='assets/macd.jpeg',
+            caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). Source: Investopedia.com",
+            alt="MACD",
+            width='95%',
+            opacity=0.9
+        )],
+        style={'margin-left': '5%'}
+    ),
+    dcc.Markdown(
+        '''
+        Things to Note:
+        * Since the MACD indicator uses EMAs and they have relatively short periods,
+        the strategy can target a much shorter timeframe using the same price data than an SMA crossover can, for example.
+        * A sharp change in price-direction can create a crossover relatively quickly.
+        * For additional information, you can read the following [article on Investopedia.](https://www.investopedia.com/terms/m/macd.asp)
+        ''',
+        mathjax=True
+    )
+]
+
+data_label = sidebar_label("Data Selection", data_modal_children, 'modal_1', 'icon_1',
+                           {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'})
+
+window_label = sidebar_label("Window Splitting", window_modal_children, 'modal_2', 'icon_2')
+
+strategy_label = sidebar_label("Strategy Details", strategy_modal_children, 'modal_3', 'icon_3')
 
 sidebar = html.Div(
     [
@@ -368,7 +375,7 @@ def create_layout():
     )
 
 # Tabs implimented in mantine components and dash bootstap components libraries.
-# Using either currently results in a max call stack error from the dash_table with fill_width=False.
+# Using either one currently results in a maximum call stack error from the dash_table inside with fill_width=False.
 # data_display_tabs = dmc.Tabs(
 #     [
 #         dmc.TabsList(
