@@ -178,21 +178,44 @@ def simulation_callback(app, cache):
 
         # Defining dash components for displaying the formatted data.
         annualization_factor = 252 / len(np.unique(out_dates[0].date))
+        header_styling = {'fontFamily': 'Arial, sans-serif', 'fontSize': '14px', 'fontWeight': 'bold'}
+        cell_styling = {'fontFamily': 'Arial, sans-serif', 'fontSize': '14px'}
+
         averages_table = dmc.Table(
             [
                 html.Tbody(
                     [
-                        html.Tr([html.Td("Annualized Return"), html.Td(f"{round(pf_outsample.total_return().mean() * 100 * annualization_factor, 2)}%")]),
-                        html.Tr([html.Td("Average Return per Window"), html.Td(f"{round(pf_outsample.total_return().mean() * 100, 2)}%")]),
-                        html.Tr([html.Td("Average Sharpe Ratio"), html.Td(f"{round(pf_outsample.sharpe_ratio().mean(), 2)}")]),
-                        html.Tr([html.Td("Average Max Drawdown"), html.Td(f"{round(pf_outsample.max_drawdown().mean() * 100, 2)}%")]),
+                        html.Tr(
+                            [
+                                html.Td("Annualized Return", style=header_styling),
+                                html.Td(f"{round(pf_outsample.total_return().mean() * 100 * annualization_factor, 2)}%", cell_styling)
+                            ]
+                        ),
+                        html.Tr(
+                            [
+                                html.Td("Average Return per Window", style=header_styling),
+                                html.Td(f"{round(pf_outsample.total_return().mean() * 100, 2)}%", cell_styling)
+                            ]
+                        ),
+                        html.Tr(
+                            [
+                                html.Td("Average Sharpe Ratio", style=header_styling),
+                                html.Td(f"{round(pf_outsample.sharpe_ratio().mean(), 2)}", cell_styling)
+                            ]
+                        ),
+                        html.Tr(
+                            [
+                                html.Td("Average Max Drawdown", style=header_styling),
+                                html.Td(f"{round(pf_outsample.max_drawdown().mean() * 100, 2)}%", cell_styling)
+                            ]
+                        ),
                     ]
                 )
             ],
             highlightOnHover=True
         )
 
-        def create_dash_table(df, percentage_columns, tooltips=None):
+        def create_dash_table(df, percentage_columns, header_tooltips, table_id):
             def format_as_percentage(value):
                 if -1000000 < value < 1000000 and value != 0:
                     return f"{value}%"
@@ -213,17 +236,19 @@ def simulation_callback(app, cache):
                 style_header={
                     'color': 'rgba(220, 220, 220, 0.95)',
                     'padding': '10px',
+                    'fontFamily': 'Arial, sans-serif',
+                    'fontSize': '14px',
                     'fontWeight': 'bold'
                 },
-                style_data={
-                    'color': 'rgba(220, 220, 220, 0.85)'
-                },
+                style_data={'color': 'rgba(220, 220, 220, 0.85)'},
+                style_cell=cell_styling,
                 style_cell_conditional=[{'textAlign': 'center'}],
-                tooltip_header=tooltips
+                tooltip_header=header_tooltips,
+                id=table_id
             )
 
-        outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Expectancy (%)': {'value': 'testing'}})
-        optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'testing'}})
+        outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Expectancy (%)': {'value': 'testing'}}, 'outsample_table')
+        optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'testing'}}, 'optimal_table')
 
         # Creating the segmented control for selecting the window to display plots for.
         selections = []

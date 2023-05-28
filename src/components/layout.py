@@ -267,7 +267,7 @@ def accordion_header(displayed_text):
     )
 
 tab_style = {'padding': '4px', 'padding-top': '9px'}
-tab_selected_style = {'padding': '4px', 'padding-top': '7px'}
+selected_tab_style = {'padding': '4px', 'padding-top': '7px'}
 
 # Three tabs: the first contains data plots, the second has an accordion with tables, and the third contains portfolio based plots
 data_display_tabs = dcc.Tabs(
@@ -285,7 +285,7 @@ data_display_tabs = dcc.Tabs(
             ],
             label='Price History and Windows',
             style=tab_style,
-            selected_style=tab_selected_style,
+            selected_style=selected_tab_style,
         ),
         dcc.Tab(
             [
@@ -326,7 +326,7 @@ data_display_tabs = dcc.Tabs(
             ],
             label='Tabular Backtest Results',
             style=tab_style,
-            selected_style=tab_selected_style,
+            selected_style=selected_tab_style,
         ),
         dcc.Tab(
             [
@@ -335,7 +335,7 @@ data_display_tabs = dcc.Tabs(
             ],
             label='Visual Backtest Results',
             style=tab_style,
-            selected_style=tab_selected_style,
+            selected_style=selected_tab_style,
         ),
     ],
     style={'height': '44px'},
@@ -367,7 +367,8 @@ def create_layout():
         id='mantine_container'
     )
 
-
+# Tabs implimented in mantine components and dash bootstap components libraries.
+# Using either currently results in a max call stack error from the dash_table with fill_width=False.
 # data_display_tabs = dmc.Tabs(
 #     [
 #         dmc.TabsList(

@@ -59,14 +59,50 @@ clientside_callback(
         var header_color = checked ? '#d5d5d5' : '#2b2b2b';
         var sidebar_style = checked ? {'margin-left': '12px', 'background-color': '#d5d5d5'} : {'margin-left': '12px', 'background-color': '#2b2b2b'};
         var page_title_style = checked ? {'font-size': '20px', 'color': '#537eff'} : {'font-size': '20px', 'color': 'white'};
+        var outsample_header_style = checked
+            ? {
+                'color': 'black',
+                'padding': '10px',
+                'fontFamily': 'Arial, sans-serif',
+                'fontSize': '14px',
+                'fontWeight': 'bold'
+                }
+            : {
+                'color': 'rgba(220, 220, 220, 0.95)',
+                'padding': '10px',
+                'fontFamily': 'Arial, sans-serif',
+                'fontSize': '14px',
+                'fontWeight': 'bold'
+                };
+        var optimal_header_style = checked
+        ? {
+            'color': 'black',
+            'padding': '10px',
+            'fontFamily': 'Arial, sans-serif',
+            'fontSize': '14px',
+            'fontWeight': 'bold'
+            }
+        : {
+            'color': 'rgba(220, 220, 220, 0.95)',
+            'padding': '10px',
+            'fontFamily': 'Arial, sans-serif',
+            'fontSize': '14px',
+            'fontWeight': 'bold'
+            };
+        var outsample_data_style = checked ? {'color': 'black'} : {'color': 'rgba(220, 220, 220, 0.85)'}
+        var optimal_data_style = checked ? {'color': 'black'} : {'color': 'rgba(220, 220, 220, 0.85)'}
 
-        return [components_color, header_color, sidebar_style, page_title_style];
+        return [components_color, header_color, sidebar_style, page_title_style, outsample_header_style, optimal_header_style, outsample_data_style, optimal_data_style];
     }
     """,
     Output('mantine_container', 'theme'),
     Output('page_header', 'color'),
     Output('sidebar', 'style'),
     Output('page_title', 'style'),
+    Output('outsample_table', 'style_header'),
+    Output('optimal_table', 'style_header'),
+    Output('outsample_table', 'style_data'),
+    Output('optimal_table', 'style_data'),
     Input('theme_switch', 'checked'),
     prevent_initial_call=True
 )

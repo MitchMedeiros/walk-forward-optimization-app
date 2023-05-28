@@ -1,4 +1,4 @@
-from dash import dcc, Input, Output, State, clientside_callback
+from dash import dcc, Input, Output, State
 import dash_mantine_components as dmc
 import pandas as pd
 import polars as pl
