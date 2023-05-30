@@ -115,9 +115,13 @@ def window_plot_callback(app, cache):
                        gridcolor='#191919'),
             yaxis=dict(showgrid=False)
         )
-        fig['data'][0]['colorscale'] = [[0.0, '#8d30ff'], [1.0, '#30a8f9']]  # Changing the heatmap colors.
-        fig['data'][1]['colorscale'] = [[0.0, '#8a2cd2'], [1.0, '#be32ff']]
-        # fig.update_xaxes(range=[df.index[0], df.index[-1]])  # only relevant if using one of the callbacks below.
+        # Changing the heatmap colors.
+        fig['data'][0]['colorscale'] = [[0.0, '#1bbeff'], [1.0, '#298dff']]
+        fig['data'][1]['colorscale'] = [[0.0, '#298dff'], [1.0, '#633fff']]
+
+        # only relevant if using one of the callbacks below:
+        # fig.update_xaxes(range=[df.index[0], df.index[-1]])
+
         return dcc.Graph(figure=fig, id='window_plot', style={'width': '100%', 'height': '280px'})
 
 # clientside_callback(

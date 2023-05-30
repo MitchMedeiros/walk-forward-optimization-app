@@ -52,26 +52,36 @@ clientside_callback(
     prevenet_initial_call=True
 )
 
-# Changes the color scheme of mantine components, various background and text colors, and the table colors to match the theme.
+# Changes the color scheme of mantine components and various background and text colors.
 clientside_callback(
     '''
     function change_layout_colors(checked) {
         var components_color = {colorScheme: checked ? 'light' : 'dark'};
         var header_color = checked ? '#d5d5d5' : '#2b2b2b';
         var sidebar_style = {'margin-left': '12px', 'background-color': checked ? '#d5d5d5' : '#2b2b2b'};
-        var page_title_style = {'font-size': '20px', 'color': checked ? '#537eff' : 'white'};
+        var page_title = checked ? {'from': '#6a74fc', 'to': '#298dff'} : {'from': '#30eeff', 'to': '#28b4ff'}
 
-        return [components_color, header_color, sidebar_style, page_title_style];
+        var text_color = checked ? {'from': '#525dff', 'to': '#298dff', 'deg': 45} : {'from': '#1bbeff', 'to': '#28b4ff', 'deg': 45};
+        var data_label_text = text_color;
+        var window_label_text = text_color;
+        var strategy_label_text = text_color;
+
+        return [components_color, header_color, sidebar_style, page_title, data_label_text,
+                window_label_text, strategy_label_text];
     }
     ''',
     Output('mantine_container', 'theme'),
     Output('page_header', 'color'),
     Output('sidebar', 'style'),
-    Output('page_title', 'style'),
+    Output('page_title', 'gradient'),
+    Output('data_label_text', 'gradient'),
+    Output('window_label_text', 'gradient'),
+    Output('strategy_label_text', 'gradient'),
     Input('theme_switch', 'checked'),
     prevent_initial_call=True
 )
 
+# Changes the text colors for the dash data tables to match the theme.
 clientside_callback(
     '''
     function change_layout_colors(checked) {

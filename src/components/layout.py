@@ -15,8 +15,21 @@ page_header = dbc.Navbar(
             [
                 dbc.Col(
                     [
-                        html.Img(src='assets/favicon.ico', height="35px", style={'margin-left': '25px', 'margin-right': '25px'}),
-                        dbc.NavbarBrand("Walk-Forward Optimization", style={'font-size': '20px', 'color': 'white'}, id='page_title')
+                        dbc.Stack(
+                            [
+                                html.Img(src='assets/favicon.ico', height="35px", style={'margin-left': '25px', 'margin-right': '25px'}),
+                                dmc.Text(
+                                    "Walk-Forward Optimization",
+                                    variant='gradient',
+                                    gradient={'from': '#30eeff', 'to': '#28b4ff', 'deg': 25},
+                                    style={'font-size': '25px'},
+                                    id='page_title'
+                                )
+                            ],
+                            direction='horizontal',
+                            gap=2,
+                            style={'margin-left': '25px', 'margin-bottom': '10px'}
+                        )
                     ]
                 )
             ],
@@ -70,11 +83,17 @@ page_header = dbc.Navbar(
     id='page_header'
 )
 
-def sidebar_label(label_text, modal_children, modal_id, icon_id,
+def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
                   styling={'margin-left': '25px', 'margin-bottom': '10px'}):
     return dbc.Stack(
         [
-            html.H4(label_text, style={'margin-left': 'auto', 'color': '#5e94ff'}),
+            dmc.Text(
+                label_text,
+                variant='gradient',
+                gradient={'from': '#1bbeff', 'to': '#28b4ff', 'deg': 45},
+                style={'margin-left': 'auto', 'font-size': '22px'},
+                id=label_id
+            ),
             html.Div(
                 [
                     dmc.Modal(
@@ -91,7 +110,7 @@ def sidebar_label(label_text, modal_children, modal_id, icon_id,
                         radius='xl',
                         variant='filled',
                         opacity=0.7,
-                        style={'margin-bottom': '20px'},
+                        style={'margin-bottom': '15px'},
                         id=icon_id
                     )
                 ],
@@ -327,12 +346,12 @@ strategy_modal_children = [
     )
 ]
 
-data_label = sidebar_label("Data Selection", data_modal_children, 'modal_1', 'icon_1',
+data_label = sidebar_label("Data Selection", 'data_label_text', data_modal_children, 'modal_1', 'icon_1',
                            {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'})
 
-window_label = sidebar_label("Window Splitting", window_modal_children, 'modal_2', 'icon_2')
+window_label = sidebar_label("Window Splitting", 'window_label_text', window_modal_children, 'modal_2', 'icon_2')
 
-strategy_label = sidebar_label("Strategy Details", strategy_modal_children, 'modal_3', 'icon_3')
+strategy_label = sidebar_label("Strategy Details", 'strategy_label_text', strategy_modal_children, 'modal_3', 'icon_3')
 
 sidebar = html.Div(
     [
