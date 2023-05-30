@@ -16,7 +16,7 @@ nwindows_input = dmc.Select(
         {'label': '12', 'value': 12}
     ],
     value=5,
-    label="Windows",
+    label="Number of windows",
     icon=DashIconify(icon='fluent-mdl2:sections'),
     searchable=True,
     nothingFound="Number not found",
@@ -38,7 +38,7 @@ insample_dropdown = dmc.Select(
         {'label': '90%', 'value': 90}
     ],
     value=75,
-    label="In-sample percent",
+    label="In-sample percentage",
     icon=DashIconify(icon='material-symbols:splitscreen-left-outline'),
     searchable=True,
     nothingFound="Percentage not found",
