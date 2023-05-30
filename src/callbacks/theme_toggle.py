@@ -8,6 +8,7 @@ clientside_callback(
         const theme2 = "https://cdn.jsdelivr.net/npm/bootswatch@5.1.0/dist/darkly/bootstrap.min.css"
         const stylesheet = document.querySelector('link[rel=stylesheet][href^="https://cdn.jsdelivr"]')
         var themeLink = checked ? theme1 : theme2;
+
         stylesheet.href = themeLink
     }
     """,
@@ -51,54 +52,41 @@ clientside_callback(
     prevenet_initial_call=True
 )
 
-# Changes the color scheme of mantine components and the color of static layout elements to match the theme.
+# Changes the color scheme of mantine components, various background and text colors, and the table colors to match the theme.
 clientside_callback(
-    """
+    '''
     function change_layout_colors(checked) {
-        var components_color = checked ? {colorScheme: 'light'} : {colorScheme: 'dark'};
+        var components_color = {colorScheme: checked ? 'light' : 'dark'};
         var header_color = checked ? '#d5d5d5' : '#2b2b2b';
-        var sidebar_style = checked ? {'margin-left': '12px', 'background-color': '#d5d5d5'} : {'margin-left': '12px', 'background-color': '#2b2b2b'};
-        var page_title_style = checked ? {'font-size': '20px', 'color': '#537eff'} : {'font-size': '20px', 'color': 'white'};
-        var outsample_header_style = checked
-            ? {
-                'color': 'black',
-                'padding': '10px',
-                'fontFamily': 'Arial, sans-serif',
-                'fontSize': '14px',
-                'fontWeight': 'bold'
-                }
-            : {
-                'color': 'rgba(220, 220, 220, 0.95)',
-                'padding': '10px',
-                'fontFamily': 'Arial, sans-serif',
-                'fontSize': '14px',
-                'fontWeight': 'bold'
-                };
-        var optimal_header_style = checked
-        ? {
-            'color': 'black',
-            'padding': '10px',
-            'fontFamily': 'Arial, sans-serif',
-            'fontSize': '14px',
-            'fontWeight': 'bold'
-            }
-        : {
-            'color': 'rgba(220, 220, 220, 0.95)',
-            'padding': '10px',
-            'fontFamily': 'Arial, sans-serif',
-            'fontSize': '14px',
-            'fontWeight': 'bold'
-            };
-        var outsample_data_style = checked ? {'color': 'black'} : {'color': 'rgba(220, 220, 220, 0.85)'}
-        var optimal_data_style = checked ? {'color': 'black'} : {'color': 'rgba(220, 220, 220, 0.85)'}
+        var sidebar_style = {'margin-left': '12px', 'background-color': checked ? '#d5d5d5' : '#2b2b2b'};
+        var page_title_style = {'font-size': '20px', 'color': checked ? '#537eff' : 'white'};
 
-        return [components_color, header_color, sidebar_style, page_title_style, outsample_header_style, optimal_header_style, outsample_data_style, optimal_data_style];
+        return [components_color, header_color, sidebar_style, page_title_style];
     }
-    """,
+    ''',
     Output('mantine_container', 'theme'),
     Output('page_header', 'color'),
     Output('sidebar', 'style'),
     Output('page_title', 'style'),
+    Input('theme_switch', 'checked'),
+    prevent_initial_call=True
+)
+
+clientside_callback(
+    '''
+    function change_layout_colors(checked) {
+        var table_header_style = {'padding': '10px', 'fontFamily': 'Arial, sans-serif', 'fontSize': '14px',
+                            'fontWeight': 'bold', 'color': checked ? 'black' : 'rgba(220, 220, 220, 0.95)'};
+        var outsample_header_style = table_header_style;
+        var optimal_header_style = table_header_style;
+
+        var table_data_style = {'color': checked ? 'black' : 'rgba(220, 220, 220, 0.85)'};
+        var outsample_data_style = table_data_style;
+        var optimal_data_style = table_data_style;
+
+        return [outsample_header_style, optimal_header_style, outsample_data_style, optimal_data_style];
+    }
+    ''',
     Output('outsample_table', 'style_header'),
     Output('optimal_table', 'style_header'),
     Output('outsample_table', 'style_data'),

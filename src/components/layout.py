@@ -106,31 +106,31 @@ def sidebar_label(label_text, modal_children, modal_id, icon_id,
 data_modal_children = [
     dcc.Markdown(
         '''
-        ### Information About Asset Data:
+        ### Information About Asset Data
 
         ---
 
-        #### Chosing an Asset
+        #### Choosing an Asset
 
         The assets available are the Spyder S&P 500 ETF (SPY), the Invesco QQQ Trust (QQQ), and the
         iShares Russell 2000 ETF (IWM). The price of each ETF represents a fraction of the underlying
         index that it tracks, such as 1/10 of the S&P 500 Index in the case of SPY. However, the
         price data is unadjusted for dividend payouts, causing it to deviate slightly from this ratio.
 
-        #### Chosing a Timeframe
+        #### Choosing a Timeframe
 
         Unless using tick data where every single trade is saved, asset price data is almost always
         aggregated using a set period or "timeframe". Open, High, Low, Close (OHLC) is the standard
-        way to aggregate price data and using a 1 day timeframe (1d) is by far the most common.
+        way to aggregate price data, and using a 1-day timeframe (1d) is by far the most common.
         In this case, the open price will be the first trade of the day, the close price will be the
         last recorded trade of the day, and the high and low prices will be the single highest and
         lowest trades recorded throughout the day. This means every data point has 4 price values.
-        With the timeframe dropdown, you can choose from data aggregted every 15 minutes, 1 hour, or 1 day.
+        With the timeframe dropdown, you can choose from data aggregated every 15 minutes, 1 hour, or 1 day.
 
         As an aside, all the strategies provided in this app use the closing price values for their
-        inputs, as is standard. This is likely because on the daily timeframe the close of the trading
-        day see very large spikes in trading volume. Therefore, this prices carries more overall
-        signifance to investors who entered and exited positions that day.
+        inputs, as is standard. This is likely because, on the daily timeframe, the close of the trading
+        day sees very large spikes in trading volume. Therefore, this price carry more overall
+        significance to investors who entered and exited positions that day.
 
         #### Visualizing Price Data
 
@@ -144,14 +144,16 @@ data_modal_children = [
             alt="Bar chart structure",
             width='75%',
         )],
-        style={'margin-left': '15%'}
+        style={'margin-left': '15%', 'margin-bottom': '20px'}
     ),
     dcc.Markdown(
         '''
-        Each data point is a vertical line or bar, where the top of the top bar represents the high price
-        and the bottom the low price. Additionally, each bar has two horizontal lines extending from it.
-        On the left side, the line is at the opening price and on the right side, at the closing price.
-        Looking at the price data isn't neccessary to use this app, but it can provide more context to the results.
+        Each data point is represented as a vertical line or bar, where the top of the bar represents
+        the high price and the bottom the low price. Additionally, each bar has two horizontal lines
+        extending from it. On the left side, the line is at the opening price, and on the right side,
+        at the closing price. Furthermore, the bar is colored green or red based on whether the closing
+        price is higher or lower than the opening price respectively. Note that looking at the price
+        data isn't necessary to use this app, but it can provide more context to the results.
         '''
     )
 ]
@@ -159,7 +161,7 @@ data_modal_children = [
 window_modal_children = [
     dcc.Markdown(
         '''
-        ### About Walk-Forward Window Splitting:
+        ### Walk-Forward Optimization Parameters
 
         ---
 
@@ -172,10 +174,10 @@ window_modal_children = [
         it is for testing indicator strategies. In general, the number of windows should be considered
         in proportion to how many data points there are in the total data set. If too few price points
         exist in each window, it's likely that not enough trades will be taken for the test to have
-        significance. This number will vary for each strategy, given there can be significant differences
+        significance. This number will vary for each strategy, given there can be sizeable differences
         in the number of trades produced. Furthermore, a strategy may only become active under a certain
-        set of market conditions. To gauge this, you may view how many trades were taken in the
-        out-of-sample window within the "Visual Backtest Results" tab.
+        set of market conditions. To evaluate this, you can view how many trades were taken in each
+        out-of-sample window in the backtest results tabs.
 
         #### Choosing the In-Sample Percentage
 
@@ -184,6 +186,8 @@ window_modal_children = [
         can result in a loss of statistical significance. It is common practice in cross-validation
         to make the out-of-sample size about 20% of the in-sample size, or a ratio of 4:1. However,
         this is not a hard rule and it is recommended to experiment with the ratio in this app.
+
+        #### Step Size
 
         An additional parameter which isn't currently adjustable by the user is the step size or
         conversely, the overlap size of the windows. This is the number of data points that each
@@ -208,12 +212,12 @@ strategy_modal_children = [
 
         #### SMA Crossover
 
-        The SMA crossover is the prototypical indicator strategy, and many of the strategies provided here
-        build upon its core concept.
+        The SMA crossover is the prototypical indicator strategy, and many of the strategies provided
+        here build upon its core concept.
 
         Most indicators are mathematical functions, with the **Simple Moving Average** (SMA) being
-        one of the most centrally import and simplest. An SMA with period $n$ is an equal-weighted average
-        taken over the previous $n$ price values:
+        one of the most centrally important and simplest. An SMA with period $n$ is an equal-weighted
+        average taken over the previous $n$ price values:
         $$
         SMA_n(x) = \\frac{1}{n} \\sum^{n}_{i=1} x_i \\: .
         $$
@@ -315,7 +319,7 @@ strategy_modal_children = [
 
         - Since the MACD indicator uses EMAs and they have relatively short periods, the strategy can target
         a much shorter timeframe using the same price data than an SMA crossover can, for example.
-        - A sharp change in price-direction can create a crossover relatively quickly.
+        - A sharp change in price direction can create a crossover relatively quickly.
         - For additional information, you can read the following
         [article on Investopedia.](https://www.investopedia.com/terms/m/macd.asp "MACD Indicator Explained, with Formula, Examples, and Limitations")
         ''',

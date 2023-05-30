@@ -81,7 +81,6 @@ def simulation_callback(app, cache):
 
         if selected_strategy == 'SMA Crossover':
             columns_list = ["Fast SMA Period", "Slow SMA Period"]
-
             parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
 
             def backtest_windows(price, sma_periods, all_periods=True):
@@ -96,7 +95,6 @@ def simulation_callback(app, cache):
 
         elif selected_strategy == 'EMA Crossover':
             columns_list = ["Fast EMA Period", "Slow EMA Period"]
-
             parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
 
             def backtest_windows(price, ema_periods, all_periods=True):
@@ -113,8 +111,8 @@ def simulation_callback(app, cache):
 
         elif selected_strategy == 'RSI':
             columns_list = ["RSI Entry Value", "RSI Exit Value"]
-
             raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
+
             # Generate all entry and exit combinations, with entry value < exit value by default, and splitting them into seperate lists.
             # For the crossover strategies this was already done for us by the .run_combs function for the period parameters.
             parameter_combinations = list(combinations(raw_parameter_values, 2))
@@ -251,16 +249,18 @@ def simulation_callback(app, cache):
         optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'testing'}}, 'optimal_table')
 
         # Creating the segmented control for selecting the window to display plots for.
-        selections = []
-        for i in range(nwindows):
-            selections.append({'value': i, 'label': f"Window {i+1}"})
+        selections = [{'value': i, 'label': f"Window {i+1}"} for i in range(nwindows)]
+
         window_selector = dmc.SegmentedControl(
             data=selections,
             value=0,
             fullWidth=True,
             size='s',
+            radius='md',
+            style={'margin-top': '7px', 'background-color': 'rgb(23, 143, 255)'},
             id='window_selector'
         )
+        # rgb(28, 108, 255)
 
         return averages_table, outsample_table, optimal_table, False, window_selector
 
