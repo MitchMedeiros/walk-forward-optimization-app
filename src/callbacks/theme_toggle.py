@@ -59,9 +59,9 @@ clientside_callback(
         var components_color = {colorScheme: checked ? 'light' : 'dark'};
         var header_color = checked ? '#d5d5d5' : '#2b2b2b';
         var sidebar_style = {'margin-left': '12px', 'background-color': checked ? '#d5d5d5' : '#2b2b2b'};
-        var page_title = checked ? {'from': '#6a74fc', 'to': '#298dff'} : {'from': '#30eeff', 'to': '#28b4ff'}
+        var page_title = checked ? {'from': '#525dff', 'to': '#298dff'} : {'from': '#52b1ff', 'to': '#739dff', 'deg': 45}
 
-        var text_color = checked ? {'from': '#525dff', 'to': '#298dff', 'deg': 45} : {'from': '#1bbeff', 'to': '#28b4ff', 'deg': 45};
+        var text_color = checked ? {'from': '#525dff', 'to': '#298dff', 'deg': 45} : {'from': '#52b1ff', 'to': '#739dff', 'deg': 45};
         var data_label_text = text_color;
         var window_label_text = text_color;
         var strategy_label_text = text_color;

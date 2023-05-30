@@ -115,8 +115,8 @@ def window_plot_callback(app, cache):
                        gridcolor='#191919'),
             yaxis=dict(showgrid=False)
         )
-        # Changing the heatmap colors.
-        fig['data'][0]['colorscale'] = [[0.0, '#1bbeff'], [1.0, '#298dff']]
+        # Changing the heatmap colors of the plot.
+        fig['data'][0]['colorscale'] = [[0.0, '#298dff'], [1.0, '#739dff']]
         fig['data'][1]['colorscale'] = [[0.0, '#298dff'], [1.0, '#633fff']]
 
         # only relevant if using one of the callbacks below:

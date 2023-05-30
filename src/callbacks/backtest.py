@@ -113,7 +113,7 @@ def simulation_callback(app, cache):
             columns_list = ["RSI Entry Value", "RSI Exit Value"]
             raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
 
-            # Generate all entry and exit combinations, with entry value < exit value by default, and splitting them into seperate lists.
+            # Generate all entry and exit combinations with entry value < exit value by default and splitting them into seperate lists.
             # For the crossover strategies this was already done for us by the .run_combs function for the period parameters.
             parameter_combinations = list(combinations(raw_parameter_values, 2))
             parameter_values_entries = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]

@@ -21,7 +21,7 @@ page_header = dbc.Navbar(
                                 dmc.Text(
                                     "Walk-Forward Optimization",
                                     variant='gradient',
-                                    gradient={'from': '#30eeff', 'to': '#28b4ff', 'deg': 25},
+                                    gradient={'from': '#52b1ff', 'to': '#739dff', 'deg': 45},
                                     style={'font-size': '25px'},
                                     id='page_title'
                                 )
@@ -90,7 +90,7 @@ def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
             dmc.Text(
                 label_text,
                 variant='gradient',
-                gradient={'from': '#1bbeff', 'to': '#28b4ff', 'deg': 45},
+                gradient={'from': '#52b1ff', 'to': '#739dff', 'deg': 45},
                 style={'margin-left': 'auto', 'font-size': '22px'},
                 id=label_id
             ),
@@ -468,9 +468,9 @@ def create_layout():
                     page_header,
                     dbc.Row(
                         [
-                            dbc.Col(sidebar, xs=12, lg=3, id='sidebar',
+                            dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
                                     style={'margin-left': '12px', 'background-color': '#2b2b2b'}),
-                            dbc.Col(data_display_tabs, xs=12, lg=8)
+                            dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
                         ]
                     ),
                     html.Div(id='dummy_output'),
