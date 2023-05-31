@@ -65,7 +65,7 @@ def simulation_callback(app, cache):
             close = df['close']
             close = close.astype({'close': 'double'})
 
-        # Split the data into walk-forward windows to be looped through.
+        # Split the data into walk-forward windows.
         window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
                              window_len=round(len(df) / ((1 - overlap_factor(nwindows)) * nwindows)))
         (in_price, in_dates), (out_price, out_dates) = close.vbt.rolling_split(**window_kwargs, plot=False)
@@ -107,7 +107,25 @@ def simulation_callback(app, cache):
                 exits = fast_ema.real_crossed_below(slow_ema.real)
                 return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
-        # elif selected_strategy == 'MACD':
+        elif selected_strategy == 'MACD':
+            columns_list = ["Fast EMA Period", "Slow EMA Period"]
+            raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
+
+            # Generate all entry and exit combinations with entry value < exit value by default and splitting them into seperate lists.
+            # For the crossover strategies this was already done for us by the .run_combs function for the period parameters.
+            parameter_combinations = list(combinations(raw_parameter_values, 2))
+            parameter_values_entries = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]
+            parameter_values_exits = [parameter_combinations[i][1] for i in range(len(parameter_combinations))]
+            parameter_values = [parameter_values_entries, parameter_values_exits]
+
+            def backtest_windows(price, parameter_values, all_periods=True):
+                if all_periods is True:
+                    macd = vbt.IndicatorFactory.from_talib('MACD').run(price, parameter_values[0], parameter_values[1])
+                else:
+                    macd = vbt.IndicatorFactory.from_talib('MACD').run(price, parameter_values[0], parameter_values[1], per_column=True)
+                entries = macd.macd_crossed_above(macd.macdsignal)
+                exits = macd.macd_crossed_below(macd.macdsignal)
+                return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
         elif selected_strategy == 'RSI':
             columns_list = ["RSI Entry Value", "RSI Exit Value"]

@@ -341,6 +341,10 @@ strategy_modal_children = [
         - A sharp change in price direction can create a crossover relatively quickly.
         - For additional information, you can read the following
         [article on Investopedia.](https://www.investopedia.com/terms/m/macd.asp "MACD Indicator Explained, with Formula, Examples, and Limitations")
+
+        #### RSI
+
+        The **Relative Strength Index** (RSI) is catagorized a momentum indicator. Its intention is to measure
         ''',
         link_target="_blank"
     )
