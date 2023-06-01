@@ -9,6 +9,94 @@ import src.components.data_inputs as data_inputs
 import src.components.window_inputs as window_inputs
 import src.components.strategy_inputs as strategy_inputs
 
+about_text = [
+    dcc.Markdown(
+        '''
+        ### About This App
+
+        ---
+
+        This app is a tool for backtesting and optimizing trading strategies. It utilizes a more
+        sophisticated method called walk-forward optimization. Read below to find out more.
+
+        #### What is Strategy Optimization?
+
+        In the "Strategy Details" area you can choose from four algorithmic trading strategies. These
+        strategies involve functions known as *indicators* which typically take asset prices and/or
+        trading volume as input and output a value used for trading decisions. It's also common to
+        use the values of one indicator as input for another.
+
+        Indicators generally have one or more constants in their equations, known as *parameters*.
+        The most common parameter for an indicator to have is a *period*. This is the number
+        of most recent historical prices used as input. For example, a 20-period simple moving average
+        has a value equal to the average of last 20 prices.
+        Different parameter values can be tested while holding the trading rules for buying and selling
+        fixed to find the optimal value for a chosen data set. The most common metric to optimize
+        for is the overall profit or *return* from using the strategy. This app also allows you to
+        choose two other metrics to optimize for: maximizing the Sharpe ratio or minimizing the
+        maximum drawdown incurred thoughout the test. It's worth mentioning that one can also hold the
+        parameter values fixed and change the trading rules when optimizing a strategy.
+
+        #### What is Walk-Forward Optimization?
+
+        ##### Cross-Validation
+
+        Generally speaking, walk-forward optimization is a type of cross-validation technique. In
+        cross-validation one splits a data set into in-sample periods and out-of-sample periods. The
+        model is optimized on the former and tested on the latter.
+        It's standard practice to only seperate the data into a single in-sample and out-of-sample period.
+        For chronologically ordered data, known as *time-series data*, one might use the first 80%
+        for optimizing and the last 20% for testing. The out-of-sample period is intended to emulate
+        performing live trading right after optimization.
+
+        ##### The Problem With Strategy Optimzation
+
+        The main drawback to using a single overall window is that one must practice a considerable
+        amount of discretion when choosing how to optimize. This is becuase in backtesting the problem
+        of overfitting is a significant concern. Overfitting generally occurs when a model has too many
+        degrees of freedom i.e. parameters being optimized such that it can fit the training data near
+        perfectly. Ironically, such hyperoptimzed models tend to have some of the worst real-world
+        performance. If only a single, relatively short out-of-sample period is used for the model
+        validation, there's a larger chance that the model still performs well out-of-sample, only to
+        produce very poor results in live trading.
+
+        Suppose that someones sleeping was observed for an hour. During this period they only slept on
+        their side. An optimization is then conducted to find the least wasteful matress for this
+        person which still sufficiently accomodates their observed sleeping patterns. If we're allowed
+        only one parameter for the optimization, we might choose the width of the bed, reducing it from
+        a king size to a twin, given they never used more than half the bed during this hour. However,
+        if we were allowed to optimize with several parameters, we could produce sophisticated curves
+        and we might opt for the matress shown below as this would fit the data perfectly.
+        '''
+    ),
+    dmc.Center([
+        dmc.Image(
+            src='assets/overfitting.png',
+            caption="A matress overfit for a side-sleeper.",
+            alt="SMA crossover example",
+            opacity=0.9,
+            width='95%'
+        )],
+        style={'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'}
+    ),
+    dcc.Markdown(
+        '''
+        The issue with this optimization is that as soon as the person shifts their sleeping position
+        they're going to fall off the bed! If we had observed the person for a longer period this would
+        be present in the in-sample data, however, in investing, avoiding overfitting is not always as
+        simple as adding more data.
+
+
+        it is relatively easy for an overfit model to still perform well on the single out-of-sample period.
+        producing potentially worse results on future data than an unoptimized model. Backtest
+        results may require screening for overfit models, introducing an additional qualitative
+        subprocess to an ideally quantitative process. Walk-forward optimization aims to address
+        this issue, not by making overfitting the in-sample data any more difficult, but by
+        making it much less likely that overfitting produces strong overall results out-of-sample.
+        '''
+    )
+]
+
 page_header = dbc.Navbar(
     [
         dbc.Row(
@@ -24,11 +112,29 @@ page_header = dbc.Navbar(
                                     gradient={'from': '#52b1ff', 'to': '#739dff', 'deg': 45},
                                     style={'font-size': '25px'},
                                     id='page_title'
+                                ),
+                                dmc.Modal(
+                                    children=about_text,
+                                    centered=True,
+                                    zIndex=100,
+                                    size='xl',
+                                    id='modal_4'
+                                ),
+                                dmc.Button(
+                                    "About",
+                                    leftIcon=DashIconify(icon='ep:info-filled', color='#739dff', height=20),
+                                    variant='outline',
+                                    color='indigo',
+                                    size='lg',
+                                    compact=True,
+                                    radius='xl',
+                                    style={'margin-left': '50px'},
+                                    id='icon_4'
                                 )
                             ],
                             direction='horizontal',
                             gap=2,
-                            style={'margin-left': '25px', 'margin-bottom': '10px'}
+                            style={'margin-left': '25px'}
                         )
                     ]
                 )
@@ -59,7 +165,7 @@ page_header = dbc.Navbar(
                             target="_blank"
                         )
                     ],
-                    style={'margin-right': '40px'}
+                    style={'margin-right': '40px', 'margin-left': '20px'}
                 ),
                 dbc.Col(
                     [

@@ -9,7 +9,7 @@ except ImportError:
     import config
 
 asset_dropdown = dmc.Select(
-    data=[{'label': 'SPY', 'value': 'spy'}, {'label': 'QQQ', 'value': 'qqq'}, {'label': 'VIXY', 'value': 'vixy'}],
+    data=[{'label': 'SPY', 'value': 'spy'}, {'label': 'QQQ', 'value': 'qqq'}, {'label': 'IWM', 'value': 'iwm'}],
     value='spy',
     label="Asset",
     icon=DashIconify(icon='arcticons:stockswidget'),
