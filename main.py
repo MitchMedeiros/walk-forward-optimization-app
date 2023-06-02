@@ -47,6 +47,7 @@ plotting.candle_plot_callback(app, cache)
 plotting.window_plot_callback(app, cache)
 backtest.simulation_callback(app, cache)
 stats_plotting.backtest_plotting_callback(app, cache)
+children.notification_callback(app)
 
 # Deploys the app locally if run_locally is True.
 if __name__ == '__main__' and config.run_locally:

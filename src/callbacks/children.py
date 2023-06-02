@@ -1,5 +1,6 @@
 from dash import html, Input, Output
 import dash_bootstrap_components as dbc
+from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
 def parameters_div(label_text, slider_min, slider_max, slider_step, slider_value):
@@ -39,3 +40,25 @@ def parameter_inputs_callback(app):
 
         elif selected_strategy == 'MACD':
             return parameters_div("Range of EMA periods for MACD line", 6, 50, 2, [8, 30])
+
+# A dummy input and output div is used to trigger the notification popup on page load only and keep it
+# seperated from other callbacks.
+def notification_callback(app):
+    @app.callback(
+        Output('notification_output', 'children'),
+        Input('notification_trigger', 'children')
+    )
+    def show(children):
+        return dmc.Notification(
+            action='show',
+            title="Make use of the popups if this is your first time!",
+            message=dmc.Text(
+                "Click the About button in the top bar of the page to learn more about this app. "
+                "There's also info icons in the dropdown area explaining the choices.",
+                size='16px',
+            ),
+            icon=DashIconify(icon='ant-design:notification-filled'),
+            color='yellow',
+            autoClose=20000,
+            id='initial_message'
+        )

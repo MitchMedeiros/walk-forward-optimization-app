@@ -9,7 +9,7 @@ import src.components.data_inputs as data_inputs
 import src.components.window_inputs as window_inputs
 import src.components.strategy_inputs as strategy_inputs
 
-about_text = [
+about_modal_children = [
     dcc.Markdown(
         '''
         ### About This App
@@ -34,12 +34,10 @@ about_text = [
         fixed to find the optimal value for a chosen data set. The most common metric to optimize
         for is the overall profit or *return* from using the strategy. This app also allows you to
         choose two other metrics to optimize for: maximizing the Sharpe ratio or minimizing the
-        maximum drawdown incurred thoughout the test. It's worth mentioning that one can also hold the
+        maximum drawdown incurred throughout the test. It's worth mentioning that one can also hold the
         parameter values fixed and change the trading rules when optimizing a strategy.
 
-        #### What is Walk-Forward Optimization?
-
-        ##### Cross-Validation
+        #### Cross-Validation
 
         Generally speaking, walk-forward optimization is a type of cross-validation technique. In
         cross-validation one splits a data set into in-sample periods and out-of-sample periods. The
@@ -49,50 +47,61 @@ about_text = [
         for optimizing and the last 20% for testing. The out-of-sample period is intended to emulate
         performing live trading right after optimization.
 
-        ##### The Problem With Strategy Optimzation
+        ##### The Issue With Single Period Cross-Validation
 
-        The main drawback to using a single overall window is that one must practice a considerable
-        amount of discretion when choosing how to optimize. This is becuase in backtesting the problem
-        of overfitting is a significant concern. Overfitting generally occurs when a model has too many
-        degrees of freedom i.e. parameters being optimized such that it can fit the training data near
-        perfectly. Ironically, such hyperoptimzed models tend to have some of the worst real-world
-        performance. If only a single, relatively short out-of-sample period is used for the model
-        validation, there's a larger chance that the model still performs well out-of-sample, only to
-        produce very poor results in live trading.
+        The main drawback to using a single in-sample and out-of-sample period or *window* is that
+        there is more uncertainty in whether a model is overfit.
+        Overfitting generally occurs when a model has too many degrees of freedom i.e. parameters
+        being optimized such that it can fit the training data near perfectly. Ironically, such
+        hyperoptimzed models tend to have some of the worst real-world performance. If only a single,
+        relatively short out-of-sample period is used for the model validation, there's a higher chance that
+        the model happens to perform well out-of-sample, only to produce very poor results in live trading.
+        Walk-forward optimization seeks to address this by making out-of-sample results more in-line with
+        live trading results for a given optimization procedure.
 
-        Suppose that someones sleeping was observed for an hour. During this period they only slept on
+        ###### An Intuitive Example of Overfitting
+
+        Suppose that a person's sleeping was observed for an hour, during which time they only slept on
         their side. An optimization is then conducted to find the least wasteful matress for this
-        person which still sufficiently accomodates their observed sleeping patterns. If we're allowed
-        only one parameter for the optimization, we might choose the width of the bed, reducing it from
-        a king size to a twin, given they never used more than half the bed during this hour. However,
-        if we were allowed to optimize with several parameters, we could produce sophisticated curves
-        and we might opt for the matress shown below as this would fit the data perfectly.
+        person which still accomodates their observed sleeping patterns. If we're allowed
+        only one parameter for the optimization, we might choose the width of the bed. We could reduce
+        the matress from say a king size to a twin if they never used more than half the bed during this
+        hour. However, if we were allowed to optimize with several parameters, we can create a matress
+        with complicated curves, like the one shown below.
         '''
     ),
     dmc.Center([
         dmc.Image(
-            src='assets/overfitting.png',
+            src='assets/overfit.png',
             caption="A matress overfit for a side-sleeper.",
-            alt="SMA crossover example",
-            opacity=0.9,
-            width='95%'
+            alt="Overfitting Image",
+            width='80%'
         )],
-        style={'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'}
+        style={'margin-left': '15%', 'margin-top': '18px', 'margin-bottom': '25px'}
     ),
     dcc.Markdown(
         '''
-        The issue with this optimization is that as soon as the person shifts their sleeping position
-        they're going to fall off the bed! If we had observed the person for a longer period this would
-        be present in the in-sample data, however, in investing, avoiding overfitting is not always as
-        simple as adding more data.
+        This is likely the most optimized matress as it seemingly fits the obversed data and optimization
+        criteria perfectly. The problem with this hyperoptimization is that once the person shifts their
+        sleeping position, they're going to fall off the bed! We've optimized the matress so much
+        that it can only accomodate a very specific sleeping behavior. Analogously, if we over-optimize a
+        trading strategy and market behavior changes even slightly, we might incur significant losses. Now,
+        if we had observed the person for a longer period of time, different sleeping positions might be
+        present in the in-sample data. However, in general, overfitting is not avoided by simply adding
+        more data.
 
+        #### Walk-Forward Optimization
 
-        it is relatively easy for an overfit model to still perform well on the single out-of-sample period.
-        producing potentially worse results on future data than an unoptimized model. Backtest
-        results may require screening for overfit models, introducing an additional qualitative
-        subprocess to an ideally quantitative process. Walk-forward optimization aims to address
-        this issue, not by making overfitting the in-sample data any more difficult, but by
-        making it much less likely that overfitting produces strong overall results out-of-sample.
+        Walk-forward optimization is a way to address this issue, not by making overfitting the in-sample
+        data more difficult, but by making it much less likely that overfitting produces strong results
+        out-of-sample. The method creates overlapping windows in order to maximize the number of out-of-sample
+        periods without shrinking the size of the in-sample periods. Each window involves an optimizion on
+        in-sample and testing on out-of-sample before moving on to the next window and reoptimizing.
+        At the end, all the out-of-sample results are averaged to evaluate the overall performance across
+        the time period. It's typical for the windows to overlap by an amount close to the in-sample length
+        as to keep each out-of-sample period unique. You can view a walk-forward graph in the main
+        tab labeled "Price History and Windows" and alter it in the "Window Splitting" section to get an
+        understand for how it works.
         '''
     )
 ]
@@ -114,7 +123,7 @@ page_header = dbc.Navbar(
                                     id='page_title'
                                 ),
                                 dmc.Modal(
-                                    children=about_text,
+                                    children=about_modal_children,
                                     centered=True,
                                     zIndex=100,
                                     size='xl',
@@ -572,24 +581,30 @@ def create_layout():
     unique_session = str(uuid.uuid4())
 
     return dmc.MantineProvider(
-        [
-            dbc.Container(
-                [
-                    page_header,
-                    dbc.Row(
-                        [
-                            dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
-                                    style={'margin-left': '12px', 'background-color': '#2b2b2b'}),
-                            dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
-                        ]
-                    ),
-                    html.Div(id='dummy_output'),
-                    dcc.Store(data=unique_session, id='session_id')
-                ],
-                fluid=True,
-                className='dbc'
-            )
-        ],
+        dmc.NotificationsProvider(
+            [
+                dbc.Container(
+                    [
+                        page_header,
+                        dbc.Row(
+                            [
+                                dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
+                                        style={'margin-left': '12px', 'background-color': '#2b2b2b'}),
+                                dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
+                            ]
+                        ),
+                        html.Div(id='dummy_output'),
+                        html.Div(id='notification_trigger'),
+                        html.Div(id='notification_output'),
+                        dcc.Store(data=unique_session, id='session_id'),
+                    ],
+                    fluid=True,
+                    className='dbc'
+                )
+            ],
+            position='bottom-center',
+            containerWidth='55%'
+        ),
         theme={'colorScheme': 'dark'},
         id='mantine_container'
     )
