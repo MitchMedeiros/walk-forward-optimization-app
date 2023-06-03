@@ -29,7 +29,7 @@ about_modal_children = [
         Indicators generally have one or more constants in their equations, known as *parameters*.
         The most common parameter for an indicator to have is a *period*. This is the number
         of most recent historical prices used as input. For example, a 20-period simple moving average
-        has a value equal to the average of last 20 prices.
+        has a value equal to the average of the last 20 prices.
         Different parameter values can be tested while holding the trading rules for buying and selling
         fixed to find the optimal value for a chosen data set. The most common metric to optimize
         for is the overall profit or *return* from using the strategy. This app also allows you to
@@ -42,7 +42,7 @@ about_modal_children = [
         Generally speaking, walk-forward optimization is a type of cross-validation technique. In
         cross-validation one splits a data set into in-sample periods and out-of-sample periods. The
         model is optimized on the former and tested on the latter.
-        It's standard practice to only seperate the data into a single in-sample and out-of-sample period.
+        It's standard practice to only separate the data into a single in-sample and out-of-sample period.
         For chronologically ordered data, known as *time-series data*, one might use the first 80%
         for optimizing and the last 20% for testing. The out-of-sample period is intended to emulate
         performing live trading right after optimization.
@@ -52,28 +52,28 @@ about_modal_children = [
         The main drawback to using a single in-sample and out-of-sample period or *window* is that
         there is more uncertainty in whether a model is overfit.
         Overfitting generally occurs when a model has too many degrees of freedom i.e. parameters
-        being optimized such that it can fit the training data near perfectly. Ironically, such
-        hyperoptimzed models tend to have some of the worst real-world performance. If only a single,
+        being optimized such that it can fit the training data nearly perfectly. Ironically, such
+        hyper-optimzed models tend to have some of the worst real-world performance. If only a single,
         relatively short out-of-sample period is used for the model validation, there's a higher chance that
         the model happens to perform well out-of-sample, only to produce very poor results in live trading.
-        Walk-forward optimization seeks to address this by making out-of-sample results more in-line with
+        Walk-forward optimization seeks to address this by making out-of-sample results more in line with
         live trading results for a given optimization procedure.
 
         ###### An Intuitive Example of Overfitting
 
         Suppose that a person's sleeping was observed for an hour, during which time they only slept on
-        their side. An optimization is then conducted to find the least wasteful matress for this
-        person which still accomodates their observed sleeping patterns. If we're allowed
+        their side. An optimization is then conducted to find the least wasteful mattress for this
+        person which still accommodates their observed sleeping patterns. If we're allowed
         only one parameter for the optimization, we might choose the width of the bed. We could reduce
-        the matress from say a king size to a twin if they never used more than half the bed during this
-        hour. However, if we were allowed to optimize with several parameters, we can create a matress
+        the mattress from say a king size to a twin if they never used more than half the bed during this
+        hour. However, if we were allowed to optimize with several parameters, we can create a mattress
         with complicated curves, like the one shown below.
         '''
     ),
     dmc.Center([
         dmc.Image(
             src='assets/overfit.png',
-            caption="A matress overfit for a side-sleeper.",
+            caption=dmc.Text("An overfit mattress optimized for a side-sleeper.", style={'margin-right': '18%'}),
             alt="Overfitting Image",
             width='80%'
         )],
@@ -81,10 +81,10 @@ about_modal_children = [
     ),
     dcc.Markdown(
         '''
-        This is likely the most optimized matress as it seemingly fits the obversed data and optimization
+        This is likely the most optimized mattress as it seemingly fits the observed data and optimization
         criteria perfectly. The problem with this hyperoptimization is that once the person shifts their
-        sleeping position, they're going to fall off the bed! We've optimized the matress so much
-        that it can only accomodate a very specific sleeping behavior. Analogously, if we over-optimize a
+        sleeping position, they're going to fall off the bed! We've optimized the mattress so much
+        that it can only accommodate a very specific sleeping behavior. Analogously, if we over-optimize a
         trading strategy and market behavior changes even slightly, we might incur significant losses. Now,
         if we had observed the person for a longer period of time, different sleeping positions might be
         present in the in-sample data. However, in general, overfitting is not avoided by simply adding
@@ -94,14 +94,14 @@ about_modal_children = [
 
         Walk-forward optimization is a way to address this issue, not by making overfitting the in-sample
         data more difficult, but by making it much less likely that overfitting produces strong results
-        out-of-sample. The method creates overlapping windows in order to maximize the number of out-of-sample
-        periods without shrinking the size of the in-sample periods. Each window involves an optimizion on
+        out-of-sample. The method creates overlapping windows to maximize the number of out-of-sample
+        periods without shrinking the size of the in-sample periods. Each window involves an optimization on
         in-sample and testing on out-of-sample before moving on to the next window and reoptimizing.
         At the end, all the out-of-sample results are averaged to evaluate the overall performance across
         the time period. It's typical for the windows to overlap by an amount close to the in-sample length
         as to keep each out-of-sample period unique. You can view a walk-forward graph in the main
         tab labeled "Price History and Windows" and alter it in the "Window Splitting" section to get an
-        understand for how it works.
+        understanding of how it works.
         '''
     )
 ]
@@ -352,9 +352,11 @@ strategy_modal_children = [
         Most indicators are mathematical functions, with the **Simple Moving Average** (SMA) being
         one of the most centrally important and simplest. An SMA with period $n$ is an equal-weighted
         average taken over the previous $n$ price values:
+
         $$
         SMA_n(x) = \\frac{1}{n} \\sum^{n}_{i=1} x_i \\: .
         $$
+
         Traditionally, closing prices are used within the context of finance. However, any set of
         real values will produce a real analytic function. As price points are progressively input
         into the function, across a selected date range, the value is updated by dropping the oldest
@@ -395,10 +397,12 @@ strategy_modal_children = [
         The EMA crossover applies the same trading rules for entering and exiting a position as the SMA
         crossover but with **Exponential Moving Averages** (EMAs) instead. An $n$ period EMA evaluated
         at the $i^{th}$ data point is calculated recursively as:
+
         $$
         EMA_n(x_i) = \\frac{2}{n+1} * x_i + (1-\\frac{2}{n+1}) * EMA_n(x_{i-1}) \\:,
         $$
-        where $x_i$ is generally the closing price at point i. Since the period $n \\geq 1$, the weighting
+
+        where $x_i$ is typically the closing price at point i. Since the period $n \\geq 1$, the weighting
         factor $0 < \\frac{2}{n+1} \\leq 1$. Thus, the most recent price value is always weighted more
         heavily than the previous EMA value. Since the function is calculated recursively, the contributions
         from older EMA values fall off in a compounding fashion. The initial value of the EMA is generally
@@ -418,13 +422,17 @@ strategy_modal_children = [
         part of a more complicated crossover strategy. It traditionally utilizes EMAs with periods
         9, 12, and 26 to derive two new functions: the **MACD line** and the **signal line**.
         The MACD line is the difference between the 12-period and 26-period EMAs:
+
         $$
         MACD_{12,26}(x_i) = EMA_{12}(x_i) - EMA_{26}(x_i) \\:.
         $$
+
         The signal line, denoted as $S(x)$, is the 9-period EMA of the MACD line:
+
         $$
         S(x_i) = EMA_{9}(MACD_{12,26}(x_i)) \\:.
         $$
+
         In other words, the MACD line is the total difference between two EMAs and the signal line is
         an exponentially weighted average of the recent differences between them. When the current
         difference between the EMAs is greater than the exponentially averaged recent differences,
@@ -455,11 +463,58 @@ strategy_modal_children = [
         a much shorter timeframe using the same price data than an SMA crossover can, for example.
         - A sharp change in price direction can create a crossover relatively quickly.
         - For additional information, you can read the following
-        [article on Investopedia.](https://www.investopedia.com/terms/m/macd.asp "MACD Indicator Explained, with Formula, Examples, and Limitations")
+        [article on Investopedia.](https://www.investopedia.com/terms/m/macd.asp
+        "MACD Indicator Explained, with Formula, Examples, and Limitations")
+
+        &nbsp;
 
         #### RSI
 
-        The **Relative Strength Index** (RSI) is catagorized a momentum indicator. Its intention is to measure
+        The **Relative Strength Index** (RSI) is a momentum indicator intended to help identify
+        overbought or oversold conditions. Generally, values above 70 may suggest that an asset is
+        overbought and due for a downward correction, while values below 30 may suggest that an asset
+        is oversold and due for an upward correction. To calculate the RSI one must first average
+        the upward moves $U$ and the absolute value of the downward moves $D$ over the period of the
+        indicator. There's more than one common choice for how the averages of $U$ and $D$ are taken,
+        however, the historic choice is an exponential moving average with period 14. For a period
+        $n$, the average of the upward price movements at point $i$ would be calculated recursively as
+
+        $$
+        U_{i}(x) = \\frac{1}{n} * x_i + \\frac{n-1}{n} * U_{i-1}(x) \\:,
+        $$
+
+        where $x_i$ is the change in price at data point $i$. The downward price movements are calculated
+        the same but using the absolute values to obtain a positive value. The RSI is then calculated as
+
+        $$
+        RSI = 100 - \\frac{100}{1 + \\dfrac{U}{D}} \\:.
+        $$
+
+        It's straightforward to show that the RSI is bounded from below at 0: given $U$ and $D$ are
+        positive, the RSI is minimized by $U=0$ resulting in $RSI=0$ . This occurs when there are
+        only downward moves within the indicator period. The upper bound is defined to be 100 if $D=0$ ,
+        given the RSI would be undefined otherwise. This is a sensible choice, given in the limit that
+        $D \\rightarrow 0$ , $RSI \\rightarrow 100$ . The image below is an example of RSI plotted under
+        a price chart.
+        ''',
+        mathjax=True,
+        link_target="_blank"
+    ),
+    dmc.Center([
+        dmc.Image(
+            src='assets/rsi.png',
+            caption="RSI plotted below a price chart. Source: Investopedia.com",
+            alt="RSI example",
+            opacity=0.9,
+            width='95%'
+        )],
+        style={'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'}
+    ),
+    dcc.Markdown(
+        '''
+        For more information on how to contextually use RSI values, you can read the following
+        [article on Investopedia.](https://www.investopedia.com/terms/r/rsi.asp
+        "Relative Strength Index (RSI) Indicator Explained With Formula")
         ''',
         link_target="_blank"
     )
