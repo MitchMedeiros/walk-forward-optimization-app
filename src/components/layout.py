@@ -9,6 +9,7 @@ import src.components.data_inputs as data_inputs
 import src.components.window_inputs as window_inputs
 import src.components.strategy_inputs as strategy_inputs
 
+# Components provided to the About modal in the top bar of the app.
 about_modal_children = [
     dcc.Markdown(
         '''
@@ -106,6 +107,7 @@ about_modal_children = [
     )
 ]
 
+# The top bar of the app
 page_header = dbc.Navbar(
     [
         dbc.Row(
@@ -198,6 +200,7 @@ page_header = dbc.Navbar(
     id='page_header'
 )
 
+# Used to create the Data Selection, Window Splitting, and Strategy Details headings with info modals.
 def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
                   styling={'margin-left': '25px', 'margin-bottom': '10px'}):
     return dbc.Stack(
@@ -237,6 +240,7 @@ def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
         style=styling
     )
 
+# Information modals for the sidebar labels
 data_modal_children = [
     dcc.Markdown(
         '''
@@ -246,10 +250,11 @@ data_modal_children = [
 
         #### Choosing an Asset
 
-        The assets available are the Spyder S&P 500 ETF (SPY), the Invesco QQQ Trust (QQQ), and the
-        iShares Russell 2000 ETF (IWM). The price of each ETF represents a fraction of the underlying
-        index that it tracks, such as 1/10 of the S&P 500 Index in the case of SPY. However, the
-        price data is unadjusted for dividend payouts, causing it to deviate slightly from this ratio.
+        The assets you can choose from for backtesting in this app are the most traded ETFs tracking
+        the S&P 500, Nasdaq 100, Dow Jones Industral Average, and Russell 2000 indexes. The price of
+        each ETF represents a fraction of the underlying index that it tracks, such as 1/10th of the
+        S&P 500 Index price in the case of the SPY ETF. However, the price data is unadjusted for
+        dividend payouts, causing it to deviate slightly from this ratio.
 
         #### Choosing a Timeframe
 
@@ -559,6 +564,7 @@ def accordion_header(displayed_text):
 tab_style = {'padding': '4px', 'padding-top': '9px'}
 selected_tab_style = {'padding': '4px', 'padding-top': '7px'}
 
+# The main section of the app where data is displayed. Contains three tabs.
 data_display_tabs = dcc.Tabs(
     [
         dcc.Tab(
@@ -632,6 +638,7 @@ data_display_tabs = dcc.Tabs(
     id='tabs'
 )
 
+# The app layout containing all displayed components. Provided to app.layout in main.py
 def create_layout():
     unique_session = str(uuid.uuid4())
 

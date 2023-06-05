@@ -5,8 +5,8 @@ import polars as pl
 import plotly.graph_objects as go
 import vectorbt as vbt
 
-import src.data.data as data
 from . backtest import overlap_factor
+import src.data.data as data
 try:
     import my_config as config
 except ImportError:

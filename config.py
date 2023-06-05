@@ -69,7 +69,7 @@ port_number = 8050
 debug_bool = True
 
 # Only used if run_locally=True. Suppresses initial callback errors relating to component id if they are intentional.
-callback_suppress = True
+callback_suppress = False
 
 # Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. The default value is True.
 locally_style = True

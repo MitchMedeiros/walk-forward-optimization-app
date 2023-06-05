@@ -57,8 +57,8 @@ def notification_callback(app):
                 "There's also info icons in the dropdown area explaining the choices.",
                 size='16px',
             ),
-            icon=DashIconify(icon='ant-design:notification-filled'),
-            color='yellow',
+            icon=DashIconify(icon='ant-design:notification-filled', color='orange'),
+            color='indigo',
             autoClose=20000,
             id='initial_message'
         )

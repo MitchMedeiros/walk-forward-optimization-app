@@ -263,8 +263,8 @@ def simulation_callback(app, cache):
                 id=table_id
             )
 
-        outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Expectancy (%)': {'value': 'testing'}}, 'outsample_table')
-        optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'testing'}}, 'optimal_table')
+        outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Return': {'value': 'The realized profit out-of-sample.'}}, 'outsample_table')
+        optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'The highest possible out-of-sample returns.'}}, 'optimal_table')
 
         # Creating the segmented control for selecting the window to display plots for.
         selections = [{'value': i, 'label': f"Window {i+1}"} for i in range(nwindows)]
