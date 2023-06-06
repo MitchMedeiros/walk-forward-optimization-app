@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date
 import os
 
 '''
@@ -13,14 +13,15 @@ and whether or not to cache data with a redis database. Both of these require ex
 data_type = 'yfinance'
 
 # Only used if data_type='postgres'. Provide your postgreSQL connection credentials below.
-# A note about table formatting: Your tables should have the same names as those listed in the asset dropdown: spy, qqq, vixy.
-# The columns should have the lowercase names: date, open, high, low, close, volume.
-db_host = ''
-db_port = ''
-db_name = ''
-db_user = ''
-db_password = ''
-db_credentials = dict(host=db_host, port=db_port, database=db_name, user=db_user, password=db_password)
+# A note about table formatting: Your tables should have the same names as those listed in the asset dropdown: spy, qqq, dia, iwm.
+# The columns should have the lowercase names: date, open, high, low, close, volume, symbol.
+database_type = 'postgresql'
+user = ''
+password = ''
+host = ''
+port = ''
+database = ''
+connection = f"{database_type}://{user}:{password}@{host}:{port}/{database}"
 
 # Only used if data_type='postgres'. Choose weather to aggregate data to larger time intervals with 'pandas' or 'timescaledb'.
 # Set to 'pandas' if you are not using the timescaledb extension or have not converted your tables to hypertables.
@@ -29,10 +30,10 @@ aggregation_method = 'pandas'
 
 # Adjust the date range for the data requested when the app initially loads. Limit the dates that can be chosen.
 # Found in src/components/data_inputs.py
-calendar_start = (date.today() - timedelta(days=540))
-calendar_end = (date.today() - timedelta(days=20))
-minimum_selectable_date = date(1990, 1, 1)
-maximum_selectable_date = (date.today() - timedelta(days=1))
+calendar_start = date(2021, 1, 1)
+calendar_end = date(2022, 12, 31)
+minimum_selectable_date = date(2017, 1, 1)
+maximum_selectable_date = date(2023, 5, 31)
 
 
 ################ Data Caching (main.py) ################

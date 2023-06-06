@@ -1,5 +1,5 @@
 <h2>About This Directory</h2>
 
-This directory contains all of the app's interactive functionality. The dash callbacks utilize JavaScript to take in user inputs involving the dash components, perform a specified Python function, and then update the arguments of existing components within the app layout. New components can be created from a callback by updating the children argument. 
+This directory contains all of the app's interactive functionality. The dash callbacks utilize JavaScript to take in user inputs involving the dash components, call a function, and update the attributes of existing components within the app layout. New components are created from a callback by updating the children attribute of an existing component.
 
-As an example, selecting a date in the calendar component triggers the callbacks that have the date component as an input. The decorated Python function is then run and when complete should specify one or more return values that update the specified output components.
+In most of the modules, you will find normal Dash callbacks which call a Python function decorated with `@app.callback()` specifying all the input and output components and runs server-side. For cases where minimizing latency is important and Python-specific functionality is not needed, clientside callbacks are used. The `clientside_callback()` is a Dash function that wraps a JavaScript function and a list of inputs and outputs and is executed in the browser.

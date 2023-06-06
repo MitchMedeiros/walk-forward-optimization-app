@@ -1,37 +1,66 @@
-<h1>App Description and Preview</h1>
-
-<h2>Dependencies &nbsp;
+<h1>App Description &nbsp;&nbsp;
  <a href="https://pypi.org/project/vectorbt" alt="Python Versions">
  <img src="https://img.shields.io/pypi/pyversions/vectorbt.svg?logo=python&logoColor=white">
  </a>
-</h2>
+</h1>
+
+<h1>Core Dependencies</h1>
+
+The core dependencies are:
 
 <ol>
- <li>It is assumed that you already have a compatible version of Python (listed above) and ideally a fresh virtual environment</li>
- <li>The C-based TA-Lib library</li>
- <li>The libraries in requirements.txt</li>
- <li>(optional) A CSV file or database containing market data</li>
- <li>(optional) A WSGI setup if web hosting the app</li>
+ <li>A compatible Python version (3.6-3.10)</li>
+ <li>TA-Lib (C library)</li>
+ <li>Python libraries in requirements.txt</li>
 </ol>
 
-For a barebones installation you only need to install TA-Lib, clone this repository, and run pip3 install -r requirements.txt in your Python environment. Detailed instructions for reproducing the full web app connected to a PostgreSQL/TimescaleDB database are provided below.
+<h2>Cloning This Repository</h2>
 
-The TA-Lib Python library serves only as a compatibility layer for the original TA-Lib library based in C and this must be installed before running `pip install ta-lib`. For Linux, I've provided the steps below. For Mac, a fairly similar procedure can be followed: 
-<a href="https://medium.com/@mkstz/install-ta-lib-without-homebrew-61f57a63c06d">
- Installing TA-Lib without Homebrew
-</a>
 
-<h2>Ta-Lib Installation on Linux</h2>
+To run this app locally you can simply clone this repository. Make sure you have
+<a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">
+git installed</a>.
+You can confirm this on Linux or Mac by typing `git --version` in a terminal. Navigate to the directory you want the app in and use the command:
 
-Install wget, if not already installed, using the appropriate 
+```shell
+git clone https://github.com/MitchMedeiros/dashapp.git
+```
+
+<h2>Creating the Virtual Environment</h2>
+
+If you have Anaconda installed you can create a virtual environment called "backtesting" using:
+
+```shell
+conda create -n backtesting python=3.10
+```
+
+and activate it with `conda activate backtesting`. Note what default directory it's installed in if you plan to web host the app.
+
+Alternately, you can use the Python venv module with the following command in the directory you want the environment in:
+
+```shell
+python3.10 -m venv backtesting
+```
+
+Activate it on Linux/Mac using: `source backtesting/bin/activate` or in Windows PowerShell: `backtesting\Scripts\activate`.
+
+<h2>TA-Lib</h2>
+
+At this point you should install the core TA-Lib library from source before you can install the TA-Lib Python library. This is necessary since the Python library is only a wrapper.
+
+<h3>Ta-Lib Installation on Linux and Mac</h3>
+
+If you have a web browser available you can download the source file by visiting <a href="https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/ta-lib-0.4.0-src.tar.gz/download?use_mirror=phoenixnap">soureforge</a>.
+
+If using a Linux server, install wget if not already installed, using the appropriate 
 <a href="https://www.maketecheasier.com/install-software-in-various-linux-distros/">
- install command
-</a> 
-for your Linux distro.\
+install command</a> 
+for your Linux distro.
+
 For Debian/Ubuntu:
 
 ```shell
-sudo apt-get install wget
+sudo apt install wget
 ```
 
 Download the TA-Lib library from 
@@ -44,71 +73,74 @@ using
 wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
 ```
 
-Unpack the tar file
+Once you have the tar file downloaded you should unpack it:
 
 ```shell
 tar -xvf ta-lib-0.4.0-src.tar.gz
 ```
 
-Delete the tar file, cd into the new folder, and run the configure file inside
+Delete the tar file and cd into the newly created folder.
 
+```shell
+rm ta-lib-0.4.0-src.tar.gz; cd ta-lib
 ```
-rm ta-lib-0.4.0-src.tar.gz; cd ta-lib; ./configure --prefix=/usr
+
+Now we run the configure file on Debian/Ubuntu you should use the prefix /usr:
+
+```shell
+./configure --prefix=/usr
+```
+
+On Mac the prefix /usr/local should be used:
+```shell
+./configure --prefix=/usr/local
 ```
 
 Run the `make` command to compile the TA-Lib files.\
 Run `sudo make install`, which will copy the compiled files into /usr/include/ta-lib.
 
-You should now be able to install vectorbt and all dependencies without any issues
+<h2>requirements.txt</h2>
+
+After you've installed the core TA-Lib library, activate your virutal environment and navigate inside the app directory. Install the libraries in requirements.txt with pip:
 
 ```shell
 pip3 install -r requirements.txt
 ```
-If this generates errors about ta-lib then confirm that your Linux distro stores header files in a subdirectory of /usr. If not, change `./configure --prefix=/appropriate_directory` in the earlier step.
 
-<h2>Importing Your Own Data</h2>
+You can now run the main.py file and visit <a href=127.0.0.1:8050>127.0.0.1:8050</a> in a web browser to access the app.
 
-The dataframe used for the strategy simulation is created in make_df.py. Inside it, you will find the Yahoo Finance API used to reduce the overhead of getting the app running. 
+<h2>Optional Dependencies</h2>
 
-<h3>Importing from a CSV</h3>
+The optional dependencies to extend the functionality of this app are:
 
-You can easily use a CSV file instead by uncommenting the lines below ##For CSV## and specifying your CSV's directory and commenting out the yfinance lines.
+<ol>
+ <li>PostgreSQL database - for custom data</li>
+ <li>Redis database - for faster caching</li>
+ <li>mod_wsgi - for web hosting</li>
+ <li>Apache HTTP - for web hosting</li>
+</ol>
 
+<h3>PostgreSQL and Redis Databases</h3>
 
-<h3>Importing from a PostreSQL/TimescaleDB</h3>
+The app hosted on <a ahref=backtest.fi>backtest.fi</a> utilizes a postgreSQL and Redis backend. However, the default configuration file when cloning this repository will use Yahoo Finance for data as well as the local file system for caching between Dash callbacks. If you have either or both databases installed you can connect them by simply providing your connection credentials in config.py, located in the parent directory of this repository.
 
-You'll also find the code for this in make_df.py under ##For PostgreSQL/Timescale database##\
-You'll need to install psycopg2 (see details below) then input your database information inside credentials.py and add the file to .getignore if you plan to share your repository. Note that you can use any database with this app that has a Python API but the process may vary.
+<h3>WSGI Setup for an Apache Server on Linux</h3>
 
-<h4>Installing psycopg2</h4>
+This section explains how to web host the app on a server. It assumes you have an Apache virtual host set up and linked to a domain name.
 
-You should first check if you meet the 
-<a href="https://www.psycopg.org/docs/install.html#install-from-source">
- build requirements 
-</a> 
-to install psycopg2. If so simply `pip install psycopg2` inside your python environment. If you experience issues the easiest workaround is to `pip uninstall psycopg2` and `pip install psycopg2-binary`. 
-
-As a disclaimer, using psycopg2-binary is not recommended for production systems since it can create binary upgradeability issues. This is because psycopg2 is a compatibility library similar to TA-Lib, and psycopg2-binary installs the relevant C libraries and pre-compiled binary for you to make setup simple. However, these libraries won't be upgraded by your system and can create conflicts.
-
-Note that you can shortcut the cursor creation process for importing data with psycopg2 using the pandas function `pd.read_sql_query('''your query''', conn)`, however, this is officially untested for psycopg2.
-
-<h2>WSGI Setup for an Apache Server</h2>
-
-This section explains optionally how to web host the app on a server. It assumes you have an Apache server setup and linked to a domain name.
-
-Even with Apache installed, you may be missing important files for WSGI. For Debian/Ubuntu run:
+You should first install the Apache header files for third-party modules. If you have Apache 2.4 then on Debian/Ubuntu run:
 
 ```shell
-sudo apt-get install apache2-dev
+sudo apt install apache2-dev
 ```
 
-Now with your Python environment active 
+Now, with your Python virtual environment active:
 
 ```shell
-pip install mod-wsgi
+pip3 install mod-wsgi
 ```
 
-Locate your newly created wsgi files with
+Locate your newly created wsgi files with:
 
 ```shell
 mod_wsgi-express module-config
@@ -124,59 +156,75 @@ vim /etc/apache2/mods-available/wsgi.load
 
 Enable the new mod with `a2enmod wsgi`.
 
-Navigate to the .config or .htaccess file (depending on your OS) that you have your virtual host information in. You'll need to add a `WSGIScriptAlias` specifying the location of the app.wsgi file in this repository.
+Navigate to the .config or .htaccess file (depending on your OS) that you have your virtual host information in. You'll need to add a `WSGIScriptAlias` specifying the location of the app.wsgi file.
 
-If your site is only using HTTP, your virtual host info should look similar to the snippet below. If you have your site in a different directory from /var/www/ then change the root directory appropriately.
+If your site is only using HTTP, your virtual host info should look similar to the snippet below. Make sure to replace /path_to_cloned_repository with the appropriate path and yoursite.com with your domain name.
 
 ```apache
 <VirtualHost *:80>
- ServerName yoursite.com
- ServerAlias www.yoursite.com
- WSGIScriptAlias / /var/www/yoursites_folder/dashapp/app.wsgi
- 
- <Directory /var/www/yoursites_folder/dashapp/>
- Order allow,deny
- Allow from all
- </Directory>
+    ServerName yoursite.com
+    ServerAlias www.yoursite.com
+
+    WSGIDaemonProcess dashapp python-home=your_python_virtual_env_directory user=www-data group=www-data
+
+    WSGIProcessGroup dashapp
+    WSGIApplicationGroup %{GLOBAL}
+
+    WSGIScriptAlias / /path_to_cloned_repository/dashapp/app.wsgi
+
+    <Directory /path_to_cloned_repository/dashapp/>
+        Require all granted
+    </Directory>
 </VirtualHost>
 ```
 
-If your site is set up to use HTTPS via Let's Encrypt then your .htaccess or .config file should look something like 
+If your site is set up to use HTTPS via Let's Encrypt then your .config or .htaccess file should look like 
 
 ```apache
 <VirtualHost *:80>
- ServerName yoursite.com
- ServerAlias www.yoursite.com
+    ServerName yoursite.com
+    ServerAlias www.yoursite.com
 
- RewriteEngine on
- RewriteCond %{HTTPS} off
- RewriteRule ^(.*)$ https://yoursite.com/$1 [L,R=301]
+    RewriteEngine on
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://yoursite.com/$1 [L,R=301]
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
- ServerName yoursite.com
- ServerAlias www.yoursite.com
- WSGIScriptAlias / /var/www/yoursites_folder/dashapp/app.wsgi
+    ServerName yoursite.com
+    ServerAlias www.yoursite.com
 
- <Directory /var/www/yoursites_folder/dashapp/>
- Order allow,deny
- Allow from all
- </Directory>
- 
- Include /etc/letsencrypt/options-ssl-apache.conf
- SSLCertificateFile /etc/letsencrypt/live/yoursite.com/fullchain.pem
- SSLCertificateKeyFile /etc/letsencrypt/live/yoursite.com/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+    SSLCertificateFile /etc/letsencrypt/live/yoursite.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/yoursite.com/privkey.pem
+
+    WSGIDaemonProcess dashapp python-home=/path_to_your_virtual_environment user=www-data group=www-data
+
+    WSGIProcessGroup dashapp
+    WSGIApplicationGroup %{GLOBAL}
+
+    WSGIScriptAlias / /path_to_cloned_repository/dashapp/app.wsgi
+
+    <Directory /path_to_cloned_repository/dashapp/>
+        Require all granted
+    </Directory>
 </VirtualHost>
 </IfModule>
 ```
 
-If you've created a new .config or .htaccess file in one of your ...-available folders rather than adding to an existing file then you'll also need to activate it with the appropriate `a2ensite`, `a2enmod`, or `a2enconf` command.
+If you've created a new .config file in one of your ...-available folders rather than adding to an existing file then you'll also need to activate it with the appropriate `a2ensite`, `a2enmod`, or `a2enconf` command.
 
-Finally, you should edit the app.wsgi file in this repository by changing the sys.path line shown below to the appropriate root directory for your app
+Now you will need to edit the app.wsgi file in the root directory of the repository. First change the shebang line at the top of the file to the location of your virtual environment and Python version:
+```python
+#!/path_to_your_virtual_environment/bin/python3.10
+```
+Also changing the sys.path line shown below to the appropriate root directory for your app
 
 ```python
-sys.path.insert(0,"/var/www/yoursites_folder/dashapp/")
+sys.path.insert(0,"/path_to_cloned_repository/dashapp/")
 ```
 
-Now restart Apache: `systemctl restart apache2` for all changes to take effect. The app should now be accessible through your domain name! 🤩
+Finally, insure that the Apache user: www-data has sufficient file permissions. At a minimum the entire app directory should have the group as www-data with read permissions on all files and also execute permission for app.wsgi. You should add further write or execute permissions to files only as necessary. For security reasons, the directory should be owned by a user other than root.
+
+Restart Apache: `systemctl restart apache2` for all changes to take effect. The app should now be accessible through your domain name!
