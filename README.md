@@ -109,7 +109,7 @@ pip3 install -r requirements.txt
 
 You can now run the main.py file and visit <a href=127.0.0.1:8050>127.0.0.1:8050</a> in a web browser to access the app.
 
-<h2>Optional Dependencies</h2>
+<h1>Optional Dependencies</h1>
 
 The optional dependencies to extend the functionality of this app are:
 
@@ -120,11 +120,11 @@ The optional dependencies to extend the functionality of this app are:
  <li>Apache HTTP - for web hosting</li>
 </ol>
 
-<h3>PostgreSQL and Redis Databases</h3>
+<h2>PostgreSQL and Redis Databases</h2>
 
 The app hosted on <a ahref=backtest.fi>backtest.fi</a> utilizes a postgreSQL and Redis backend. However, the default configuration file when cloning this repository will use Yahoo Finance for data as well as the local file system for caching between Dash callbacks. If you have either or both databases installed you can connect them by simply providing your connection credentials in config.py, located in the parent directory of this repository.
 
-<h3>WSGI Setup for an Apache Server on Linux</h3>
+<h2>WSGI Setup for an Apache Server on Linux</h2>
 
 This section explains how to web host the app on a server. It assumes you have an Apache virtual host set up and linked to a domain name.
 

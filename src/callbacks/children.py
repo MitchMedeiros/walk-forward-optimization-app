@@ -51,12 +51,12 @@ def notification_callback(app):
     def show(children):
         return dmc.Notification(
             action='show',
-            title="Make use of the popups if this is your first time!",
-            message=dmc.Text(
-                "Click the About button in the top bar of the page to learn more about this app. "
-                "There's also info icons in the dropdown area explaining the choices.",
-                size='16px',
+            title=dmc.Text(
+                "Click the About button in the top bar of the page to learn more about what this app does. "
+                "Also click the info icons in the selection area to understand the choices",
+                size='17px'
             ),
+            message=None,
             icon=DashIconify(icon='ant-design:notification-filled', color='orange'),
             color='indigo',
             autoClose=20000,

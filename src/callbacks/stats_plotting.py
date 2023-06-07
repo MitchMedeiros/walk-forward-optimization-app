@@ -57,7 +57,7 @@ def backtest_plotting_callback(app, cache):
             font_color='#2b99ff',
             height=1200,
             width=None,
-            margin=dict(t=100),
+            margin=dict(t=110),
             modebar_remove=['toImage', 'autoScale2d', 'lasso2d', 'select2d']
         )
         dashboard.update_xaxes(linecolor='rgba(0, 0, 0, 0.25)', gridcolor='rgba(0, 0, 0, 0.25)')
@@ -65,7 +65,7 @@ def backtest_plotting_callback(app, cache):
 
         return dcc.Graph(
             figure=dashboard,
-            style={'height': '1200px'},
+            style={'height': '1200px', 'margin-top': '8px'},
             config={'showTips': True, 'displayModeBar': True, 'displaylogo': False},
             id='dashboard_plot'
         )
