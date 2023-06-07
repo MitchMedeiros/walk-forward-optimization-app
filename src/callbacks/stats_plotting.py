@@ -51,8 +51,21 @@ def backtest_plotting_callback(app, cache):
 #       rsi_plot = rsi.vbt.plot(trace_kwargs=dict(name="RSI", line=dict(color='#8332c6')),
 #                               add_trace_kwargs=dict(row=2, col=1), fig=dashboard)
 
-        dashboard.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_color='#2b99ff', height=1200, width=None)
+        dashboard.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font_color='#2b99ff',
+            height=1200,
+            width=None,
+            margin=dict(t=100),
+            modebar_remove=['toImage', 'autoScale2d', 'lasso2d', 'select2d']
+        )
         dashboard.update_xaxes(linecolor='rgba(0, 0, 0, 0.25)', gridcolor='rgba(0, 0, 0, 0.25)')
         dashboard.update_yaxes(linecolor='rgba(0, 0, 0, 0.25)', gridcolor='rgba(0, 0, 0, 0.25)')
 
-        return dcc.Graph(figure=dashboard, id='dashboard_plot', style={'height': '1200px'})
+        return dcc.Graph(
+            figure=dashboard,
+            style={'height': '1200px'},
+            config={'showTips': True, 'displayModeBar': True, 'displaylogo': False},
+            id='dashboard_plot'
+        )

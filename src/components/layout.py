@@ -223,12 +223,12 @@ def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
                     ),
                     dmc.ActionIcon(
                         DashIconify(icon='ri:question-mark', width=18, height=15),
-                        color='gray',
-                        size='xs',
+                        color='dark',
+                        size='sm',
                         radius='xl',
                         variant='filled',
-                        opacity=0.7,
-                        style={'margin-bottom': '15px'},
+                        # opacity=0.9,
+                        style={'margin-bottom': '2px'},
                         id=icon_id
                     )
                 ],

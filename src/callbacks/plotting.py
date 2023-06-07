@@ -67,11 +67,19 @@ def candle_plot_callback(app, cache):
                 paper_bgcolor='#2b2b2b',
                 font_color='white',
                 margin=dict(l=40, r=8, t=12, b=12),
-                xaxis=dict(rangeslider=dict(visible=False), rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
-                           gridcolor='#191919'),
-                yaxis=dict(gridcolor='#191919')
+                xaxis=dict(
+                    rangeslider=dict(visible=False),
+                    rangebreaks=[breaks, dict(bounds=['sat', 'mon'])],
+                    gridcolor='#191919'
+                ),
+                yaxis=dict(gridcolor='#191919'),
+                modebar_remove=['toImage', 'autoScale2d', 'lasso2d', 'select2d']
             )
-            return dcc.Graph(figure=fig, id='candle_plot')
+            return dcc.Graph(
+                figure=fig,
+                config={'showTips': True, 'displayModeBar': True, 'displaylogo': False},
+                id='candle_plot'
+            )
 
 # Callback for plotting the walk-forward windows
 def window_plot_callback(app, cache):
@@ -111,9 +119,9 @@ def window_plot_callback(app, cache):
             height=280,
             width=None,  # Reset the width defined by .rolling_split so that Dash can properly scale the graph.
             legend=dict(yanchor='bottom', y=0.04, xanchor='left', x=0.03, bgcolor='#2b2b2b'),
-            xaxis=dict(showticklabels=False, rangebreaks=[dict(bounds=['sat', 'mon'])],
-                       gridcolor='#191919'),
-            yaxis=dict(showgrid=False)
+            xaxis=dict(showticklabels=False, rangebreaks=[dict(bounds=['sat', 'mon'])], gridcolor='#191919'),
+            yaxis=dict(showgrid=False),
+            modebar_remove=['toImage', 'autoScale2d', 'lasso2d', 'select2d']
         )
         # Changing the heatmap colors of the plot.
         fig['data'][0]['colorscale'] = [[0.0, '#298dff'], [1.0, '#739dff']]
@@ -122,7 +130,12 @@ def window_plot_callback(app, cache):
         # only relevant if using one of the callbacks below:
         # fig.update_xaxes(range=[df.index[0], df.index[-1]])
 
-        return dcc.Graph(figure=fig, id='window_plot', style={'width': '100%', 'height': '280px'})
+        return dcc.Graph(
+            figure=fig,
+            config={'showTips': True, 'displayModeBar': True, 'displaylogo': False},
+            style={'width': '100%', 'height': '280px'},
+            id='window_plot'
+        )
 
 # clientside_callback(
 #     """
