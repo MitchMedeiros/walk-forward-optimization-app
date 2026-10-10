@@ -71,8 +71,7 @@ def simulation_callback(app, cache):
             close = df.select(pl.col(['date', 'close'])).to_pandas()
             close = close.set_index('date')
         elif config.data_type == 'yfinance':
-            close = df['close']
-            close = close.astype({'close': 'double'})
+            close = df['close'].astype('double')
 
         # Split the data into walk-forward windows.
         window_kwargs = dict(n=nwindows, set_lens=(insample / 100,),
@@ -248,8 +247,7 @@ def simulation_callback(app, cache):
                 else:
                     return "0.0%"
 
-            for column in percentage_columns:
-                column_name = df.columns[column]
+            for column_name in percentage_columns:
                 df[column_name] = df[column_name].apply(lambda x: format_as_percentage(x))
             table_columns = [{'name': str(i), 'id': str(i)} for i in df.columns]
 
@@ -273,8 +271,11 @@ def simulation_callback(app, cache):
                 id=table_id
             )
 
-        outsample_table = create_dash_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14], {'Return': {'value': 'The realized profit out-of-sample.'}}, 'outsample_table')
-        optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'The highest possible out-of-sample returns.'}}, 'optimal_table')
+        outsample_percentage_columns = ['Return', 'Max Drawdown', 'Benchmark Return', 'Win Rate', 'Avg Winning Trade',
+                                        'Avg Losing Trade', 'Exposure']
+        optimal_percentage_columns = ['Return', 'Max Drawdown', 'Average Returns']
+        outsample_table = create_dash_table(outsample_df, outsample_percentage_columns, {'Return': {'value': 'The realized profit out-of-sample.'}}, 'outsample_table')
+        optimal_table = create_dash_table(optimal_df, optimal_percentage_columns, {'Return': {'value': 'The highest possible out-of-sample returns.'}}, 'optimal_table')
 
         # Creating the segmented control for selecting the window to display plots for.
         selections = [{'value': str(i), 'label': f"Window {i+1}"} for i in range(nwindows)]
@@ -285,35 +286,8 @@ def simulation_callback(app, cache):
             fullWidth=True,
             size='sm',
             radius='md',
-            style={'margin-top': '7px', 'background-color': 'rgb(23, 143, 255)'},
+            style={'marginTop': '7px', 'backgroundColor': 'rgb(23, 143, 255)'},
             id='window_selector'
         )
-        # rgb(28, 108, 255)
 
         return averages_table, outsample_table, optimal_table, False, window_selector
-
-
-# def create_dmc_table(df, percentage_columns):
-#     def format_as_percentage(value):
-#         if -1000000 < value < 1000000 and value != 0:
-#             return f"{value}%"
-#         else:
-#             return "0.0%"
-#     for column in percentage_columns:
-#         column_name = df.columns[column]
-#         df[column_name] = df[column_name].apply(lambda x: format_as_percentage(x))
-
-#     def create_html_table(df):
-#         columns, values = df.columns, df.values
-#         header = [html.Tr([html.Th(col, style={'width': '140px'}) for col in columns])]
-#         rows = [html.Tr([html.Td(cell) for cell in row]) for row in values]
-#         table = [html.Thead(header), html.Tbody(rows)]
-#         return table
-#     return dmc.Table(
-#         create_html_table(df),
-#         highlightOnHover=True,
-#         style={'table-layout': 'fixed'}
-#     )
-
-# outsample_table = create_dmc_table(outsample_df, [3, 5, 6, 7, 10, 11, 12, 13, 14])
-# optimal_table = create_dmc_table(optimal_df, [3, 5, 6])

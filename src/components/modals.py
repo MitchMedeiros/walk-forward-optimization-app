@@ -73,7 +73,7 @@ about_modal_children = [
     ),
     captioned_image(
         'assets/overfit.png', "Overfitting Image", '80%',
-        {'margin-left': '15%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        {'marginLeft': '15%', 'marginTop': '18px', 'marginBottom': '25px'},
         caption="An overfit mattress optimized for a side-sleeper."
     ),
     dcc.Markdown(
@@ -142,7 +142,7 @@ data_modal_children = [
     ),
     captioned_image(
         'assets/bars.png', "Bar chart structure", '75%',
-        {'margin-left': '15%', 'margin-bottom': '20px'}
+        {'marginLeft': '15%', 'marginBottom': '20px'}
     ),
     dcc.Markdown(
         '''
@@ -235,7 +235,7 @@ strategy_modal_children = [
     ),
     captioned_image(
         'assets/sma.jpeg', "SMA crossover example", '95%',
-        {'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        {'marginLeft': '5%', 'marginTop': '18px', 'marginBottom': '25px'},
         caption="An SMA crossover producing a buy signal. Source: Investopedia.com", opacity=0.9
     ),
     dcc.Markdown(
@@ -307,7 +307,7 @@ strategy_modal_children = [
     ),
     captioned_image(
         'assets/macd.jpeg', "MACD example", '95%',
-        {'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        {'marginLeft': '5%', 'marginTop': '18px', 'marginBottom': '25px'},
         caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). "
                 "Source: Investopedia.com",
         opacity=0.9
@@ -359,7 +359,7 @@ strategy_modal_children = [
     ),
     captioned_image(
         'assets/rsi.png', "RSI example", '95%',
-        {'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        {'marginLeft': '5%', 'marginTop': '18px', 'marginBottom': '25px'},
         caption="RSI plotted below a price chart. Source: Investopedia.com", opacity=0.9
     ),
     dcc.Markdown(
@@ -374,14 +374,14 @@ strategy_modal_children = [
 
 # Used to create the Data Selection, Window Splitting, and Strategy Details headings with info modals.
 def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
-                  styling={'margin-left': '25px', 'margin-bottom': '10px'}):
+                  styling={'marginLeft': '25px', 'marginBottom': '10px'}):
     return dbc.Stack(
         [
             dmc.Text(
                 label_text,
                 variant='gradient',
                 gradient={'from': '#52b1ff', 'to': '#739dff', 'deg': 45},
-                style={'margin-left': 'auto', 'font-size': '22px'},
+                style={'marginLeft': 'auto', 'fontSize': '22px'},
                 id=label_id
             ),
             html.Div(
@@ -399,11 +399,11 @@ def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
                         size='sm',
                         radius='xl',
                         variant='filled',
-                        style={'margin-bottom': '2px'},
+                        style={'marginBottom': '2px'},
                         id=icon_id
                     )
                 ],
-                style={'margin-right': 'auto'}
+                style={'marginRight': 'auto'}
             )
         ],
         direction='horizontal',
@@ -412,7 +412,7 @@ def sidebar_label(label_text, label_id, modal_children, modal_id, icon_id,
     )
 
 data_label = sidebar_label("Data Selection", 'data_label_text', data_modal_children, 'modal_1', 'icon_1',
-                           {'margin-left': '25px', 'margin-top': '10px', 'margin-bottom': '10px'})
+                           {'marginLeft': '25px', 'marginTop': '10px', 'marginBottom': '10px'})
 
 window_label = sidebar_label("Window Splitting", 'window_label_text', window_modal_children, 'modal_2', 'icon_2')
 

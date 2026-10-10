@@ -6,7 +6,7 @@ import dash_mantine_components as dmc
 def parameters_div(label_text, slider_min, slider_max, slider_step, slider_value):
     return html.Div(
         [
-            dbc.Label(label_text, style={'margin-top': '10px'}),
+            dbc.Label(label_text, style={'marginTop': '10px'}),
             dmc.RangeSlider(
                 min=slider_min,
                 max=slider_max,
@@ -15,11 +15,11 @@ def parameters_div(label_text, slider_min, slider_max, slider_step, slider_value
                 size='sm',
                 radius='xl',
                 labelAlwaysOn=True,
-                style={'margin-top': '35px', 'margin-bottom': '10px'},
+                style={'marginTop': '35px', 'marginBottom': '10px'},
                 id={'type': 'slider'},
             )
         ],
-        style={'text-align': 'center', 'cursor': 'pointer'}
+        style={'textAlign': 'center', 'cursor': 'pointer'}
     )
 
 # Callback to create parameter input components based on selected strategy
@@ -41,23 +41,25 @@ def parameter_inputs_callback(app):
         elif selected_strategy == 'MACD':
             return parameters_div("Range of EMA periods for MACD line", 6, 50, 2, [8, 30])
 
-# A dummy input and output div is used to trigger the notification popup on page load only and keep it
+# A dummy input div is used to trigger the notification popup on page load only and keep it
 # seperated from other callbacks.
 def notification_callback(app):
     @app.callback(
-        Output('notification_output', 'children'),
+        Output('notification_container', 'sendNotifications'),
         Input('notification_trigger', 'children')
     )
     def show(children):
-        return dmc.Notification(
-            action='show',
-            message=dmc.Text(
-                "Click the About button in the top bar of the page to learn more about what this app does. "
-                "Also click the info icons in the selection area to understand the choices",
-                size='17px'
-            ),
-            icon=DashIconify(icon='ant-design:notification-filled', color='orange'),
-            color='indigo',
-            autoClose=20000,
-            id='initial_message'
-        )
+        return [
+            dict(
+                action='show',
+                message=dmc.Text(
+                    "Click the About button in the top bar of the page to learn more about what this app does. "
+                    "Also click the info icons in the selection area to understand the choices",
+                    size='17px'
+                ),
+                icon=DashIconify(icon='ant-design:notification-filled', color='orange'),
+                color='indigo',
+                autoClose=20000,
+                id='initial_message'
+            )
+        ]

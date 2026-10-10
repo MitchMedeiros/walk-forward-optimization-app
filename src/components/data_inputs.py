@@ -14,7 +14,7 @@ asset_dropdown = dmc.Select(
     searchable=True,
     nothingFoundMessage="Asset not found",
     className='mx-auto',
-    style={"width": 130, 'text-align': 'center'},
+    style={"width": 130, 'textAlign': 'center'},
     id='asset'
 )
 
@@ -26,7 +26,7 @@ timeframe_dropdown = dmc.Select(
     searchable=True,
     nothingFoundMessage="Timeframe not found",
     className='mx-auto',
-    style={"width": 130, 'text-align': 'center'},
+    style={"width": 130, 'textAlign': 'center'},
     id='timeframe'
 )
 
@@ -38,6 +38,6 @@ date_calendar = dmc.DatePickerInput(
     clearable=False,
     leftSection=DashIconify(icon='clarity:date-line'),
     valueFormat="MMM DD, YYYY",
-    style={"width": '100%', 'margin-left': 'auto', 'margin-right': 'auto'},
+    style={"width": '100%', 'marginLeft': 'auto', 'marginRight': 'auto'},
     id='date_range'
 )

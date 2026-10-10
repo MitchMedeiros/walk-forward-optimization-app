@@ -9,7 +9,7 @@ nwindows_input = dmc.Select(
     searchable=True,
     nothingFoundMessage="Number not found",
     className='mx-auto',
-    style={"width": 130, 'text-align': 'center'},
+    style={"width": 130, 'textAlign': 'center'},
     id='nwindows'
 )
 
@@ -21,6 +21,6 @@ insample_dropdown = dmc.Select(
     searchable=True,
     nothingFoundMessage="Percentage not found",
     className='mx-auto',
-    style={"width": 130, 'text-align': 'center'},
+    style={"width": 130, 'textAlign': 'center'},
     id='insample'
 )

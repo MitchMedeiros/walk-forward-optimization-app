@@ -42,7 +42,6 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
             return df
 
         elif config.data_type == 'yfinance':
-            import pandas as pd
             import yfinance
 
             # Query the data with the yfinance API
@@ -56,10 +55,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
             )
 
             # Format the data to match the formatting used with the database
-            try:
-                df = df.drop(columns=['Adj Close'])
-            except KeyError:
-                pass
+            df = df.drop(columns=['Adj Close', 'Repaired?'], errors='ignore')
             df = df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low', 'Close': 'close', 'Volume': 'volume'})
             df.index.rename('date', inplace=True)
             df = df.astype({'open': 'float32', 'high': 'float32', 'low': 'float32', 'close': 'float32', 'volume': 'int32'})

@@ -57,8 +57,9 @@ clientside_callback(
     '''
     function change_layout_colors(checked) {
         var components_color = checked ? 'light' : 'dark';
-        var header_color = checked ? '#d5d5d5' : '#2b2b2b';
-        var sidebar_style = {'margin-left': '12px', 'background-color': checked ? '#d5d5d5' : '#2b2b2b'};
+        var background_color = checked ? '#d5d5d5' : '#2b2b2b';
+        var header_style = {'marginBottom': '7px', 'padding': '10px', 'backgroundColor': background_color};
+        var sidebar_style = {'marginLeft': '12px', 'backgroundColor': background_color};
         var page_title = checked ? {'from': '#525dff', 'to': '#298dff'} : {'from': '#52b1ff', 'to': '#739dff', 'deg': 45}
 
         var text_color = checked ? {'from': '#525dff', 'to': '#298dff', 'deg': 45} : {'from': '#52b1ff', 'to': '#739dff', 'deg': 45};
@@ -66,12 +67,12 @@ clientside_callback(
         var window_label_text = text_color;
         var strategy_label_text = text_color;
 
-        return [components_color, header_color, sidebar_style, page_title, data_label_text,
+        return [components_color, header_style, sidebar_style, page_title, data_label_text,
                 window_label_text, strategy_label_text];
     }
     ''',
     Output('mantine_container', 'forceColorScheme'),
-    Output('page_header', 'color'),
+    Output('page_header', 'style'),
     Output('sidebar', 'style'),
     Output('page_title', 'gradient'),
     Output('data_label_text', 'gradient'),

@@ -10,7 +10,7 @@ strategy_dropdown = dmc.Select(
     searchable=True,
     nothingFoundMessage="Strategy not found",
     className='mx-auto',
-    style={"width": 180, 'text-align': 'center'},
+    style={"width": 180, 'textAlign': 'center'},
     id='strategy_drop'
 )
 
@@ -26,7 +26,7 @@ metric_dropdown = dmc.Select(
     searchable=True,
     nothingFoundMessage="Metric not found",
     className='mx-auto',
-    style={"width": 225, 'text-align': 'center'},
+    style={"width": 225, 'textAlign': 'center'},
     id='metric_drop'
 )
 
@@ -38,14 +38,14 @@ trade_direction_radio = dmc.RadioGroup(
                 label=label,
                 value=value,
                 color=color,
-                style={'margin-left': 'auto', 'margin-right': 'auto'}
+                style={'marginLeft': 'auto', 'marginRight': 'auto'}
             ) for label, value, color in radio_data
         ],
         justify='center'
     ),
     label="Trade direction",
     value='longonly',
-    style={'text-align': 'center', 'margin-top': '20px', 'margin-bottom': '20px'},
+    style={'textAlign': 'center', 'marginTop': '20px', 'marginBottom': '20px'},
     id='trade_direction'
 )
 
@@ -54,7 +54,7 @@ run_backtest_button = dmc.Button(
     leftSection=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
     variant="gradient",
     n_clicks=0,
-    style={'width': '100%', 'margin-top': '15px'},
+    style={'width': '100%', 'marginTop': '15px'},
     id='run_button'
 )
 

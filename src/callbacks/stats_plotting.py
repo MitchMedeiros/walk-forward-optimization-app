@@ -29,15 +29,6 @@ def backtest_plotting_callback(app, cache):
                         title="Asset Price"
                     )
                 ),
-                # net_exposure=dict(
-                #     title="RSI",
-                #     yaxis_kwargs=dict(
-                #         title="RSI Value"
-                #     ),
-                #     trace_kwargs=dict(
-                #         opacity=0
-                #     )
-                # ),
                 cum_returns=dict(
                     title="Strategy Return vs S&P 500",
                     yaxis_kwargs=dict(
@@ -53,10 +44,6 @@ def backtest_plotting_callback(app, cache):
             )
         )
 
-#       rsi = talib.RSI(out_price[i], 14)
-#       rsi_plot = rsi.vbt.plot(trace_kwargs=dict(name="RSI", line=dict(color='#8332c6')),
-#                               add_trace_kwargs=dict(row=2, col=1), fig=dashboard)
-
         dashboard.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
@@ -71,7 +58,7 @@ def backtest_plotting_callback(app, cache):
 
         return dcc.Graph(
             figure=dashboard,
-            style={'height': '1200px', 'margin-top': '8px'},
+            style={'height': '1200px', 'marginTop': '8px'},
             config={'showTips': True, 'displayModeBar': True, 'displaylogo': False},
             id='dashboard_plot'
         )

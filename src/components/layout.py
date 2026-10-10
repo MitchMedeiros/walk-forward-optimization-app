@@ -19,12 +19,12 @@ page_header = dbc.Navbar(
                     [
                         dbc.Stack(
                             [
-                                html.Img(src='assets/favicon.ico', height="35px", style={'margin-left': '25px', 'margin-right': '25px'}),
+                                html.Img(src='assets/favicon.ico', height="35px", style={'marginLeft': '25px', 'marginRight': '25px'}),
                                 dmc.Text(
                                     "Walk-Forward Optimization",
                                     variant='gradient',
                                     gradient={'from': '#52b1ff', 'to': '#739dff', 'deg': 45},
-                                    style={'font-size': '25px'},
+                                    style={'fontSize': '25px'},
                                     id='page_title'
                                 ),
                                 dmc.Modal(
@@ -41,13 +41,13 @@ page_header = dbc.Navbar(
                                     color='indigo',
                                     size='compact-lg',
                                     radius='xl',
-                                    style={'margin-left': '50px'},
+                                    style={'marginLeft': '50px'},
                                     id='icon_4'
                                 )
                             ],
                             direction='horizontal',
                             gap=2,
-                            style={'margin-left': '25px'}
+                            style={'marginLeft': '25px'}
                         )
                     ]
                 )
@@ -78,7 +78,7 @@ page_header = dbc.Navbar(
                             target="_blank"
                         )
                     ],
-                    style={'margin-right': '40px', 'margin-left': '20px'}
+                    style={'marginRight': '40px', 'marginLeft': '20px'}
                 ),
                 dbc.Col(
                     [
@@ -87,7 +87,7 @@ page_header = dbc.Navbar(
                             onLabel=DashIconify(icon='line-md:sun-rising-loop', width=20),
                             size='xl',
                             color='indigo',
-                            style={'margin-right': '15px'},
+                            style={'marginRight': '15px'},
                             id='theme_switch'
                         )
                     ]
@@ -98,14 +98,14 @@ page_header = dbc.Navbar(
         )
     ],
     color='#2b2b2b',
-    style={'margin-bottom': '7px', 'padding': '10px', 'background-color': '#2b2b2b'},
+    style={'marginBottom': '7px', 'padding': '10px', 'backgroundColor': '#2b2b2b'},
     id='page_header'
 )
 
 sidebar = html.Div(
     [
         modals.data_label,
-        dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], direction='horizontal', style={'margin-bottom': '20px'}),
+        dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], direction='horizontal', style={'marginBottom': '20px'}),
         data_inputs.date_calendar,
         html.Hr(),
         modals.window_label,
@@ -131,8 +131,8 @@ def accordion_header(displayed_text):
         style={'width': '100%'}
     )
 
-tab_style = {'padding': '4px', 'padding-top': '9px'}
-selected_tab_style = {'padding': '4px', 'padding-top': '7px'}
+tab_style = {'padding': '4px', 'paddingTop': '9px'}
+selected_tab_style = {'padding': '4px', 'paddingTop': '7px'}
 
 # The main section of the app where data is displayed. Contains three tabs.
 data_display_tabs = dcc.Tabs(
@@ -215,20 +215,19 @@ def create_layout():
 
     return dmc.MantineProvider(
         [
-            dmc.NotificationProvider(position='bottom-center', containerWidth='45%'),
+            dmc.NotificationContainer(position='bottom-center', containerWidth='45%', id='notification_container'),
             dbc.Container(
                 [
                     page_header,
                     dbc.Row(
                         [
                             dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
-                                    style={'margin-left': '12px', 'background-color': '#2b2b2b'}),
+                                    style={'marginLeft': '12px', 'backgroundColor': '#2b2b2b'}),
                             dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
                         ]
                     ),
                     html.Div(id='dummy_output'),
                     html.Div(id='notification_trigger'),
-                    html.Div(id='notification_output'),
                     dcc.Store(data=unique_session, id='session_id'),
                 ],
                 fluid=True,

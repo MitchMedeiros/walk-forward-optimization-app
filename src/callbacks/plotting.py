@@ -1,9 +1,8 @@
 from dash import dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
-import pandas as pd
 import polars as pl
 import plotly.graph_objects as go
-import vectorbt as vbt
+import vectorbt as vbt  # Registers the .vbt accessor on pandas objects
 
 from . backtest import overlap_factor
 import src.components.alerts as alerts
@@ -45,7 +44,7 @@ def candle_plot_callback(app, cache):
                 breaks = dict(bounds=after_hours_bounds[config.data_type], pattern='hour')
 
             if config.data_type == 'yfinance':
-                df.reset_index(inplace=True)
+                df = df.reset_index()
 
             fig = go.Figure(data=[go.Ohlc(x=df['date'], open=df['open'], high=df['high'],
                                   low=df['low'], close=df['close'])])
@@ -122,40 +121,9 @@ def window_plot_callback(app, cache):
         fig['data'][0]['colorscale'] = [[0.0, '#298dff'], [1.0, '#739dff']]
         fig['data'][1]['colorscale'] = [[0.0, '#298dff'], [1.0, '#633fff']]
 
-        # only relevant if using one of the callbacks below:
-        # fig.update_xaxes(range=[df.index[0], df.index[-1]])
-
         return dcc.Graph(
             figure=fig,
             config={'showTips': True, 'displayModeBar': True, 'displaylogo': False},
             style={'width': '100%', 'height': '280px'},
             id='window_plot'
         )
-
-# clientside_callback(
-#     """
-#     function update_range(relayout, window_plot) {
-#         var window_plot = Object.assign({}, window_plot);
-#         const x_range = [relayout['xaxis.range[0]'], relayout['xaxis.range[1]']];
-#         window_plot.layout.xaxis.range = x_range;
-#         return window_plot;
-#     }
-#     """,
-#     Output('window_plot', 'figure', allow_duplicate=True),
-#     Input('candle_plot', 'relayoutData'),
-#     State('window_plot', 'figure'),
-#     prevent_initial_call=True
-# )
-
-# def xaxis_range_callback(app):
-#     @app.callback(
-#         Output('window_plot', 'figure', allow_duplicate=True),
-#         Input('candle_plot', 'relayoutData'),
-#         State('window_plot', 'figure'),
-#         prevent_initial_call=True
-#     )
-#     def update_range(relayout, window_plot):
-#         x_range = [relayout['xaxis.range[0]'], relayout['xaxis.range[1]']]
-
-#         window_plot['layout']['xaxis']['range'] = x_range
-#         return window_plot
