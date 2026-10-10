@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
@@ -28,14 +30,17 @@ timeframe_dropdown = dmc.Select(
     id='timeframe'
 )
 
-date_calendar = dmc.DatePickerInput(
-    type='range',
-    value=[config.calendar_start.isoformat(), config.calendar_end.isoformat()],
-    numberOfColumns=2,
-    allowSingleDateInRange=True,
-    clearable=False,
-    leftSection=DashIconify(icon='clarity:date-line'),
-    valueFormat="MMM DD, YYYY",
-    style={"width": '100%', 'marginLeft': 'auto', 'marginRight': 'auto'},
-    id='date_range'
-)
+# A function so the default range is relative to the day the page is loaded rather than the day the server started.
+def create_date_calendar():
+    today = date.today()
+    return dmc.DatePickerInput(
+        type='range',
+        value=[(today - timedelta(days=config.calendar_days)).isoformat(), today.isoformat()],
+        numberOfColumns=2,
+        allowSingleDateInRange=True,
+        clearable=False,
+        leftSection=DashIconify(icon='clarity:date-line'),
+        valueFormat="MMM DD, YYYY",
+        style={"width": '100%', 'marginLeft': 'auto', 'marginRight': 'auto'},
+        id='date_range'
+    )

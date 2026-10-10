@@ -102,23 +102,25 @@ page_header = dbc.Navbar(
     id='page_header'
 )
 
-sidebar = html.Div(
-    [
-        modals.data_label,
-        dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], gap=3, style={'marginBottom': '20px'}),
-        data_inputs.date_calendar,
-        html.Hr(),
-        modals.window_label,
-        dbc.Stack([window_inputs.nwindows_input, window_inputs.insample_dropdown], gap=3),
-        html.Hr(),
-        modals.strategy_label,
-        strategy_inputs.strategy_dropdown,
-        strategy_inputs.parameter_inputs,
-        strategy_inputs.trade_direction_radio,
-        strategy_inputs.metric_dropdown,
-        strategy_inputs.run_backtest_button
-    ]
-)
+def create_sidebar():
+    return html.Div(
+        [
+            modals.data_label,
+            dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], gap=3,
+                      style={'marginBottom': '20px'}),
+            data_inputs.create_date_calendar(),
+            html.Hr(),
+            modals.window_label,
+            dbc.Stack([window_inputs.nwindows_input, window_inputs.insample_dropdown], gap=3),
+            html.Hr(),
+            modals.strategy_label,
+            strategy_inputs.strategy_dropdown,
+            strategy_inputs.parameter_inputs,
+            strategy_inputs.trade_direction_radio,
+            strategy_inputs.metric_dropdown,
+            strategy_inputs.run_backtest_button
+        ]
+    )
 
 def accordion_header(displayed_text):
     return dmc.Badge(
@@ -221,7 +223,7 @@ def create_layout():
                     page_header,
                     dbc.Row(
                         [
-                            dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
+                            dbc.Col(create_sidebar(), xs=12, lg='auto', id='sidebar',
                                     style={'marginLeft': '12px', 'backgroundColor': '#2b2b2b'}),
                             dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
                         ]

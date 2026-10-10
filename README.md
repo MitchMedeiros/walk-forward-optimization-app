@@ -46,7 +46,7 @@ The main options are:
 
 - `data_type` - `'yfinance'` or `'postgres'`
 - `cache_type` - `'files'` or `'redis'`
-- `calendar_start` and `calendar_end` - the date range selected when the app loads
+- `calendar_days` - how many days back from today the date range selected when the app loads starts
 - `port_number`, `run_locally`, and `debug_bool` - Dash server settings
 
 ## Optional Dependencies

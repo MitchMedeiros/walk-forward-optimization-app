@@ -1,4 +1,3 @@
-from datetime import date, timedelta
 from urllib.parse import quote
 import os
 
@@ -47,11 +46,10 @@ connection = f"{database_type}://{quote(user, safe='')}:{quote(password, safe=''
 # The data in your tables should have a time interval <= the lowest interval you want to test on.
 aggregation_method = 'pandas'
 
-# Adjust the date range for the data requested when the app initially loads. Defaults to the last 58 days. yfinance only provides 5m and 15m data within
-# the last 60 days and rejects a start date right at the limit.
+# CALENDAR_DAYS. The date range selected when the app loads is this many days back from today. Defaults to 58 days.
+# yfinance only provides 5m and 15m data within the last 60 days and rejects a start date right at the limit.
 # Found in src/components/data_inputs.py
-calendar_start = date.today() - timedelta(days=58)
-calendar_end = date.today()
+calendar_days = int(os.environ.get('CALENDAR_DAYS', 58))
 
 
 ################ Data Caching (main.py) ################
