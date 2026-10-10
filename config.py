@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import os
 
 '''
@@ -28,12 +28,11 @@ connection = f"{database_type}://{user}:{password}@{host}:{port}/{database}"
 # The data in your tables should have a time interval <= the lowest interval you want to test on.
 aggregation_method = 'pandas'
 
-# Adjust the date range for the data requested when the app initially loads. Limit the dates that can be chosen.
+# Adjust the date range for the data requested when the app initially loads. Defaults to the last 58 days. yfinance only provides 5m and 15m data within
+# the last 60 days and rejects a start date right at the limit.
 # Found in src/components/data_inputs.py
-calendar_start = date(2021, 1, 1)
-calendar_end = date(2022, 12, 31)
-minimum_selectable_date = date(2017, 1, 1)
-maximum_selectable_date = date(2023, 5, 31)
+calendar_start = date.today() - timedelta(days=58)
+calendar_end = date.today()
 
 
 ################ Data Caching (main.py) ################
@@ -70,7 +69,7 @@ port_number = 8050
 debug_bool = True
 
 # Only used if run_locally=True. Suppresses initial callback errors relating to component id if they are intentional.
-callback_suppress = False
+callback_suppress = True
 
 # Serve dash component CSS and Javascript locally or through the https://unpkg.com/ CDN. The default value is True.
 locally_style = True

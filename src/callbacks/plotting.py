@@ -40,7 +40,7 @@ def candle_plot_callback(app, cache):
         elif config.data_type == 'yfinance' and len(df) == 0:
             return dmc.Alert(
                 "You have likely requested data too far in the past for your selected timeframe. "
-                "For the yfinance API, 15m data is only available within the last 60 days. "
+                "For the yfinance API, 5m and 15m data is only available within the last 60 days. "
                 "1h data is only available within the last 730 days. "
                 "Alternatively, the yfinance API may be experiencing issues with its API keys currently. "
                 "In this case, you should try again later.",
@@ -94,13 +94,14 @@ def window_plot_callback(app, cache):
         ]
     )
     def plot_windows(nwindows, insample, dates, selected_timeframe, selected_asset):
+        nwindows, insample = int(nwindows), int(insample)
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
         if config.data_type == 'postgres':
             df = df.select(pl.col(['date', 'close']))
 
             # Aggregate larger datasets with low timeframes to speed up the window plotting.
-            if selected_timeframe == '15m' and len(df) > 150:
-                df = df.groupby_dynamic('date', every='1h').agg([pl.first("close")])
+            if selected_timeframe in ('5m', '15m') and len(df) > 150:
+                df = df.group_by_dynamic('date', every='1h').agg([pl.first("close")])
 
             # Convert to pandas for vectorbt
             df = df.to_pandas()

@@ -1,0 +1,27 @@
+[project]
+name = "walk-forward-optimization-app"
+version = "0.1.0"
+description = "Dash app for walk-forward optimization of trading strategies"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dash>=4.4",
+    "dash-bootstrap-components>=2.0",
+    "dash-iconify>=0.1.2",
+    "dash-mantine-components>=2.8",
+    "flask-caching>=2.4",
+    "numpy>=2.4",
+    "pandas>=3.0",
+    "plotly>=7.1",
+    "polars>=2.0",
+    "vectorbt>=1.1.2",
+    "yfinance>=1.7",
+]
+
+[project.optional-dependencies]
+postgres = ["connectorx>=0.4", "pyarrow>=24"]
+redis = ["redis>=8.1"]
+wsgi = ["mod-wsgi>=6.1"]
+
+[tool.uv]
+package = false

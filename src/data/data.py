@@ -28,7 +28,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                    .set_sorted('date')
 
             # Aggregate the data to the user-selected timeframe
-            df = df.groupby_dynamic('date', every=selected_timeframe) \
+            df = df.group_by_dynamic('date', every=selected_timeframe) \
                    .agg([pl.first('open'), pl.max('high'), pl.min('low'), pl.last('close')]) \
                    .collect()
             return df
@@ -43,7 +43,8 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                 start=start_date,
                 end=end_date,
                 interval=selected_timeframe,
-                repair=True
+                repair=True,
+                multi_level_index=False
             )
 
             # Format the data to match the formatting used with the database

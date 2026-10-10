@@ -1,4 +1,6 @@
 .vscode
+.venv
+cache/
 my_config.py
 testbook.ipynb
 xrange_testing.py

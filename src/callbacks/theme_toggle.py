@@ -49,14 +49,14 @@ clientside_callback(
     Input('theme_switch', 'checked'),
     State('candle_plot', 'figure'),
     State('window_plot', 'figure'),
-    prevenet_initial_call=True
+    prevent_initial_call=True
 )
 
 # Changes the color scheme of mantine components and various background and text colors.
 clientside_callback(
     '''
     function change_layout_colors(checked) {
-        var components_color = {colorScheme: checked ? 'light' : 'dark'};
+        var components_color = checked ? 'light' : 'dark';
         var header_color = checked ? '#d5d5d5' : '#2b2b2b';
         var sidebar_style = {'margin-left': '12px', 'background-color': checked ? '#d5d5d5' : '#2b2b2b'};
         var page_title = checked ? {'from': '#525dff', 'to': '#298dff'} : {'from': '#52b1ff', 'to': '#739dff', 'deg': 45}
@@ -70,7 +70,7 @@ clientside_callback(
                 window_label_text, strategy_label_text];
     }
     ''',
-    Output('mantine_container', 'theme'),
+    Output('mantine_container', 'forceColorScheme'),
     Output('page_header', 'color'),
     Output('sidebar', 'style'),
     Output('page_title', 'gradient'),

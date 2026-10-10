@@ -1,6 +1,5 @@
 from dash import dcc, Input, Output, State
 
-import talib
 import vectorbt as vbt
 
 def backtest_plotting_callback(app, cache):
@@ -15,7 +14,7 @@ def backtest_plotting_callback(app, cache):
         pf_outsample = vbt.Portfolio.loads(pickled_portfolio)
 
         dashboard = pf_outsample.plots(
-            column=pf_outsample.wrapper.columns[value],
+            column=pf_outsample.wrapper.columns[int(value)],
             subplots=['trades', 'cum_returns', 'drawdowns'],
             subplot_settings=dict(
                 trades=dict(

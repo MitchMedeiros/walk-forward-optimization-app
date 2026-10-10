@@ -6,9 +6,9 @@ strategy_dropdown = dmc.Select(
     data=['SMA Crossover', 'EMA Crossover', 'MACD', 'RSI'],
     value='SMA Crossover',
     label="Strategy",
-    icon=DashIconify(icon='arcticons:stockswidget'),
+    leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
-    nothingFound="Strategy not found",
+    nothingFoundMessage="Strategy not found",
     className='mx-auto',
     style={"width": 180, 'text-align': 'center'},
     id='strategy_drop'
@@ -22,9 +22,9 @@ metric_dropdown = dmc.Select(
     ],
     value='total_return',
     label="Metric to optimize",
-    icon=DashIconify(icon='arcticons:stockswidget'),
+    leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
-    nothingFound="Metric not found",
+    nothingFoundMessage="Metric not found",
     className='mx-auto',
     style={"width": 225, 'text-align': 'center'},
     id='metric_drop'
@@ -32,14 +32,17 @@ metric_dropdown = dmc.Select(
 
 radio_data = [["Long", 'longonly', 'green'], ["Short", 'shortonly', 'red'], ["Both", 'both', 'yellow']]
 trade_direction_radio = dmc.RadioGroup(
-    [
-        dmc.Radio(
-            label,
-            value=value,
-            color=color,
-            style={'margin-left': 'auto', 'margin-right': 'auto'}
-        ) for label, value, color in radio_data
-    ],
+    dmc.Group(
+        [
+            dmc.Radio(
+                label=label,
+                value=value,
+                color=color,
+                style={'margin-left': 'auto', 'margin-right': 'auto'}
+            ) for label, value, color in radio_data
+        ],
+        justify='center'
+    ),
     label="Trade direction",
     value='longonly',
     style={'text-align': 'center', 'margin-top': '20px', 'margin-bottom': '20px'},
@@ -48,7 +51,7 @@ trade_direction_radio = dmc.RadioGroup(
 
 run_backtest_button = dmc.Button(
     "Run Backtest",
-    leftIcon=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
+    leftSection=DashIconify(icon="mdi:finance", color="lightGreen", width=30),
     variant="gradient",
     n_clicks=0,
     style={'width': '100%', 'margin-top': '15px'},

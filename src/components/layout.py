@@ -36,11 +36,10 @@ page_header = dbc.Navbar(
                                 ),
                                 dmc.Button(
                                     "About",
-                                    leftIcon=DashIconify(icon='ep:info-filled', color='#739dff', height=20),
+                                    leftSection=DashIconify(icon='ep:info-filled', color='#739dff', height=20),
                                     variant='outline',
                                     color='indigo',
-                                    size='lg',
-                                    compact=True,
+                                    size='compact-lg',
                                     radius='xl',
                                     style={'margin-left': '50px'},
                                     id='icon_4'
@@ -140,13 +139,13 @@ data_display_tabs = dcc.Tabs(
     [
         dcc.Tab(
             [
-                dmc.LoadingOverlay(
+                dcc.Loading(
                     [
                         html.Div(id='candle_div'),
                         html.Div(id='window_div')
                     ],
-                    loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
-                    radius='lg'
+                    type='circle',
+                    color='#4c6ef5'
                 )
             ],
             label='Price History and Windows',
@@ -155,9 +154,9 @@ data_display_tabs = dcc.Tabs(
         ),
         dcc.Tab(
             [
-                dmc.LoadingOverlay(
+                dcc.Loading(
                     [
-                        dmc.AccordionMultiple(
+                        dmc.Accordion(
                             [
                                 dmc.AccordionItem(
                                     [
@@ -181,13 +180,14 @@ data_display_tabs = dcc.Tabs(
                                     value='outsample'
                                 )
                             ],
+                            multiple=True,
                             value=['averaged', 'insample', 'outsample'],
                             chevronPosition='left',
                             styles={'chevron': {"&[data-rotate]": {'transform': 'rotate(-90deg)'}}}
                         )
                     ],
-                    loaderProps={'variant': 'bars', 'color': 'indigo', 'size': 'xl'},
-                    radius='sm'
+                    type='circle',
+                    color='#4c6ef5'
                 )
             ],
             label='Tabular Backtest Results',
@@ -214,30 +214,27 @@ def create_layout():
     unique_session = str(uuid.uuid4())
 
     return dmc.MantineProvider(
-        dmc.NotificationsProvider(
-            [
-                dbc.Container(
-                    [
-                        page_header,
-                        dbc.Row(
-                            [
-                                dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
-                                        style={'margin-left': '12px', 'background-color': '#2b2b2b'}),
-                                dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
-                            ]
-                        ),
-                        html.Div(id='dummy_output'),
-                        html.Div(id='notification_trigger'),
-                        html.Div(id='notification_output'),
-                        dcc.Store(data=unique_session, id='session_id'),
-                    ],
-                    fluid=True,
-                    className='dbc'
-                )
-            ],
-            position='bottom-center',
-            containerWidth='45%'
-        ),
-        theme={'colorScheme': 'dark'},
+        [
+            dmc.NotificationProvider(position='bottom-center', containerWidth='45%'),
+            dbc.Container(
+                [
+                    page_header,
+                    dbc.Row(
+                        [
+                            dbc.Col(sidebar, xs=12, lg='auto', id='sidebar',
+                                    style={'margin-left': '12px', 'background-color': '#2b2b2b'}),
+                            dbc.Col(data_display_tabs, style={'overflow': 'hidden'})
+                        ]
+                    ),
+                    html.Div(id='dummy_output'),
+                    html.Div(id='notification_trigger'),
+                    html.Div(id='notification_output'),
+                    dcc.Store(data=unique_session, id='session_id'),
+                ],
+                fluid=True,
+                className='dbc'
+            )
+        ],
+        forceColorScheme='dark',
         id='mantine_container'
     )

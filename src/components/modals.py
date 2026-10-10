@@ -3,6 +3,12 @@ import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
+def captioned_image(src, alt, width, margins, caption=None, opacity=None):
+    children = [dmc.Image(src=src, alt=alt, w=width, opacity=opacity)]
+    if caption:
+        children.append(dmc.Text(caption, size='sm', ta='center'))
+    return dmc.Center(dmc.Stack(children, gap='xs'), style=margins)
+
 # Components provided to the About modal in the top bar of the app.
 about_modal_children = [
     dcc.Markdown(
@@ -65,14 +71,10 @@ about_modal_children = [
         with complicated curves, like the one shown below.
         '''
     ),
-    dmc.Center([
-        dmc.Image(
-            src='assets/overfit.png',
-            caption=dmc.Text("An overfit mattress optimized for a side-sleeper.", style={'margin-right': '18%'}),
-            alt="Overfitting Image",
-            width='80%'
-        )],
-        style={'margin-left': '15%', 'margin-top': '18px', 'margin-bottom': '25px'}
+    captioned_image(
+        'assets/overfit.png', "Overfitting Image", '80%',
+        {'margin-left': '15%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        caption="An overfit mattress optimized for a side-sleeper."
     ),
     dcc.Markdown(
         '''
@@ -138,13 +140,9 @@ data_modal_children = [
         The image below shows how the bars in a bar chart represent each price.
         '''
     ),
-    dmc.Center([
-        dmc.Image(
-            src='assets/bars.png',
-            alt="Bar chart structure",
-            width='75%',
-        )],
-        style={'margin-left': '15%', 'margin-bottom': '20px'}
+    captioned_image(
+        'assets/bars.png', "Bar chart structure", '75%',
+        {'margin-left': '15%', 'margin-bottom': '20px'}
     ),
     dcc.Markdown(
         '''
@@ -235,15 +233,10 @@ strategy_modal_children = [
         ''',
         mathjax=True
     ),
-    dmc.Center([
-        dmc.Image(
-            src='assets/sma.jpeg',
-            caption="An SMA crossover producing a buy signal. Source: Investopedia.com",
-            alt="SMA crossover example",
-            opacity=0.9,
-            width='95%'
-        )],
-        style={'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'}
+    captioned_image(
+        'assets/sma.jpeg', "SMA crossover example", '95%',
+        {'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        caption="An SMA crossover producing a buy signal. Source: Investopedia.com", opacity=0.9
     ),
     dcc.Markdown(
         '''
@@ -312,15 +305,12 @@ strategy_modal_children = [
         mathjax=True,
         link_target="_blank"
     ),
-    dmc.Center([
-        dmc.Image(
-            src='assets/macd.jpeg',
-            caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). Source: Investopedia.com",
-            alt="MACD example",
-            opacity=0.9,
-            width='95%'
-        )],
-        style={'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'}
+    captioned_image(
+        'assets/macd.jpeg', "MACD example", '95%',
+        {'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        caption="MACD and signal lines produced from a fast EMA (orange) and a slow EMA (blue). "
+                "Source: Investopedia.com",
+        opacity=0.9
     ),
     dcc.Markdown(
         '''
@@ -367,15 +357,10 @@ strategy_modal_children = [
         mathjax=True,
         link_target="_blank"
     ),
-    dmc.Center([
-        dmc.Image(
-            src='assets/rsi.png',
-            caption="RSI plotted below a price chart. Source: Investopedia.com",
-            alt="RSI example",
-            opacity=0.9,
-            width='95%'
-        )],
-        style={'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'}
+    captioned_image(
+        'assets/rsi.png', "RSI example", '95%',
+        {'margin-left': '5%', 'margin-top': '18px', 'margin-bottom': '25px'},
+        caption="RSI plotted below a price chart. Source: Investopedia.com", opacity=0.9
     ),
     dcc.Markdown(
         '''

@@ -9,9 +9,8 @@
 The core dependencies are:
 
 <ol>
- <li>A compatible Python version (3.6-3.10)</li>
- <li>TA-Lib (C library)</li>
- <li>Python libraries in requirements.txt</li>
+ <li>Python 3.12 or newer</li>
+ <li><a href="https://docs.astral.sh/uv/">uv</a> to install the pinned libraries in uv.lock</li>
 </ol>
 
 <h2>Cloning This Repository</h2>
@@ -26,88 +25,18 @@ You can confirm this on Linux or Mac by typing `git --version` in a terminal. Na
 git clone https://github.com/MitchMedeiros/dashapp.git
 ```
 
-<h2>Creating the Virtual Environment</h2>
+<h2>Installing the Dependencies</h2>
 
-If you have Anaconda installed you can create a virtual environment called "backtesting" using:
-
-```shell
-conda create -n backtesting python=3.10
-```
-
-and activate it with `conda activate backtesting`. Note what default directory it's installed in if you plan to web host the app.
-
-Alternately, you can use the Python venv module with the following command in the directory you want the environment in:
+Navigate inside the app directory and run the following. uv creates the virtual environment in `.venv`, downloads a
+compatible Python if needed, and installs the exact versions pinned in uv.lock.
 
 ```shell
-python3.10 -m venv backtesting
+uv sync
 ```
 
-Activate it on Linux/Mac using: `source backtesting/bin/activate` or in Windows PowerShell: `backtesting\Scripts\activate`.
+Add `--extra postgres`, `--extra redis`, or `--extra wsgi` for the optional dependencies listed below.
 
-<h2>TA-Lib</h2>
-
-At this point you should install the core TA-Lib library from source before you can install the TA-Lib Python library. This is necessary since the Python library is only a wrapper.
-
-<h3>Ta-Lib Installation on Linux and Mac</h3>
-
-If you have a web browser available you can download the source file by visiting <a href="https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/ta-lib-0.4.0-src.tar.gz/download?use_mirror=phoenixnap">soureforge</a>.
-
-If using a Linux server, install wget if not already installed, using the appropriate 
-<a href="https://www.maketecheasier.com/install-software-in-various-linux-distros/">
-install command</a> 
-for your Linux distro.
-
-For Debian/Ubuntu:
-
-```shell
-sudo apt install wget
-```
-
-Download the TA-Lib library from 
-<a href="https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/">
- SourceForge
-</a>
-using 
-
-```shell
-wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-```
-
-Once you have the tar file downloaded you should unpack it:
-
-```shell
-tar -xvf ta-lib-0.4.0-src.tar.gz
-```
-
-Delete the tar file and cd into the newly created folder.
-
-```shell
-rm ta-lib-0.4.0-src.tar.gz; cd ta-lib
-```
-
-Now we run the configure file on Debian/Ubuntu you should use the prefix /usr:
-
-```shell
-./configure --prefix=/usr
-```
-
-On Mac the prefix /usr/local should be used:
-```shell
-./configure --prefix=/usr/local
-```
-
-Run the `make` command to compile the TA-Lib files.\
-Run `sudo make install`, which will copy the compiled files into /usr/include/ta-lib.
-
-<h2>requirements.txt</h2>
-
-After you've installed the core TA-Lib library, activate your virutal environment and navigate inside the app directory. Install the libraries in requirements.txt with pip:
-
-```shell
-pip3 install -r requirements.txt
-```
-
-You can now run the main.py file and visit <a href=127.0.0.1:8050>127.0.0.1:8050</a> in a web browser to access the app.
+You can now run `uv run main.py` and visit <a href=127.0.0.1:8050>127.0.0.1:8050</a> in a web browser to access the app.
 
 <h1>Optional Dependencies</h1>
 
@@ -134,10 +63,10 @@ You should first install the Apache header files for third-party modules. If you
 sudo apt install apache2-dev
 ```
 
-Now, with your Python virtual environment active:
+Now install the mod_wsgi extra:
 
 ```shell
-pip3 install mod-wsgi
+uv sync --extra wsgi
 ```
 
 Locate your newly created wsgi files with:
@@ -217,7 +146,7 @@ If you've created a new .config file in one of your ...-available folders rather
 
 Now you will need to edit the app.wsgi file in the root directory of the repository. First change the shebang line at the top of the file to the location of your virtual environment and Python version:
 ```python
-#!/path_to_your_virtual_environment/bin/python3.10
+#!/path_to_your_virtual_environment/bin/python3.14
 ```
 Also changing the sys.path line shown below to the appropriate root directory for your app
 

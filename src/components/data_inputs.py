@@ -15,35 +15,34 @@ asset_dropdown = dmc.Select(
     ],
     value='spy',
     label="Asset",
-    icon=DashIconify(icon='arcticons:stockswidget'),
+    leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
-    nothingFound="Asset not found",
+    nothingFoundMessage="Asset not found",
     className='mx-auto',
     style={"width": 130, 'text-align': 'center'},
     id='asset'
 )
 
 timeframe_dropdown = dmc.Select(
-    data=['15m', {'label': '1h', 'value': '60m'}, '1d'],
-    value='15m',
+    data=['5m', '15m', {'label': '1h', 'value': '60m'}, '1d'],
+    value='5m',
     label="Timeframe",
-    icon=DashIconify(icon='mdi-light:clock'),
+    leftSection=DashIconify(icon='mdi-light:clock'),
     searchable=True,
-    nothingFound="Timeframe not found",
+    nothingFoundMessage="Timeframe not found",
     className='mx-auto',
     style={"width": 130, 'text-align': 'center'},
     id='timeframe'
 )
 
-date_calendar = dmc.DateRangePicker(
-    minDate=config.minimum_selectable_date,
-    maxDate=config.maximum_selectable_date,
-    value=[config.calendar_start, config.calendar_end],
-    amountOfMonths=2,
+date_calendar = dmc.DatePickerInput(
+    type='range',
+    value=[config.calendar_start.isoformat(), config.calendar_end.isoformat()],
+    numberOfColumns=2,
     allowSingleDateInRange=True,
     clearable=False,
-    icon=DashIconify(icon='clarity:date-line'),
-    inputFormat="MMM DD, YYYY",
+    leftSection=DashIconify(icon='clarity:date-line'),
+    valueFormat="MMM DD, YYYY",
     style={"width": '100%', 'margin-left': 'auto', 'margin-right': 'auto'},
     id='date_range'
 )

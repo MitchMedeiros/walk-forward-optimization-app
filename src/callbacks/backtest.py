@@ -56,6 +56,7 @@ def simulation_callback(app, cache):
     )
     def perform_backtest(n_clicks, session_id, selected_strategy, nwindows, insample, selected_timeframe,
                          selected_asset, dates, selected_direction, selected_range, selected_metric):
+        nwindows, insample = int(nwindows), int(insample)
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
         if config.data_type == 'postgres':
@@ -85,12 +86,12 @@ def simulation_callback(app, cache):
 
             def backtest_windows(price, sma_periods, all_periods=True):
                 if all_periods is True:
-                    fast_sma, slow_sma = vbt.IndicatorFactory.from_talib('SMA').run_combs(price, sma_periods)
+                    fast_sma, slow_sma = vbt.MA.run_combs(price, sma_periods)
                 else:
-                    fast_sma = vbt.IndicatorFactory.from_talib('SMA').run(price, sma_periods[0], per_column=True)
-                    slow_sma = vbt.IndicatorFactory.from_talib('SMA').run(price, sma_periods[1], per_column=True)
-                entries = fast_sma.real_crossed_above(slow_sma.real)
-                exits = fast_sma.real_crossed_below(slow_sma.real)
+                    fast_sma = vbt.MA.run(price, sma_periods[0], per_column=True)
+                    slow_sma = vbt.MA.run(price, sma_periods[1], per_column=True)
+                entries = fast_sma.ma_crossed_above(slow_sma.ma)
+                exits = fast_sma.ma_crossed_below(slow_sma.ma)
                 return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
         elif selected_strategy == 'EMA Crossover':
@@ -99,12 +100,12 @@ def simulation_callback(app, cache):
 
             def backtest_windows(price, ema_periods, all_periods=True):
                 if all_periods is True:
-                    fast_ema, slow_ema = vbt.IndicatorFactory.from_talib('EMA').run_combs(price, ema_periods)
+                    fast_ema, slow_ema = vbt.MA.run_combs(price, ema_periods, ewm=True)
                 else:
-                    fast_ema = vbt.IndicatorFactory.from_talib('EMA').run(price, ema_periods[0], per_column=True)
-                    slow_ema = vbt.IndicatorFactory.from_talib('EMA').run(price, ema_periods[1], per_column=True)
-                entries = fast_ema.real_crossed_above(slow_ema.real)
-                exits = fast_ema.real_crossed_below(slow_ema.real)
+                    fast_ema = vbt.MA.run(price, ema_periods[0], ewm=True, per_column=True)
+                    slow_ema = vbt.MA.run(price, ema_periods[1], ewm=True, per_column=True)
+                entries = fast_ema.ma_crossed_above(slow_ema.ma)
+                exits = fast_ema.ma_crossed_below(slow_ema.ma)
                 return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
         elif selected_strategy == 'MACD':
@@ -120,11 +121,12 @@ def simulation_callback(app, cache):
 
             def backtest_windows(price, parameter_values, all_periods=True):
                 if all_periods is True:
-                    macd = vbt.IndicatorFactory.from_talib('MACD').run(price, parameter_values[0], parameter_values[1])
+                    macd = vbt.MACD.run(price, parameter_values[0], parameter_values[1], macd_ewm=True, signal_ewm=True)
                 else:
-                    macd = vbt.IndicatorFactory.from_talib('MACD').run(price, parameter_values[0], parameter_values[1], per_column=True)
-                entries = macd.macd_crossed_above(macd.macdsignal)
-                exits = macd.macd_crossed_below(macd.macdsignal)
+                    macd = vbt.MACD.run(price, parameter_values[0], parameter_values[1], macd_ewm=True,
+                                        signal_ewm=True, per_column=True)
+                entries = macd.macd_crossed_above(macd.signal)
+                exits = macd.macd_crossed_below(macd.signal)
                 return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
         elif selected_strategy == 'RSI':
@@ -139,9 +141,9 @@ def simulation_callback(app, cache):
             parameter_values = [parameter_values_entries, parameter_values_exits]
 
             def backtest_windows(price, entry_exit_values, dummy_variable=None):
-                rsi = vbt.IndicatorFactory.from_talib('RSI').run(price, 14)
-                entries = rsi.real_crossed_below(entry_exit_values[0])
-                exits = rsi.real_crossed_above(entry_exit_values[1])
+                rsi = vbt.RSI.run(price, 14, ewm=True)
+                entries = rsi.rsi_crossed_below(entry_exit_values[0])
+                exits = rsi.rsi_crossed_above(entry_exit_values[1])
                 return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
         # A function to group by window index so we can properly access the various metrics for each window.
@@ -199,30 +201,30 @@ def simulation_callback(app, cache):
 
         averages_table = dmc.Table(
             [
-                html.Tbody(
+                dmc.TableTbody(
                     [
-                        html.Tr(
+                        dmc.TableTr(
                             [
-                                html.Td("Annualized Return", style=header_styling),
-                                html.Td(f"{round(pf_outsample.total_return().mean() * 100 * annualization_factor, 2)}%", cell_styling)
+                                dmc.TableTd("Annualized Return", style=header_styling),
+                                dmc.TableTd(f"{round(pf_outsample.total_return().mean() * 100 * annualization_factor, 2)}%", style=cell_styling)
                             ]
                         ),
-                        html.Tr(
+                        dmc.TableTr(
                             [
-                                html.Td("Average Return per Window", style=header_styling),
-                                html.Td(f"{round(pf_outsample.total_return().mean() * 100, 2)}%", cell_styling)
+                                dmc.TableTd("Average Return per Window", style=header_styling),
+                                dmc.TableTd(f"{round(pf_outsample.total_return().mean() * 100, 2)}%", style=cell_styling)
                             ]
                         ),
-                        html.Tr(
+                        dmc.TableTr(
                             [
-                                html.Td("Average Sharpe Ratio", style=header_styling),
-                                html.Td(f"{round(pf_outsample.sharpe_ratio().mean(), 2)}", cell_styling)
+                                dmc.TableTd("Average Sharpe Ratio", style=header_styling),
+                                dmc.TableTd(f"{round(pf_outsample.sharpe_ratio().mean(), 2)}", style=cell_styling)
                             ]
                         ),
-                        html.Tr(
+                        dmc.TableTr(
                             [
-                                html.Td("Average Max Drawdown", style=header_styling),
-                                html.Td(f"{round(pf_outsample.max_drawdown().mean() * 100, 2)}%", cell_styling)
+                                dmc.TableTd("Average Max Drawdown", style=header_styling),
+                                dmc.TableTd(f"{round(pf_outsample.max_drawdown().mean() * 100, 2)}%", style=cell_styling)
                             ]
                         ),
                     ]
@@ -267,13 +269,13 @@ def simulation_callback(app, cache):
         optimal_table = create_dash_table(optimal_df, [3, 5, 6], {'Return': {'value': 'The highest possible out-of-sample returns.'}}, 'optimal_table')
 
         # Creating the segmented control for selecting the window to display plots for.
-        selections = [{'value': i, 'label': f"Window {i+1}"} for i in range(nwindows)]
+        selections = [{'value': str(i), 'label': f"Window {i+1}"} for i in range(nwindows)]
 
         window_selector = dmc.SegmentedControl(
             data=selections,
-            value=0,
+            value='0',
             fullWidth=True,
-            size='s',
+            size='sm',
             radius='md',
             style={'margin-top': '7px', 'background-color': 'rgb(23, 143, 255)'},
             id='window_selector'
