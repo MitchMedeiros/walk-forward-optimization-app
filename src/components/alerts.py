@@ -28,3 +28,12 @@ def empty_data_alert():
         color='red',
         withCloseButton=True
     )
+
+# The alert displayed when the cached backtest results for the session are no longer available.
+def expired_results_alert():
+    return dmc.Alert(
+        "The results for this session have expired. Run the backtest again to view the detailed plots.",
+        title="Results Expired",
+        color='yellow',
+        withCloseButton=True
+    )

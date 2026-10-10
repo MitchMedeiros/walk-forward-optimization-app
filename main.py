@@ -47,8 +47,9 @@ elif config.cache_type == 'files':
     })
 cache.init_app(app.server)
 
-# Provide the layout, containing all the dash components to be displayed.
-app.layout = layout.create_layout()
+# Provide the layout, containing all the dash components to be displayed. Passing the function rather than its result
+# makes Dash build the layout on every page load, giving each user their own session id.
+app.layout = layout.create_layout
 
 # Instantiate the imported callbacks. The clientside callbacks are instantiated via module import.
 modals.modal_callbacks(app)

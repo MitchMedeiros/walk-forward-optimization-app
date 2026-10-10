@@ -12,7 +12,8 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
         raise ValueError(f"Unknown asset: {selected_asset!r}")
     start_date, end_date = date.fromisoformat(start_date), date.fromisoformat(end_date)
 
-    @cache.memoize()
+    # Empty results are not cached so that a failed or rate limited request isn't repeated from the cache.
+    @cache.memoize(response_filter=lambda df: len(df) > 0)
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
         if config.data_type == 'postgres':
             import polars as pl

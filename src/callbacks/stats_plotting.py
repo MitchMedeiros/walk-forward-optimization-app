@@ -2,6 +2,8 @@ from dash import dcc, Input, Output, State
 
 import vectorbt as vbt
 
+import src.components.alerts as alerts
+
 def backtest_plotting_callback(app, cache):
     @app.callback(
         Output('detailed_div', 'children'),
@@ -11,6 +13,11 @@ def backtest_plotting_callback(app, cache):
     )
     def plot_portfolio(value, session_id):
         pickled_portfolio = cache.get(session_id)
+
+        # The portfolio is gone once its cache entry expires or is evicted.
+        if pickled_portfolio is None:
+            return alerts.expired_results_alert()
+
         pf_outsample = vbt.Portfolio.loads(pickled_portfolio)
 
         dashboard = pf_outsample.plots(
