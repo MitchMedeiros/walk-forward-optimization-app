@@ -1,0 +1,19 @@
+/*Adds a small gap between the labels and the inputs of the sidebar dropdowns and radio group*/
+.mantine-InputWrapper-label {
+    margin-bottom: 4px;
+}
+
+/*dbc.min.css draws the selected tab indicator at half opacity, so use the full color*/
+.dbc .tab--selected {
+    border-top-color: #298dff !important;
+}
+
+/*Brightens the unselected window labels in the dark theme*/
+[data-mantine-color-scheme='dark'] .mantine-SegmentedControl-label {
+    color: #fff;
+}
+
+/*The sidebar inputs fill its width, so it needs a minimum width to avoid shrinking to its content*/
+#sidebar {
+    min-width: 300px;
+}

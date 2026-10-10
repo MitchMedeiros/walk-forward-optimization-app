@@ -9,8 +9,7 @@ strategy_dropdown = dmc.Select(
     leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
     nothingFoundMessage="Strategy not found",
-    className='mx-auto',
-    style={"width": 180, 'textAlign': 'center'},
+    style={"width": '100%', 'textAlign': 'center'},
     id='strategy_drop'
 )
 
@@ -25,8 +24,7 @@ metric_dropdown = dmc.Select(
     leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
     nothingFoundMessage="Metric not found",
-    className='mx-auto',
-    style={"width": 225, 'textAlign': 'center'},
+    style={"width": '100%', 'textAlign': 'center'},
     id='metric_drop'
 )
 

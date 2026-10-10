@@ -67,8 +67,10 @@ clientside_callback(
         var window_label_text = text_color;
         var strategy_label_text = text_color;
 
+        var tabs_style = {'height': '44px', '--bs-border-color': checked ? '#dee2e6' : '#444'};
+
         return [components_color, header_style, sidebar_style, page_title, data_label_text,
-                window_label_text, strategy_label_text];
+                window_label_text, strategy_label_text, tabs_style];
     }
     ''',
     Output('mantine_container', 'forceColorScheme'),
@@ -78,6 +80,7 @@ clientside_callback(
     Output('data_label_text', 'gradient'),
     Output('window_label_text', 'gradient'),
     Output('strategy_label_text', 'gradient'),
+    Output('tabs', 'style'),
     Input('theme_switch', 'checked'),
     prevent_initial_call=True
 )

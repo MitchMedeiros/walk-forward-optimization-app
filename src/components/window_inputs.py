@@ -8,8 +8,7 @@ nwindows_input = dmc.Select(
     leftSection=DashIconify(icon='fluent-mdl2:sections'),
     searchable=True,
     nothingFoundMessage="Number not found",
-    className='mx-auto',
-    style={"width": 130, 'textAlign': 'center'},
+    style={"width": '100%', 'textAlign': 'center'},
     id='nwindows'
 )
 
@@ -20,7 +19,6 @@ insample_dropdown = dmc.Select(
     leftSection=DashIconify(icon='material-symbols:splitscreen-left-outline'),
     searchable=True,
     nothingFoundMessage="Percentage not found",
-    className='mx-auto',
-    style={"width": 130, 'textAlign': 'center'},
+    style={"width": '100%', 'textAlign': 'center'},
     id='insample'
 )

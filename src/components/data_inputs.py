@@ -13,8 +13,7 @@ asset_dropdown = dmc.Select(
     leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,
     nothingFoundMessage="Asset not found",
-    className='mx-auto',
-    style={"width": 130, 'textAlign': 'center'},
+    style={"width": '100%', 'textAlign': 'center'},
     id='asset'
 )
 
@@ -25,8 +24,7 @@ timeframe_dropdown = dmc.Select(
     leftSection=DashIconify(icon='mdi-light:clock'),
     searchable=True,
     nothingFoundMessage="Timeframe not found",
-    className='mx-auto',
-    style={"width": 130, 'textAlign': 'center'},
+    style={"width": '100%', 'textAlign': 'center'},
     id='timeframe'
 )
 

@@ -105,11 +105,11 @@ page_header = dbc.Navbar(
 sidebar = html.Div(
     [
         modals.data_label,
-        dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], direction='horizontal', style={'marginBottom': '20px'}),
+        dbc.Stack([data_inputs.asset_dropdown, data_inputs.timeframe_dropdown], gap=3, style={'marginBottom': '20px'}),
         data_inputs.date_calendar,
         html.Hr(),
         modals.window_label,
-        dbc.Stack([window_inputs.nwindows_input, window_inputs.insample_dropdown], direction='horizontal'),
+        dbc.Stack([window_inputs.nwindows_input, window_inputs.insample_dropdown], gap=3),
         html.Hr(),
         modals.strategy_label,
         strategy_inputs.strategy_dropdown,
@@ -205,7 +205,7 @@ data_display_tabs = dcc.Tabs(
         ),
     ],
     mobile_breakpoint=0,
-    style={'height': '44px'},
+    style={'height': '44px', '--bs-border-color': '#444'},
     id='tabs'
 )
 
