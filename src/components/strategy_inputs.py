@@ -2,8 +2,10 @@ from dash import html
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
+from src.strategies import STRATEGIES
+
 strategy_dropdown = dmc.Select(
-    data=['SMA Crossover', 'EMA Crossover', 'MACD', 'RSI'],
+    data=list(STRATEGIES),
     value='SMA Crossover',
     label="Strategy",
     leftSection=DashIconify(icon='arcticons:stockswidget'),

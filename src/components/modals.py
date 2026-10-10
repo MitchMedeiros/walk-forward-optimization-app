@@ -367,6 +367,81 @@ strategy_modal_children = [
         For more information on how to contextually use RSI values, you can read the following
         [article on Investopedia.](https://www.investopedia.com/terms/r/rsi.asp
         "Relative Strength Index (RSI) Indicator Explained With Formula")
+
+        &nbsp;
+
+        #### Bollinger Bands
+
+        Bollinger Bands are a volatility envelope drawn around a moving average. The middle band is an
+        SMA of the price over the selected window, and the upper and lower bands sit a chosen number of
+        standard deviations above and below it. A position is entered when the price crosses below the
+        lower band, which suggests the price has stretched unusually far below its recent average, and
+        exited when the price crosses back above the middle band. The slider sets the range of window
+        lengths tested, and each window is combined with band widths of 1.5, 2, 2.5, and 3 standard deviations.
+
+        ##### Things to Note:
+
+        - This is a mean reversion strategy, so it tends to struggle in strong, sustained trends.
+        - Wider bands trigger less often but on more extreme moves.
+        - For additional information, you can read the following
+        [article on Investopedia.](https://www.investopedia.com/terms/b/bollingerbands.asp
+        "Bollinger Bands: What They Are, and What They Tell Investors")
+
+        &nbsp;
+
+        #### Stochastic Oscillator
+
+        The **Stochastic Oscillator** compares the latest closing price to its range over a recent period.
+        The %K line is the position of the close within that range, scaled from 0 to 100, where values near
+        0 indicate the price is close to its recent low and values near 100 indicate it is close to its recent
+        high. This app uses a 14 period %K calculated from closing prices only. A position is entered when
+        %K crosses below the entry value and exited when it crosses above the exit value, in the same way as
+        the RSI strategy.
+
+        ##### Things to Note:
+
+        - The oscillator is more sensitive to short-term price changes than the RSI.
+        - Since only closing prices are used, the range is narrower than one built from daily highs and lows.
+        - For additional information, you can read the following
+        [article on Investopedia.](https://www.investopedia.com/terms/s/stochasticoscillator.asp
+        "Stochastic Oscillator: What It Is, How It Works, How To Calculate")
+
+        &nbsp;
+
+        #### Donchian Breakout
+
+        A Donchian channel is formed by the highest and lowest closing prices over a lookback period. A
+        position is entered when the price closes above the highest close of the previous entry lookback
+        period and exited when the price closes below the lowest close of the previous exit lookback period.
+        The slider sets the range of lookback periods, and every combination with an exit lookback shorter
+        than the entry lookback is tested. This is the core rule of the classic trend following systems
+        popularized by the Turtle Traders.
+
+        ##### Things to Note:
+
+        - This is a trend following strategy, so it tends to suffer repeated small losses in sideways markets.
+        - A shorter exit lookback closes losing trades sooner but may exit winning trades early.
+        - For additional information, you can read the following
+        [article on Investopedia.](https://www.investopedia.com/terms/d/donchianchannels.asp
+        "Donchian Channels: Definition, Formula, and Trading Strategy")
+
+        &nbsp;
+
+        #### Rate of Change
+
+        The **Rate of Change** (ROC) is a momentum indicator equal to the percentage change in price over
+        the last 12 data points. A position is entered when the ROC crosses above the entry value and exited
+        when it crosses below the exit value, with the entry value always larger than the exit value. The
+        slider sets the range of percentage thresholds tested.
+
+        ##### Things to Note:
+
+        - Negative thresholds can be used to hold a position through small pullbacks.
+        - The indicator reacts to the price from 12 data points ago, so a large move leaving the window can
+        trigger an exit even if the current price is stable.
+        - For additional information, you can read the following
+        [article on Investopedia.](https://www.investopedia.com/terms/p/pricerateofchange.asp
+        "Price Rate of Change (ROC) Indicator: Formula and Uses")
         ''',
         link_target="_blank"
     )

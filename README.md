@@ -4,8 +4,10 @@
 
 A Dash web app for walk-forward optimization of trading strategies. It splits historical price data into
 overlapping in-sample and out-of-sample windows, finds the best parameters in each in-sample window, and tests them
-out-of-sample. The strategies available are SMA crossover, EMA crossover, MACD, and RSI. Backtests are run with
-[vectorbt](https://github.com/polakowo/vectorbt). A hosted version is available at [backtest.fi](https://backtest.fi).
+out-of-sample. The strategies available are SMA crossover, EMA crossover, MACD, RSI, Bollinger Bands, Stochastic
+Oscillator, Donchian breakout, and Rate of Change. Backtests are run with
+[vectorbt](https://github.com/polakowo/vectorbt). A hosted version is available at
+[backtest.fi](https://backtest.fi).
 
 ## Getting Started
 

@@ -2357,6 +2357,37 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/09/81/96bf2852e3b5b079bde4c0dc010d911f254ce57e6c46bca1b6d0a998940c/vectorbt-1.1.2-py3-none-any.whl", hash = "sha256:d63a1a8bde3fd4ae8ae364cb67fc174520260ba51edb8fa8a1ce867b4c63f9d6", size = 459803, upload-time = "2026-10-09T19:08:05.239Z" },
 ]
 
+[package.optional-dependencies]
+rust = [
+    { name = "vectorbt-rust" },
+]
+
+[[package]]
+name = "vectorbt-rust"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/70/09/239bb0edcbd88ba26426139c536d4eb8c4e5abd453bcf8b63d1536488a36/vectorbt_rust-1.1.2.tar.gz", hash = "sha256:ed20f992a60087b7d2f45db36eec4677acaea13538e2db6869d245bebef40e55", size = 74858, upload-time = "2026-10-09T19:07:39.655Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/90/7144672c2bb01b089c0e602c35abb42af4c2db858a60dd1268b55aae5efd/vectorbt_rust-1.1.2-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:8db5d898097bd0bb6c06f2fe71def5505acf41731422511c2dc759a80d9b3ca8", size = 899181, upload-time = "2026-10-09T19:07:14.26Z" },
+    { url = "https://files.pythonhosted.org/packages/00/51/fcce8fbd4fd0c8e4a835e0c54ed042a067d3d56a652daf1af052eb5a6c5d/vectorbt_rust-1.1.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:f5fce06c5c287ef5fd9329a8ca78d3fe65a91f6144e7ff8f7e3b847ac38befd2", size = 803159, upload-time = "2026-10-09T19:07:16.14Z" },
+    { url = "https://files.pythonhosted.org/packages/54/eb/095e5ae11e989cc5e74a62d3cda7a687dc2ff113c5f329ca909e7bb86153/vectorbt_rust-1.1.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a731060feadce3da4cccd376684bde51f17f7ce29e7a2526fc9375d93cf1461a", size = 811343, upload-time = "2026-10-09T19:07:17.608Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/a9/12316aa55cd83927fe5ec8044ee693324c29a652ec54b23d25579817117a/vectorbt_rust-1.1.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1e3145c399a5ffcdcb4d413226aebad4cfa85ef842db13d74a655dc584e7d9a7", size = 916488, upload-time = "2026-10-09T19:07:19.235Z" },
+    { url = "https://files.pythonhosted.org/packages/25/94/aceaecbbd2ebddfaa64ab790e28ba9f6ed8d67c88ad4c7be1368240ebca1/vectorbt_rust-1.1.2-cp312-cp312-win_amd64.whl", hash = "sha256:eb32345ca337486b50986ef66b889463201669b5a5c0dd8e125c6529878c482d", size = 926600, upload-time = "2026-10-09T19:07:20.759Z" },
+    { url = "https://files.pythonhosted.org/packages/8f/db/e386dc8671f620a325aec5b7650c62fee96bb5dd384d78dcba0b538a6007/vectorbt_rust-1.1.2-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:833f700ed6e22c48e65f99c67f3c7b60a1ff9aee7517aac98dea5bca70f72ba6", size = 899070, upload-time = "2026-10-09T19:07:22.337Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/77/959b063fd0f5bf67e05214873b964e448f87f14b9378177ead6e49afd49a/vectorbt_rust-1.1.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:21745e363490251b4431a5dece0458391d578e0cde082cae96a4e60b7fac7fd7", size = 803016, upload-time = "2026-10-09T19:07:23.875Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/6a/7a2b90c70a1b302970e482629bbe93636d742a4e65727ac9226d8ae34994/vectorbt_rust-1.1.2-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:24165480fba4fbab644756c8aeee6c488d47b2117e1f8a720066b49dfcfb58f5", size = 810993, upload-time = "2026-10-09T19:07:25.406Z" },
+    { url = "https://files.pythonhosted.org/packages/42/30/c80b00784d9e82e3675793dc78790e99d64f6e9307b9828c3bc4bbaffd6e/vectorbt_rust-1.1.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4dd692dfc25da82a911219ded1e300d83e9b7725095189186153cb3c6bf19702", size = 916195, upload-time = "2026-10-09T19:07:26.939Z" },
+    { url = "https://files.pythonhosted.org/packages/74/31/bd1124ee5fb2c3ab5421d85012c7552c7bed6de520eeb6e20b27702a6a50/vectorbt_rust-1.1.2-cp313-cp313-win_amd64.whl", hash = "sha256:e48b09b385e27602222ee1ac5ac15d41a33e61cfa92a602426a981b9de74c6bf", size = 926537, upload-time = "2026-10-09T19:07:28.684Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/da/dab116b7c39364d81e9b5b5170c143348aaee25e0cd65fb1c54f1f21829c/vectorbt_rust-1.1.2-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:eed0e468b5a31850fdebc8891e2b507db75153419711ab7bfe66763653aa3555", size = 893294, upload-time = "2026-10-09T19:07:30.867Z" },
+    { url = "https://files.pythonhosted.org/packages/5a/03/1de7e025b6fd787890d7f1cb5be5dd7eb2a2dae6b49c72e375206e6a58f0/vectorbt_rust-1.1.2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:7a5eec74607ca8dc397e7954b107f15004694b99c63582900d4fef848d61ec97", size = 797457, upload-time = "2026-10-09T19:07:32.668Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/c2/88ba8ea3bf0240efbb599d7e9c0d894115c37782cfc84c3c6c9997a0e3ea/vectorbt_rust-1.1.2-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:24f0803cb900265c0e169e11bea24ebb565b5ee46ac7cec272b4bf8145db2df8", size = 805079, upload-time = "2026-10-09T19:07:34.431Z" },
+    { url = "https://files.pythonhosted.org/packages/77/af/25e324dfb2899a284e34a4fbbc4fc2dc0724e275f5955772e9b650cde30a/vectorbt_rust-1.1.2-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6ca803103a4eafcbf6c019efb88c105570dc19639ef28cc4df99ab4b3869cd82", size = 908937, upload-time = "2026-10-09T19:07:36.071Z" },
+    { url = "https://files.pythonhosted.org/packages/db/b1/ea13aa62e235c423ff89f8796f21fe43d62146c8b64e8bba068959033ac5/vectorbt_rust-1.1.2-cp314-cp314-win_amd64.whl", hash = "sha256:4f59430da4265d6d356ef42cd7b8af8af0613b8125c6136eb7ced4ce12bba2e6", size = 921016, upload-time = "2026-10-09T19:07:38.077Z" },
+]
+
 [[package]]
 name = "walk-forward-optimization-app"
 version = "0.1.0"
@@ -2371,7 +2402,7 @@ dependencies = [
     { name = "pandas" },
     { name = "plotly" },
     { name = "polars" },
-    { name = "vectorbt" },
+    { name = "vectorbt", extra = ["rust"] },
     { name = "yfinance" },
 ]
 
@@ -2402,7 +2433,7 @@ requires-dist = [
     { name = "polars", specifier = ">=2.0" },
     { name = "pyarrow", marker = "extra == 'postgres'", specifier = ">=24" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=8.1" },
-    { name = "vectorbt", specifier = ">=1.1.2" },
+    { name = "vectorbt", extras = ["rust"], specifier = ">=1.1.2" },
     { name = "yfinance", specifier = ">=1.7" },
 ]
 provides-extras = ["postgres", "redis", "wsgi"]

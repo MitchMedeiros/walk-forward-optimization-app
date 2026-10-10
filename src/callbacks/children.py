@@ -3,6 +3,8 @@ import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import dash_mantine_components as dmc
 
+from src.strategies import STRATEGIES
+
 def parameters_div(label_text, slider_min, slider_max, slider_step, slider_value):
     return html.Div(
         [
@@ -29,17 +31,7 @@ def parameter_inputs_callback(app):
         Input('strategy_drop', 'value')
     )
     def update_strategy_children(selected_strategy):
-        if selected_strategy == 'SMA Crossover':
-            return parameters_div("Range of SMA periods", 10, 300, 10, [20, 200])
-
-        elif selected_strategy == 'EMA Crossover':
-            return parameters_div("Range of EMA periods", 10, 300, 10, [30, 180])
-
-        elif selected_strategy == 'RSI':
-            return parameters_div("Range of RSI entry and exit values", 10, 100, 2, [20, 80])
-
-        elif selected_strategy == 'MACD':
-            return parameters_div("Range of EMA periods for MACD line", 6, 50, 2, [8, 30])
+        return parameters_div(*STRATEGIES[selected_strategy].slider)
 
 # A dummy input div is used to trigger the notification popup on page load only and keep it
 # seperated from other callbacks.

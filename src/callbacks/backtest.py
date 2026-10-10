@@ -1,4 +1,3 @@
-from itertools import combinations
 from math import atan, pi
 
 from dash import Input, Output, State, dash_table, no_update
@@ -10,6 +9,7 @@ import vectorbt as vbt
 
 import src.components.alerts as alerts
 import src.data.data as data
+from src.strategies import STRATEGIES
 try:
     import my_config as config
 except ImportError:
@@ -22,14 +22,6 @@ def overlap_factor(nwindows):
         return factors[nwindows - 2]
     else:
         return (13 / (9 * pi)) * atan(nwindows)
-
-# For creating a numpy.arange array with a closed interval instead of half-open.
-def closed_arange(start, stop, step, dtype=None):
-    array = np.arange(start, stop, step, dtype=dtype)
-    if array[-1] + step <= stop:
-        end_value = np.array(stop, ndmin=1, dtype=dtype)
-        array = np.concatenate([array, end_value])
-    return array
 
 # This callback creates the tables within the tabular results section.
 def simulation_callback(app, cache):
@@ -87,71 +79,13 @@ def simulation_callback(app, cache):
 
         pf_kwargs = dict(direction=selected_direction, freq=time_interval, init_cash=100, fees=0.000, slippage=0.000)
 
-        if selected_strategy == 'SMA Crossover':
-            columns_list = ["Fast SMA Period", "Slow SMA Period"]
-            parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
+        strategy = STRATEGIES[selected_strategy]
+        columns_list = list(strategy.parameter_names)
+        parameter_values = strategy.parameter_grid(selected_range[0], selected_range[1])
 
-            def backtest_windows(price, sma_periods, all_periods=True):
-                if all_periods is True:
-                    fast_sma, slow_sma = vbt.MA.run_combs(price, sma_periods)
-                else:
-                    fast_sma = vbt.MA.run(price, sma_periods[0], per_column=True)
-                    slow_sma = vbt.MA.run(price, sma_periods[1], per_column=True)
-                entries = fast_sma.ma_crossed_above(slow_sma.ma)
-                exits = fast_sma.ma_crossed_below(slow_sma.ma)
-                return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-
-        elif selected_strategy == 'EMA Crossover':
-            columns_list = ["Fast EMA Period", "Slow EMA Period"]
-            parameter_values = closed_arange(selected_range[0], selected_range[1], 10, np.int16)
-
-            def backtest_windows(price, ema_periods, all_periods=True):
-                if all_periods is True:
-                    fast_ema, slow_ema = vbt.MA.run_combs(price, ema_periods, ewm=True)
-                else:
-                    fast_ema = vbt.MA.run(price, ema_periods[0], ewm=True, per_column=True)
-                    slow_ema = vbt.MA.run(price, ema_periods[1], ewm=True, per_column=True)
-                entries = fast_ema.ma_crossed_above(slow_ema.ma)
-                exits = fast_ema.ma_crossed_below(slow_ema.ma)
-                return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-
-        elif selected_strategy == 'MACD':
-            columns_list = ["Fast EMA Period", "Slow EMA Period"]
-            raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
-
-            # Generate all entry and exit combinations with entry value < exit value by default and splitting them into seperate lists.
-            # For the crossover strategies this was already done for us by the .run_combs function for the period parameters.
-            parameter_combinations = list(combinations(raw_parameter_values, 2))
-            parameter_values_entries = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]
-            parameter_values_exits = [parameter_combinations[i][1] for i in range(len(parameter_combinations))]
-            parameter_values = [parameter_values_entries, parameter_values_exits]
-
-            def backtest_windows(price, parameter_values, all_periods=True):
-                if all_periods is True:
-                    macd = vbt.MACD.run(price, parameter_values[0], parameter_values[1], macd_ewm=True, signal_ewm=True)
-                else:
-                    macd = vbt.MACD.run(price, parameter_values[0], parameter_values[1], macd_ewm=True,
-                                        signal_ewm=True, per_column=True)
-                entries = macd.macd_crossed_above(macd.signal)
-                exits = macd.macd_crossed_below(macd.signal)
-                return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
-
-        elif selected_strategy == 'RSI':
-            columns_list = ["RSI Entry Value", "RSI Exit Value"]
-            raw_parameter_values = closed_arange(selected_range[0], selected_range[1], 2, np.int16)
-
-            # Generate all entry and exit combinations with entry value < exit value by default and splitting them into seperate lists.
-            # For the crossover strategies this was already done for us by the .run_combs function for the period parameters.
-            parameter_combinations = list(combinations(raw_parameter_values, 2))
-            parameter_values_entries = [parameter_combinations[i][0] for i in range(len(parameter_combinations))]
-            parameter_values_exits = [parameter_combinations[i][1] for i in range(len(parameter_combinations))]
-            parameter_values = [parameter_values_entries, parameter_values_exits]
-
-            def backtest_windows(price, entry_exit_values, dummy_variable=None):
-                rsi = vbt.RSI.run(price, 14, ewm=True)
-                entries = rsi.rsi_crossed_below(entry_exit_values[0])
-                exits = rsi.rsi_crossed_above(entry_exit_values[1])
-                return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
+        def backtest_windows(price, parameters, per_column=False):
+            entries, exits = strategy.signals(price, parameters, per_column)
+            return vbt.Portfolio.from_signals(price, entries, exits, **pf_kwargs)
 
         # A function to group by window index so we can properly access the various metrics for each window.
         def get_optimal_parameters(accessed_metric):
@@ -160,9 +94,7 @@ def simulation_callback(app, cache):
             else:
                 indexed_parameters = accessed_metric[accessed_metric.groupby("split_idx").idxmax()].index
 
-            first_parameters = indexed_parameters.get_level_values(indexed_parameters.names[0]).to_numpy()
-            second_parameters = indexed_parameters.get_level_values(indexed_parameters.names[1]).to_numpy()
-            return np.array([first_parameters, second_parameters])
+            return [indexed_parameters.get_level_values(level).to_numpy() for level in indexed_parameters.names[:2]]
 
         # Testing all parameter combinations on the in-sample windows and getting optimal parameters.
         # The deep.getattr function is used to provide the portfolio metric to optimize on in a variable way.
@@ -170,7 +102,7 @@ def simulation_callback(app, cache):
         outsample_parameters = get_optimal_parameters(pf_insample.deep_getattr(selected_metric))
 
         # Testing the extracted parameters on the out-of-sample windows.
-        pf_outsample = backtest_windows(out_price, outsample_parameters, False)
+        pf_outsample = backtest_windows(out_price, outsample_parameters, per_column=True)
 
         # Testing all parameter combinations on the out-of-sample windows for comparison purposes.
         pf_outsample_optimized = backtest_windows(out_price, parameter_values)
@@ -184,7 +116,7 @@ def simulation_callback(app, cache):
         # The stats DataFrames can also be created with the desired format directly by passing dictionaries to portfolio.stats().
         window_number = pd.DataFrame(np.arange(1, nwindows + 1), columns=["Window"], dtype=np.int16)
 
-        outsample_parameters_df = pd.DataFrame(outsample_parameters.transpose(), columns=columns_list, dtype=np.int16)
+        outsample_parameters_df = pd.DataFrame(dict(zip(columns_list, outsample_parameters)))
         outsample_metrics = ['total_return', 'sharpe_ratio', 'max_dd', 'benchmark_return', 'open_trade_pnl', 'total_trades',
                              'total_open_trades', 'win_rate', 'avg_winning_trade', 'avg_losing_trade', 'expectancy', 'max_gross_exposure']
         outsample_df = pf_outsample.stats(metrics=outsample_metrics, agg_func=None).reset_index(drop=True)
@@ -194,7 +126,7 @@ def simulation_callback(app, cache):
                                                     "Win Rate [%]": "Win Rate", "Avg Winning Trade [%]": "Avg Winning Trade",
                                                     "Avg Losing Trade [%]": "Avg Losing Trade", "Benchmark Return [%]": "Benchmark Return"})
 
-        optimal_parameters_df = pd.DataFrame(optimal_parameters.transpose(), columns=columns_list, dtype=np.int16)
+        optimal_parameters_df = pd.DataFrame(dict(zip(columns_list, optimal_parameters)))
         optimal_returns = (pf_outsample_optimized.total_return() * 100).groupby("split_idx").max().rename("Return")
         optimal_sharpe_ratio = (pf_outsample_optimized.sharpe_ratio()).groupby("split_idx").max().rename("Sharpe Ratio")
         optimal_maxdrawdowns = (pf_outsample_optimized.max_drawdown() * -100).groupby("split_idx").min().rename("Max Drawdown")

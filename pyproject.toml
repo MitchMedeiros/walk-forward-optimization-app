@@ -14,7 +14,7 @@ dependencies = [
     "pandas>=3.0",
     "plotly>=7.1",
     "polars>=2.0",
-    "vectorbt>=1.1.2",
+    "vectorbt[rust]>=1.1.2",
     "yfinance>=1.7",
 ]
 
