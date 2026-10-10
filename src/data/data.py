@@ -31,7 +31,7 @@ def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
                 ORDER BY
                     date ASC
             '''
-            df = pl.read_database(query, config.connection).lazy()
+            df = pl.read_database_uri(query, config.connection).lazy()
             df = df.with_columns([pl.col(['open', 'high', 'low', 'close']).cast(pl.Decimal(8, 3))]) \
                    .set_sorted('date')
 

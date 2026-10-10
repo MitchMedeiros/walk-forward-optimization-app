@@ -1,0 +1,9 @@
+.git
+.venv
+.vscode
+.env
+cache
+docker
+**/__pycache__
+*.ipynb
+my_config.py

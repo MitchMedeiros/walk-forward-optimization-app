@@ -9,4 +9,4 @@ src/__pycache__
 src/data/__pycache__
 src/callbacks/__pycache__
 src/components/__pycache__
-src/data/__pycache__
+src/data/__pycache__.env

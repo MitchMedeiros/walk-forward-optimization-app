@@ -660,6 +660,15 @@ wheels = [
 ]
 
 [[package]]
+name = "gunicorn"
+version = "26.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d9/8a/e4ef6ee11701b6cd64702848415ffb69eeff85cb388a3c6c7fe86f22f3f8/gunicorn-26.2.0.tar.gz", hash = "sha256:62b864895d9ebff0b2f9867ba04fe811c93121596540830c9c916d0769668447", size = 787921, upload-time = "2026-08-24T15:05:59.3Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fe/85/7522a52e5e2f42faf1a129113ab63e548c42e103e9af395b7bfe65e403e2/gunicorn-26.2.0-py3-none-any.whl", hash = "sha256:bd249d0b3f7972f7432f0a6b6ff3b3ee2d129f70cd1ff6c09a9dd9e29a2b88e3", size = 228389, upload-time = "2026-08-24T15:05:57.67Z" },
+]
+
+[[package]]
 name = "idna"
 version = "3.20"
 source = { registry = "https://pypi.org/simple" }
@@ -1245,12 +1254,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/bd/c0/9f7c9a46090390368
 wheels = [
     { url = "https://files.pythonhosted.org/packages/41/09/5b161152e2d90f7b87f781c2e1267494aef9c32498df793f73ad0a0a494a/matplotlib_inline-0.2.2-py3-none-any.whl", hash = "sha256:3c821cf1c209f59fb2d2d64abbf5b23b67bcb2210d663f9918dd851c6da1fcf6", size = 9534, upload-time = "2026-05-08T17:33:32.055Z" },
 ]
-
-[[package]]
-name = "mod-wsgi"
-version = "6.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/12/b1/867ada6512f6cfc8cb599b4e18475ffd8e4ff9ebcc68d22800ec6d3025e3/mod_wsgi-6.1.0.tar.gz", hash = "sha256:9ebb645c899ea6461edf27872c11a6a12c6e819edbcc3652e0b6195d990aa31c", size = 607759, upload-time = "2026-09-26T23:19:43.484Z" }
 
 [[package]]
 name = "multitasking"
@@ -2398,6 +2401,7 @@ dependencies = [
     { name = "dash-iconify" },
     { name = "dash-mantine-components" },
     { name = "flask-caching" },
+    { name = "gunicorn" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "plotly" },
@@ -2414,9 +2418,6 @@ postgres = [
 redis = [
     { name = "redis" },
 ]
-wsgi = [
-    { name = "mod-wsgi" },
-]
 
 [package.metadata]
 requires-dist = [
@@ -2426,7 +2427,7 @@ requires-dist = [
     { name = "dash-iconify", specifier = ">=0.1.2" },
     { name = "dash-mantine-components", specifier = ">=2.8" },
     { name = "flask-caching", specifier = ">=2.4" },
-    { name = "mod-wsgi", marker = "extra == 'wsgi'", specifier = ">=6.1" },
+    { name = "gunicorn", specifier = ">=26.2.0" },
     { name = "numpy", specifier = ">=2.4" },
     { name = "pandas", specifier = ">=3.0" },
     { name = "plotly", specifier = ">=7.1" },
@@ -2436,7 +2437,7 @@ requires-dist = [
     { name = "vectorbt", extras = ["rust"], specifier = ">=1.1.2" },
     { name = "yfinance", specifier = ">=1.7" },
 ]
-provides-extras = ["postgres", "redis", "wsgi"]
+provides-extras = ["postgres", "redis"]
 
 [[package]]
 name = "wcwidth"

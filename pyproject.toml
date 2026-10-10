@@ -10,6 +10,7 @@ dependencies = [
     "dash-iconify>=0.1.2",
     "dash-mantine-components>=2.8",
     "flask-caching>=2.4",
+    "gunicorn>=26.2.0",
     "numpy>=2.4",
     "pandas>=3.0",
     "plotly>=7.1",
@@ -21,7 +22,6 @@ dependencies = [
 [project.optional-dependencies]
 postgres = ["connectorx>=0.4", "pyarrow>=24"]
 redis = ["redis>=8.1"]
-wsgi = ["mod-wsgi>=6.1"]
 
 [tool.uv]
 package = false

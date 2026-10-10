@@ -28,7 +28,7 @@ app = Dash(
     update_title='Optimizing...'
 )
 
-# Name the webserver object. This is passed to the wsgi and flask-cache.
+# Name the webserver object. This is passed to gunicorn and flask-cache.
 server = app.server
 
 # Instantiate the flask cache

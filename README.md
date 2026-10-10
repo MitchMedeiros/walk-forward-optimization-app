@@ -58,7 +58,6 @@ Optional dependencies are installed as uv extras. Combine them as needed, for ex
 | --- | --- |
 | `postgres` | Load price data from a PostgreSQL or TimescaleDB database |
 | `redis` | Cache data between callbacks in Redis instead of the file system |
-| `wsgi` | mod_wsgi, for hosting the app with Apache |
 
 ### PostgreSQL
 
@@ -71,118 +70,62 @@ in a table should have a time interval less than or equal to the lowest timefram
 
 Run `uv sync --extra redis`, then set `cache_type = 'redis'` and provide `redis_host` and `redis_port` in `config.py`.
 
-## Hosting with Apache and mod_wsgi on Linux
+## Docker
 
-This section explains how to host the app on a server. It assumes you have an Apache virtual host set up and linked to
-a domain name. In the examples below, replace `/path/to/walk-forward-optimization-app` with the location of your clone
-and `yoursite.com` with your domain name.
+The Docker setup runs the app with gunicorn behind nginx. Redis and PostgreSQL are separate containers on the same
+compose network and only start when their profile is enabled. You need
+[Docker with Compose](https://docs.docker.com/compose/install/).
 
-Install the Apache header files for third-party modules. For Apache 2.4 on Debian/Ubuntu run:
-
-```shell
-sudo apt install apache2-dev
-```
-
-Install the mod_wsgi extra from the root of the repository:
+Start the app with Yahoo Finance data and the file cache, which needs no other setup:
 
 ```shell
-uv sync --extra wsgi
+docker compose up -d --build
 ```
 
-Locate your newly created wsgi files with:
+Then open [127.0.0.1:8050](http://127.0.0.1:8050). Settings are read from a `.env` file, which is optional. Copy
+`.env.example` to `.env` and edit it. Every option in `config.py` can also be set as an environment variable. Only
+nginx is published on the host. Set `HTTP_PORT=80` to serve on the standard HTTP port, for example on an EC2 instance
+with port 80 open in its security group. TLS is not configured, so terminate it in front of nginx with a load balancer
+or add certificates to `docker/nginx/default.conf`. Use `WEB_CONCURRENCY` to set the number of gunicorn workers.
+
+### Redis
+
+Add `CACHE_TYPE=redis` to `.env` and start the `redis` profile:
 
 ```shell
-uv run mod_wsgi-express module-config
+docker compose --profile redis up -d
 ```
 
-Copy the output, then create a new `.load` file in `/etc/apache2/mods-available` and paste the output inside it:
+Redis keeps the cache in memory only, limited to 512MB, and shares it between all gunicorn workers.
+
+### PostgreSQL
+
+Add `DATA_TYPE=postgres` and a `POSTGRES_PASSWORD` to `.env`, then start the `postgres` profile:
 
 ```shell
-sudo vim /etc/apache2/mods-available/wsgi.load
+docker compose --profile postgres up -d
 ```
 
-If you're new to Vim, press `i` to insert text, paste like normal, press `escape`, then type `:wq` to save and exit.
-To exit without saving, press `escape` then type `:q!`.
+The profiles can be combined, for example `docker compose --profile redis --profile postgres up -d`. The database
+runs the `timescale/timescaledb` image, which can be changed with `POSTGRES_IMAGE`. Pin the same major version that
+created an existing data directory.
 
-Enable the module with `sudo a2enmod wsgi`.
+Where the database files live is set by two options:
 
-Next, add a `WSGIScriptAlias` pointing to `app.wsgi` in the virtual host configuration for your site. If your site only
-uses HTTP, the configuration should look similar to:
+- `POSTGRES_VOLUME` is the name of the Docker volume, `wfo_pgdata` by default. To attach a volume that already holds
+  your data, set this to its name.
+- `POSTGRES_DATA` is a host directory, such as a mounted EBS volume at `/mnt/pgdata`. When set, it is used instead
+  of the named volume.
 
-```apache
-<VirtualHost *:80>
-    ServerName yoursite.com
-    ServerAlias www.yoursite.com
+The files in `docker/postgres/initdb` run only when the data directory is empty. The default one creates empty `spy`,
+`qqq`, `dia`, and `iwm` tables with the expected columns. To load data into a new database, put a `.sql`, `.sql.gz`,
+or `.sh` file in that directory before the first start, or load it into a running database:
 
-    WSGIDaemonProcess wfo_app python-home=/path/to/walk-forward-optimization-app/.venv user=www-data group=www-data
-
-    WSGIProcessGroup wfo_app
-    WSGIApplicationGroup %{GLOBAL}
-
-    WSGIScriptAlias / /path/to/walk-forward-optimization-app/app.wsgi
-
-    <Directory /path/to/walk-forward-optimization-app/>
-        Require all granted
-    </Directory>
-</VirtualHost>
+```shell
+docker compose exec -T postgres psql -U wfo -d wfo -c "\copy spy FROM STDIN CSV HEADER" < spy.csv
+docker compose exec -T postgres pg_restore -U wfo -d wfo --no-owner < backup.dump
 ```
 
-If your site uses HTTPS through Let's Encrypt, the configuration should look similar to:
-
-```apache
-<VirtualHost *:80>
-    ServerName yoursite.com
-    ServerAlias www.yoursite.com
-
-    RewriteEngine on
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://yoursite.com/$1 [L,R=301]
-</VirtualHost>
-
-<IfModule mod_ssl.c>
-<VirtualHost *:443>
-    ServerName yoursite.com
-    ServerAlias www.yoursite.com
-
-    Include /etc/letsencrypt/options-ssl-apache.conf
-    SSLCertificateFile /etc/letsencrypt/live/yoursite.com/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/yoursite.com/privkey.pem
-
-    WSGIDaemonProcess wfo_app python-home=/path/to/walk-forward-optimization-app/.venv user=www-data group=www-data
-
-    WSGIProcessGroup wfo_app
-    WSGIApplicationGroup %{GLOBAL}
-
-    WSGIScriptAlias / /path/to/walk-forward-optimization-app/app.wsgi
-
-    <Directory /path/to/walk-forward-optimization-app/>
-        Require all granted
-    </Directory>
-</VirtualHost>
-</IfModule>
-```
-
-If you created a new configuration file in one of the `...-available` folders rather than editing an existing one,
-activate it with the appropriate `a2ensite`, `a2enmod`, or `a2enconf` command.
-
-Edit `app.wsgi` in the root of the repository. Change the shebang line to the Python executable in your virtual
-environment:
-
-```python
-#!/path/to/walk-forward-optimization-app/.venv/bin/python
-```
-
-Also change the `sys.path` line to the root directory of the repository:
-
-```python
-sys.path.insert(0, "/path/to/walk-forward-optimization-app/")
-```
-
-Set `run_locally = False` in `config.py` so the app only runs through the WSGI server.
-
-Make sure the Apache user, `www-data`, has sufficient file permissions. At a minimum, the whole app directory should
-have `www-data` as its group with read permission on all files, and `app.wsgi` needs execute permission. Add further
-write or execute permissions only as necessary. For security, the directory should be owned by a user other than root.
-
-Finally, restart Apache with `sudo systemctl restart apache2` for all changes to take effect. The app should now be
-accessible through your domain name.
+The CSV columns must match the table: `date`, `open`, `high`, `low`, `close`, `volume`, `symbol`. Replace `wfo` with
+your `POSTGRES_USER` and `POSTGRES_DB` if you changed them. The database is not published on the host. To reach it
+from outside Docker, add a `ports` entry to the `postgres` service in a `compose.override.yaml`.
