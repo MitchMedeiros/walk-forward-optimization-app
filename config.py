@@ -12,8 +12,17 @@ and whether or not to cache data with a redis database. Both of these require ex
 # Set whether to retrieve asset price data from 'yfinance' (no setup required) or an existing 'postgres' database.
 data_type = 'yfinance'
 
+# The assets in the asset dropdown, mapped to their displayed labels. The keys are the yfinance tickers or the postgres
+# table names, and any other asset requested by the app is rejected.
+assets = {
+    'spy': 'SPY - S&P 500 ETF',
+    'qqq': 'QQQ - Nasdaq-100 ETF',
+    'dia': 'DIA - Dow Jones ETF',
+    'iwm': 'IWM - Russell 2000 ETF'
+}
+
 # Only used if data_type='postgres'. Provide your postgreSQL connection credentials below.
-# A note about table formatting: Your tables should have the same names as those listed in the asset dropdown: spy, qqq, dia, iwm.
+# A note about table formatting: Your tables should have the same names as the keys of the assets above.
 # The columns should have the lowercase names: date, open, high, low, close, volume, symbol.
 database_type = 'postgresql'
 user = ''

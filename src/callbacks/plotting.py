@@ -1,16 +1,21 @@
 from dash import dcc, Input, Output, State
-import dash_mantine_components as dmc
+from dash.exceptions import PreventUpdate
 import pandas as pd
 import polars as pl
 import plotly.graph_objects as go
 import vectorbt as vbt
 
 from . backtest import overlap_factor
+import src.components.alerts as alerts
 import src.data.data as data
 try:
     import my_config as config
 except ImportError:
     import config
+
+# The hours of the day that are hidden in the candlestick chart, as the start and end of the gap. Plotly reads the hour
+# as the wall-clock time of each timestamp. The database data is in UTC and the yfinance data is in New York time.
+after_hours_bounds = {'postgres': [21, 13.5], 'yfinance': [16, 9.5]}
 
 # Callback for ploting the candlestick chart
 def candle_plot_callback(app, cache):
@@ -23,39 +28,21 @@ def candle_plot_callback(app, cache):
         ]
     )
     def plot_candles(selected_timeframe, selected_asset, dates):
+        # The date range picker reports an incomplete range after the first date is clicked.
+        if not all(dates):
+            raise PreventUpdate
+
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
 
-        if config.data_type == 'postgres' and len(df) == 0:
-            return dmc.Alert(
-                "A connection could not be established to the database or the select query failed. "
-                "Make sure your database crediental are corrently entered in config.py. "
-                "Also ensure your database table is titled the same as the selected instrument "
-                "and your columns are titled: date, open, high, low, close, volume.",
-                title="Error Querying Database",
-                color='red',
-                withCloseButton=True,
-                id='db_alert'
-            )
-
-        elif config.data_type == 'yfinance' and len(df) == 0:
-            return dmc.Alert(
-                "You have likely requested data too far in the past for your selected timeframe. "
-                "For the yfinance API, 5m and 15m data is only available within the last 60 days. "
-                "1h data is only available within the last 730 days. "
-                "Alternatively, the yfinance API may be experiencing issues with its API keys currently. "
-                "In this case, you should try again later.",
-                title="Error Retrieving Financial Data",
-                color='red',
-                withCloseButton=True,
-                id='yfinance_alert'
-            )
+        if len(df) == 0:
+            return alerts.empty_data_alert()
 
         else:
             # Removes gaps outside of trading hours in the barchart. This doesn't adjust for daylights savings time.
             if selected_timeframe == '1d':
                 breaks = dict(bounds=['sat', 'mon'])
             else:
-                breaks = dict(bounds=[21, 13.5], pattern='hour')
+                breaks = dict(bounds=after_hours_bounds[config.data_type], pattern='hour')
 
             if config.data_type == 'yfinance':
                 df.reset_index(inplace=True)
@@ -94,8 +81,15 @@ def window_plot_callback(app, cache):
         ]
     )
     def plot_windows(nwindows, insample, dates, selected_timeframe, selected_asset):
+        if not all(dates):
+            raise PreventUpdate
+
         nwindows, insample = int(nwindows), int(insample)
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
+
+        if len(df) == 0:
+            return alerts.empty_data_alert()
+
         if config.data_type == 'postgres':
             df = df.select(pl.col(['date', 'close']))
 

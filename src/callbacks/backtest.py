@@ -1,13 +1,14 @@
 from itertools import combinations
 from math import atan, pi
 
-from dash import html, Input, Output, State, dash_table
+from dash import Input, Output, State, dash_table, no_update
 import dash_mantine_components as dmc
 import numpy as np
 import pandas as pd
 import polars as pl
 import vectorbt as vbt
 
+import src.components.alerts as alerts
 import src.data.data as data
 try:
     import my_config as config
@@ -56,8 +57,15 @@ def simulation_callback(app, cache):
     )
     def perform_backtest(n_clicks, session_id, selected_strategy, nwindows, insample, selected_timeframe,
                          selected_asset, dates, selected_direction, selected_range, selected_metric):
+        # The date range picker reports an incomplete range after the first date is clicked.
+        if not all(dates):
+            return no_update, no_update, no_update, False, no_update
+
         nwindows, insample = int(nwindows), int(insample)
         df = data.cached_df(cache, selected_timeframe, selected_asset, dates[0], dates[1])
+
+        if len(df) == 0:
+            return alerts.empty_data_alert(), None, None, False, None
 
         if config.data_type == 'postgres':
             close = df.select(pl.col(['date', 'close'])).to_pandas()

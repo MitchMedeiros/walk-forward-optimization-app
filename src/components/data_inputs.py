@@ -7,13 +7,8 @@ except ImportError:
     import config
 
 asset_dropdown = dmc.Select(
-    data=[
-        {'label': 'SPY - S&P 500 ETF', 'value': 'spy'},
-        {'label': 'QQQ - Nasdaq-100 ETF', 'value': 'qqq'},
-        {'label': 'DIA -  Dow Jones ETF', 'value': 'dia'},
-        {'label': 'IWM - Russell 2000 ETF', 'value': 'iwm'}
-    ],
-    value='spy',
+    data=[{'label': label, 'value': asset} for asset, label in config.assets.items()],
+    value=next(iter(config.assets)),
     label="Asset",
     leftSection=DashIconify(icon='arcticons:stockswidget'),
     searchable=True,

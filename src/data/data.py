@@ -1,3 +1,5 @@
+from datetime import date
+
 try:
     import my_config as config
 except ImportError:
@@ -5,6 +7,11 @@ except ImportError:
 
 # Queries the data from the database or yfinance and caches it via flask-cache for use in multiple callbacks
 def cached_df(cache, selected_timeframe, selected_asset, start_date, end_date):
+    # The callback values come from the client and are used to build the database query, so validate them first.
+    if selected_asset not in config.assets:
+        raise ValueError(f"Unknown asset: {selected_asset!r}")
+    start_date, end_date = date.fromisoformat(start_date), date.fromisoformat(end_date)
+
     @cache.memoize()
     def get_data(selected_timeframe, selected_asset, start_date, end_date):
         if config.data_type == 'postgres':
