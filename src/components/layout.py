@@ -74,7 +74,7 @@ page_header = dbc.Navbar(
                                     position="bottom"
                                 )
                             ],
-                            href="https://github.com/MitchMedeiros/dashapp",
+                            href="https://github.com/MitchMedeiros/walk-forward-optimization-app",
                             target="_blank"
                         )
                     ],
